@@ -1,0 +1,128 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+SCRIPT_DIR=${0:A:h}
+DATA_FILE="${SAMPLE_DATA_FILE:-$SCRIPT_DIR/sample-data.json}"
+APP_URL="${APP_URL:-http://127.0.0.1:8080}"
+CURL_BIN="${CURL_BIN:-/usr/bin/curl}"
+CAT_BIN="${CAT_BIN:-/bin/cat}"
+
+json_get() {
+  local key_path="$1"
+  python3 - "$DATA_FILE" "$key_path" <<'PY'
+import json
+import sys
+
+data_file = sys.argv[1]
+key_path = sys.argv[2]
+
+with open(data_file, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+current = data
+for part in key_path.split("."):
+    current = current[part]
+
+if isinstance(current, (dict, list)):
+    print(json.dumps(current, separators=(",", ":")))
+else:
+    print(str(current))
+PY
+}
+
+request() {
+  local method="$1"
+  local path="$2"
+  local expected_code="$3"
+  local body="${4:-}"
+  local response_file="$5"
+  local code
+
+  echo ""
+  echo ">>> $method $APP_URL$path (expected: $expected_code)"
+  if [[ -n "$body" ]]; then
+    echo ">>> request-body: $body"
+  fi
+
+  if [[ -n "$body" ]]; then
+    code=$("$CURL_BIN" -sS -o "$response_file" -w "%{http_code}" \
+      -X "$method" \
+      -H "Content-Type: application/json" \
+      --data "$body" \
+      "$APP_URL$path")
+  else
+    code=$("$CURL_BIN" -sS -o "$response_file" -w "%{http_code}" \
+      -X "$method" \
+      "$APP_URL$path")
+  fi
+
+  echo "<<< status: $code"
+  if [[ -s "$response_file" ]]; then
+    echo "<<< response-body:"
+    "$CAT_BIN" "$response_file"
+    echo ""
+  else
+    echo "<<< response-body: <empty>"
+  fi
+
+  if [[ "$code" != "$expected_code" ]]; then
+    echo "Request failed: $method $path (expected $expected_code, got $code)" >&2
+    return 1
+  fi
+}
+
+json_field() {
+  local file="$1"
+  local field="$2"
+  python3 - "$file" "$field" <<'PY'
+import json
+import sys
+
+response_file = sys.argv[1]
+field = sys.argv[2]
+
+with open(response_file, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+print(data[field])
+PY
+}
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+echo "Running API calls against $APP_URL"
+
+transfer_payload=$(json_get "payloads.createTransfer")
+deposit_payload=$(json_get "payloads.createDeposit")
+withdrawal_payload=$(json_get "payloads.createWithdrawal")
+invalid_payload=$(json_get "payloads.invalidTransaction")
+
+account_id=$(json_get "filters.accountId")
+type_filter=$(json_get "filters.type")
+from_filter=$(json_get "filters.from")
+to_filter=$(json_get "filters.to")
+missing_transaction_id=$(json_get "lookups.missingTransactionId")
+invalid_account_id=$(json_get "lookups.invalidAccountId")
+
+request "POST" "/transactions" "201" "$transfer_payload" "$tmpdir/create-transfer.json"
+transfer_id=$(json_field "$tmpdir/create-transfer.json" "id")
+
+request "POST" "/transactions" "201" "$deposit_payload" "$tmpdir/create-deposit.json"
+request "POST" "/transactions" "201" "$withdrawal_payload" "$tmpdir/create-withdrawal.json"
+
+request "GET" "/transactions" "200" "" "$tmpdir/list-all.json"
+request "GET" "/transactions/$transfer_id" "200" "" "$tmpdir/get-by-id.json"
+
+request "GET" "/transactions?accountId=$account_id" "200" "" "$tmpdir/list-by-account.json"
+request "GET" "/transactions?type=$type_filter" "200" "" "$tmpdir/list-by-type.json"
+request "GET" "/transactions?from=$from_filter&to=$to_filter" "200" "" "$tmpdir/list-by-date-range.json"
+request "GET" "/transactions?accountId=$account_id&type=$type_filter&from=$from_filter&to=$to_filter" "200" "" "$tmpdir/list-combined-filters.json"
+
+request "GET" "/accounts/$account_id/balance" "200" "" "$tmpdir/balance.json"
+
+request "POST" "/transactions" "400" "$invalid_payload" "$tmpdir/invalid-create.json"
+request "GET" "/transactions/$missing_transaction_id" "404" "" "$tmpdir/missing-by-id.json"
+request "GET" "/accounts/$invalid_account_id/balance" "400" "" "$tmpdir/invalid-balance-account.json"
+
+echo "All API calls completed successfully."
