@@ -1,14 +1,19 @@
 # 🏦 Homework 1: Banking Transactions API
 
-> **Student Name**: [Your Name]
-> **Date Submitted**: [Date]
-> **AI Tools Used**: [List tools, e.g., Claude Code, GitHub Copilot]
+> **Student Name**: Andrii Gnatiuk
+
+> **Date Submitted**: fill in
+
+> **AI Tools Used**:
+> - Codex (actual code generation)
+> - ChatGPT for brainstorming and cross-validation
 
 ---
 
 ## 📋 Project Overview
 
-[Briefly describe your implementation - what you built and the key features]
+The main goal of this project is to create a REST API that will allow users to perform CRUD operations on banking transactions.
+One of the side quests is to not touch the itself code at all, but rather use the Codex tool to generate the API and do the validation.
 
 
 <div align="center">
