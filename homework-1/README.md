@@ -8,6 +8,17 @@
 > - Codex (actual code generation)
 > - ChatGPT for brainstorming and cross-validation
 
+> **Usage approach**:
+> - docs/screenshots usage is structured as follows:
+>  - step_number-prompt-tool-what_was_asked.xxx
+>  - step_number-reply-tool.xxx
+> - an iterative path was followed:
+>   - no god prompts were used to implement the whole thing
+>   - each prompt attempts to target a specific part of the implementation
+>   - the next step is not necessarily built on top of the previous one, but rather targets to improve some aspect
+> and get change which can be validated with ease (lack of tasks list, yeah)
+> - each commit contains screenshots of tool(s) in action (prompt and reply) and actual changes
+
 ---
 
 ## 📋 Project Overview
