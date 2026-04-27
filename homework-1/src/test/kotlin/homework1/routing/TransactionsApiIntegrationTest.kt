@@ -107,6 +107,62 @@ class TransactionsApiIntegrationTest {
         assertEquals("50.0", balancesObject.getValue("USD").jsonPrimitive.content)
     }
 
+    @Test
+    fun `summary endpoint returns account transactions sorted newest first and handles empty or invalid account`() =
+        testApplication {
+            application { module() }
+
+            val deposit = client.post("/transactions") {
+                contentType(ContentType.Application.Json)
+                setBody("""{"toAccount":"ACC-A1B2C","amount":200.0,"currency":"USD","type":"deposit"}""")
+            }
+            assertEquals(HttpStatusCode.Created, deposit.status)
+            val depositId = parseObject(deposit.bodyAsText()).jsonObject.getValue("id").jsonPrimitive.content
+
+            val transfer = client.post("/transactions") {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    """{
+                        "fromAccount":"ACC-A1B2C",
+                        "toAccount":"ACC-D3E4F",
+                        "amount":150.0,
+                        "currency":"USD",
+                        "type":"transfer"
+                    }"""
+                )
+            }
+            assertEquals(HttpStatusCode.Created, transfer.status)
+            val transferId = parseObject(transfer.bodyAsText()).jsonObject.getValue("id").jsonPrimitive.content
+
+            val failedWithdrawal = client.post("/transactions") {
+                contentType(ContentType.Application.Json)
+                setBody("""{"fromAccount":"ACC-A1B2C","amount":100.0,"currency":"USD","type":"withdrawal"}""")
+            }
+            assertEquals(HttpStatusCode.Created, failedWithdrawal.status)
+            val failedBody = parseObject(failedWithdrawal.bodyAsText()).jsonObject
+            assertEquals("FAILED", failedBody.getValue("status").jsonPrimitive.content)
+            val failedId = failedBody.getValue("id").jsonPrimitive.content
+
+            val summary = client.get("/accounts/ACC-A1B2C/summary")
+            assertEquals(HttpStatusCode.OK, summary.status)
+            val summaryArray = parseObject(summary.bodyAsText()).jsonArray
+            assertEquals(3, summaryArray.size)
+            assertEquals(
+                listOf(failedId, transferId, depositId),
+                summaryArray.map { it.jsonObject.getValue("id").jsonPrimitive.content }
+            )
+            assertTrue(summaryArray.any { it.jsonObject.getValue("status").jsonPrimitive.content == "FAILED" })
+
+            val emptySummary = client.get("/accounts/ACC-Z9Y8X/summary")
+            assertEquals(HttpStatusCode.OK, emptySummary.status)
+            assertEquals(0, parseObject(emptySummary.bodyAsText()).jsonArray.size)
+
+            val invalidAccountSummary = client.get("/accounts/ACC-12/summary")
+            assertEquals(HttpStatusCode.BadRequest, invalidAccountSummary.status)
+            val invalidFields = extractErrorFields(invalidAccountSummary.bodyAsText())
+            assertTrue("accountId" in invalidFields)
+        }
+
     private fun parseObject(text: String) = json.parseToJsonElement(text)
 
     private fun extractErrorFields(body: String): Set<String> =
