@@ -2,7 +2,7 @@
 
 > **Student Name**: Andrii Gnatiuk
 
-> **Date Submitted**: fill in
+> **Date Submitted**: 28.04.2026
 
 > **AI Tools Used**:
 > - Codex (actual code generation)
@@ -44,6 +44,22 @@ From inside `homework-1`, run:
 ```bash
 ../gradlew test --rerun-tasks --console=plain
 ```
+
+## 📘 API Docs (Local Swagger)
+
+Start the app locally:
+
+```bash
+./gradlew :homework-1:run
+```
+
+Then use:
+
+- Swagger UI: `http://localhost:8080/swagger`
+- OpenAPI YAML: `http://localhost:8080/openapi.yaml`
+
+Swagger UI can be used for manual endpoint testing directly against localhost.
+The static OpenAPI spec file is located at `homework-1/src/main/resources/openapi.yaml` and must be kept in sync with API behavior.
 
 ## 🧱 Architecture Notes
 

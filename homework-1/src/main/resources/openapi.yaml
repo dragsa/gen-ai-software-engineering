@@ -1,0 +1,271 @@
+openapi: 3.0.3
+info:
+  title: Homework 1 Banking Transactions API
+  version: 1.0.0
+  description: REST API for creating and querying banking transactions.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Server is reachable
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Hello World
+
+  /transactions:
+    post:
+      summary: Create transaction
+      operationId: createTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionRequest"
+      responses:
+        "201":
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "400":
+          description: Validation or payload error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      summary: List transactions
+      operationId: listTransactions
+      parameters:
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: "^ACC-[A-Za-z0-9]{5}$"
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [deposit, withdrawal, transfer]
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Filtered transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /transactions/{id}:
+    get:
+      summary: Get transaction by ID
+      operationId: getTransactionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transaction found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /accounts/{accountId}/balance:
+    get:
+      summary: Get account balance
+      operationId: getAccountBalance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^ACC-[A-Za-z0-9]{5}$"
+      responses:
+        "200":
+          description: Account balances by currency
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BalanceResponse"
+        "400":
+          description: Invalid account id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /accounts/{accountId}/summary:
+    get:
+      summary: Get account transaction summary
+      operationId: getAccountSummary
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^ACC-[A-Za-z0-9]{5}$"
+      responses:
+        "200":
+          description: Transactions for account sorted by newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+        "400":
+          description: Invalid account id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    CreateTransactionRequest:
+      type: object
+      required: [amount, currency, type]
+      properties:
+        fromAccount:
+          type: string
+          nullable: true
+          example: ACC-A1B2C
+        toAccount:
+          type: string
+          nullable: true
+          example: ACC-D3E4F
+        amount:
+          type: number
+          format: double
+          example: 150.25
+        currency:
+          type: string
+          example: USD
+        type:
+          type: string
+          example: transfer
+        status:
+          type: string
+          nullable: true
+          description: Client-supplied status is ignored; status is derived by server.
+          example: completed
+
+    Transaction:
+      type: object
+      required: [id, amount, currency, type, timestamp, status]
+      properties:
+        id:
+          type: string
+          example: e0f1f3ca-37af-4e0f-9880-638f146ec2f5
+        fromAccount:
+          type: string
+          nullable: true
+          example: ACC-A1B2C
+        toAccount:
+          type: string
+          nullable: true
+          example: ACC-D3E4F
+        amount:
+          type: number
+          format: double
+          example: 150.25
+        currency:
+          type: string
+          example: USD
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        timestamp:
+          type: string
+          format: date-time
+          example: 2026-04-27T19:30:31.137691Z
+        status:
+          $ref: "#/components/schemas/TransactionStatus"
+
+    BalanceResponse:
+      type: object
+      required: [accountId, balances]
+      properties:
+        accountId:
+          type: string
+          example: ACC-A1B2C
+        balances:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            USD: "19.65"
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Validation failed
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationError"
+
+    ValidationError:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+          example: amount
+        message:
+          type: string
+          example: Amount must be a positive number
+
+    TransactionType:
+      type: string
+      enum: [DEPOSIT, WITHDRAWAL, TRANSFER]
+
+    TransactionStatus:
+      type: string
+      enum: [PENDING, COMPLETED, FAILED]

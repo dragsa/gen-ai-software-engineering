@@ -1,5 +1,6 @@
 package homework1.entrypoint
 
+import homework1.routing.registerDocumentationRoutes
 import homework1.routing.registerHealthRoutes
 import homework1.routing.registerTransactionRoutes
 import homework1.service.InMemoryTransactionService
@@ -28,6 +29,7 @@ fun Application.module(
 
     routing {
         registerHealthRoutes()
+        registerDocumentationRoutes()
         registerTransactionRoutes(transactionService, transactionValidator)
     }
 }
