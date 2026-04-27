@@ -10,7 +10,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("homework1.ApplicationKt")
+    mainClass.set("homework1.entrypoint.MainKt")
 }
 
 dependencies {

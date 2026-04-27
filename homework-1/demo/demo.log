@@ -8,49 +8,49 @@ Running API calls against http://127.0.0.1:8080
 >>> request-body: {"fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"transfer","status":"completed"}
 <<< status: 201
 <<< response-body:
-{"id":"7aaf762d-3fd3-4c64-9d79-34996dbf1460","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-26T19:28:45.962190Z","status":"COMPLETED"}
+{"id":"176d5b26-1b68-4916-a152-f7f52f7480df","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-27T16:46:12.965874Z","status":"COMPLETED"}
 
 >>> POST http://127.0.0.1:8080/transactions (expected: 201)
 >>> request-body: {"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"deposit","status":"completed"}
 <<< status: 201
 <<< response-body:
-{"id":"d1f258a5-341d-40dd-a45f-200e7efbb18a","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-26T19:28:46.007594Z","status":"COMPLETED"}
+{"id":"45b49820-afa8-412c-a3f7-671880efc227","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-27T16:46:13.010203Z","status":"COMPLETED"}
 
 >>> POST http://127.0.0.1:8080/transactions (expected: 201)
 >>> request-body: {"fromAccount":"ACC-A1B2C","amount":50.1,"currency":"USD","type":"withdrawal","status":"completed"}
 <<< status: 201
 <<< response-body:
-{"id":"46dd527e-4ef9-4c04-b2f7-039d357443e0","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-26T19:28:46.018084Z","status":"COMPLETED"}
+{"id":"acee82d7-af25-42f5-980a-38949a57a234","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-27T16:46:13.020594Z","status":"COMPLETED"}
 
 >>> GET http://127.0.0.1:8080/transactions (expected: 200)
 <<< status: 200
 <<< response-body:
-[{"id":"7aaf762d-3fd3-4c64-9d79-34996dbf1460","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-26T19:28:45.962190Z","status":"COMPLETED"},{"id":"d1f258a5-341d-40dd-a45f-200e7efbb18a","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-26T19:28:46.007594Z","status":"COMPLETED"},{"id":"46dd527e-4ef9-4c04-b2f7-039d357443e0","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-26T19:28:46.018084Z","status":"COMPLETED"}]
+[{"id":"176d5b26-1b68-4916-a152-f7f52f7480df","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-27T16:46:12.965874Z","status":"COMPLETED"},{"id":"45b49820-afa8-412c-a3f7-671880efc227","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-27T16:46:13.010203Z","status":"COMPLETED"},{"id":"acee82d7-af25-42f5-980a-38949a57a234","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-27T16:46:13.020594Z","status":"COMPLETED"}]
 
->>> GET http://127.0.0.1:8080/transactions/7aaf762d-3fd3-4c64-9d79-34996dbf1460 (expected: 200)
+>>> GET http://127.0.0.1:8080/transactions/176d5b26-1b68-4916-a152-f7f52f7480df (expected: 200)
 <<< status: 200
 <<< response-body:
-{"id":"7aaf762d-3fd3-4c64-9d79-34996dbf1460","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-26T19:28:45.962190Z","status":"COMPLETED"}
+{"id":"176d5b26-1b68-4916-a152-f7f52f7480df","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-27T16:46:12.965874Z","status":"COMPLETED"}
 
 >>> GET http://127.0.0.1:8080/transactions?accountId=ACC-A1B2C (expected: 200)
 <<< status: 200
 <<< response-body:
-[{"id":"7aaf762d-3fd3-4c64-9d79-34996dbf1460","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-26T19:28:45.962190Z","status":"COMPLETED"},{"id":"d1f258a5-341d-40dd-a45f-200e7efbb18a","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-26T19:28:46.007594Z","status":"COMPLETED"},{"id":"46dd527e-4ef9-4c04-b2f7-039d357443e0","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-26T19:28:46.018084Z","status":"COMPLETED"}]
+[{"id":"176d5b26-1b68-4916-a152-f7f52f7480df","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-27T16:46:12.965874Z","status":"COMPLETED"},{"id":"45b49820-afa8-412c-a3f7-671880efc227","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-27T16:46:13.010203Z","status":"COMPLETED"},{"id":"acee82d7-af25-42f5-980a-38949a57a234","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-27T16:46:13.020594Z","status":"COMPLETED"}]
 
 >>> GET http://127.0.0.1:8080/transactions?type=transfer (expected: 200)
 <<< status: 200
 <<< response-body:
-[{"id":"7aaf762d-3fd3-4c64-9d79-34996dbf1460","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-26T19:28:45.962190Z","status":"COMPLETED"}]
+[{"id":"176d5b26-1b68-4916-a152-f7f52f7480df","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-27T16:46:12.965874Z","status":"COMPLETED"}]
 
 >>> GET http://127.0.0.1:8080/transactions?from=2000-01-01&to=2100-01-01 (expected: 200)
 <<< status: 200
 <<< response-body:
-[{"id":"7aaf762d-3fd3-4c64-9d79-34996dbf1460","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-26T19:28:45.962190Z","status":"COMPLETED"},{"id":"d1f258a5-341d-40dd-a45f-200e7efbb18a","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-26T19:28:46.007594Z","status":"COMPLETED"},{"id":"46dd527e-4ef9-4c04-b2f7-039d357443e0","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-26T19:28:46.018084Z","status":"COMPLETED"}]
+[{"id":"176d5b26-1b68-4916-a152-f7f52f7480df","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-27T16:46:12.965874Z","status":"COMPLETED"},{"id":"45b49820-afa8-412c-a3f7-671880efc227","fromAccount":null,"toAccount":"ACC-A1B2C","amount":200.0,"currency":"EUR","type":"DEPOSIT","timestamp":"2026-04-27T16:46:13.010203Z","status":"COMPLETED"},{"id":"acee82d7-af25-42f5-980a-38949a57a234","fromAccount":"ACC-A1B2C","toAccount":null,"amount":50.1,"currency":"USD","type":"WITHDRAWAL","timestamp":"2026-04-27T16:46:13.020594Z","status":"COMPLETED"}]
 
 >>> GET http://127.0.0.1:8080/transactions?accountId=ACC-A1B2C&type=transfer&from=2000-01-01&to=2100-01-01 (expected: 200)
 <<< status: 200
 <<< response-body:
-[{"id":"7aaf762d-3fd3-4c64-9d79-34996dbf1460","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-26T19:28:45.962190Z","status":"COMPLETED"}]
+[{"id":"176d5b26-1b68-4916-a152-f7f52f7480df","fromAccount":"ACC-A1B2C","toAccount":"ACC-D3E4F","amount":150.25,"currency":"USD","type":"TRANSFER","timestamp":"2026-04-27T16:46:12.965874Z","status":"COMPLETED"}]
 
 >>> GET http://127.0.0.1:8080/accounts/ACC-A1B2C/balance (expected: 200)
 <<< status: 200
