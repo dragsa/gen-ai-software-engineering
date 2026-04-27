@@ -16,8 +16,12 @@
 >   - no god prompts were used to implement the whole thing
 >   - each prompt attempts to target a specific part of the implementation
 >   - the next step is not necessarily built on top of the previous one, but rather targets to improve some aspect
-> and get change which can be validated with ease (lack of tasks list, yeah)
+> and get change which can be validated with ease (lack of a task list, yeah)
 > - each commit contains screenshots of tool(s) in action (prompt and reply) and actual changes
+ 
+> **Feedback**:
+> - on steps 6-10 it was found that the Codex tool was not able to generate the API and models according to the requirements
+>and it took a lot of back and forth to get it to work
 
 ---
 
