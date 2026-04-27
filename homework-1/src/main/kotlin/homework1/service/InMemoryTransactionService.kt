@@ -2,9 +2,12 @@ package homework1.service
 
 import homework1.models.BalanceResponse
 import homework1.models.CreateTransactionCommand
+import homework1.models.DepositCommand
 import homework1.models.Transaction
 import homework1.models.TransactionFilter
 import homework1.models.TransactionStatus
+import homework1.models.TransferCommand
+import homework1.models.WithdrawalCommand
 import homework1.utils.isoInstantToUtcDate
 import java.math.BigDecimal
 import java.time.Instant
@@ -18,20 +21,26 @@ class InMemoryTransactionService(
     private val transactions = mutableListOf<Transaction>()
 
     override fun createTransaction(command: CreateTransactionCommand): Transaction {
-        val transaction = Transaction(
-            id = idGenerator(),
-            fromAccount = command.fromAccount,
-            toAccount = command.toAccount,
-            amount = command.amount,
-            currency = command.currency,
-            type = command.type,
-            timestamp = timestampProvider(),
-            status = command.status
-        )
         synchronized(transactions) {
+            val status = resolveStatus(command, transactions)
+            val (fromAccount, toAccount, type) = when (command) {
+                is DepositCommand -> Triple(null, command.toAccount, homework1.models.TransactionType.DEPOSIT)
+                is WithdrawalCommand -> Triple(command.fromAccount, null, homework1.models.TransactionType.WITHDRAWAL)
+                is TransferCommand -> Triple(command.fromAccount, command.toAccount, homework1.models.TransactionType.TRANSFER)
+            }
+            val transaction = Transaction(
+                id = idGenerator(),
+                fromAccount = fromAccount,
+                toAccount = toAccount,
+                amount = command.amount,
+                currency = command.currency,
+                type = type,
+                timestamp = timestampProvider(),
+                status = status
+            )
             transactions.add(transaction)
+            return transaction
         }
-        return transaction
     }
 
     override fun listTransactions(filter: TransactionFilter): List<Transaction> =
@@ -75,4 +84,41 @@ class InMemoryTransactionService(
 
     private fun snapshot(): List<Transaction> =
         synchronized(transactions) { transactions.toList() }
+
+    private fun resolveStatus(command: CreateTransactionCommand, existing: List<Transaction>): TransactionStatus {
+        if (command is DepositCommand) return TransactionStatus.COMPLETED
+
+        val fromAccount = when (command) {
+            is WithdrawalCommand -> command.fromAccount
+            is TransferCommand -> command.fromAccount
+            is DepositCommand -> return TransactionStatus.COMPLETED
+        }
+        val available = completedBalanceForCurrency(fromAccount, command.currency, existing)
+        val requested = BigDecimal.valueOf(command.amount)
+        return if (available.compareTo(requested) >= 0) {
+            TransactionStatus.COMPLETED
+        } else {
+            TransactionStatus.FAILED
+        }
+    }
+
+    private fun completedBalanceForCurrency(
+        accountId: String,
+        currency: String,
+        existing: List<Transaction>
+    ): BigDecimal =
+        existing.asSequence()
+            .filter { it.status == TransactionStatus.COMPLETED }
+            .filter { it.currency == currency }
+            .fold(BigDecimal.ZERO) { acc, transaction ->
+                val amount = BigDecimal.valueOf(transaction.amount)
+                var next = acc
+                if (transaction.toAccount == accountId) {
+                    next = next.add(amount)
+                }
+                if (transaction.fromAccount == accountId) {
+                    next = next.subtract(amount)
+                }
+                next
+            }
 }

@@ -2,11 +2,14 @@ package homework1.validation
 
 import homework1.models.CreateTransactionCommand
 import homework1.models.CreateTransactionRequest
+import homework1.models.DepositCommand
 import homework1.models.TransactionFilter
+import homework1.models.TransactionType
+import homework1.models.TransferCommand
 import homework1.models.ValidationError
+import homework1.models.WithdrawalCommand
 import homework1.utils.isValidAccount
 import homework1.utils.parseIsoDate
-import homework1.utils.parseTransactionStatus
 import homework1.utils.parseTransactionType
 import java.math.BigDecimal
 import java.util.Currency
@@ -22,7 +25,7 @@ class TransactionValidator {
     fun validateCreateRequest(request: CreateTransactionRequest): List<ValidationError> {
         val errors = mutableListOf<ValidationError>()
 
-        if (request.amount == null || request.amount <= 0) {
+        if (request.amount <= 0) {
             errors.add(ValidationError("amount", "Amount must be a positive number"))
         } else {
             val scale = BigDecimal.valueOf(request.amount).stripTrailingZeros().scale()
@@ -31,26 +34,20 @@ class TransactionValidator {
             }
         }
 
-        if (request.currency == null || request.currency.uppercase() !in validCurrencyCodes) {
+        if (request.currency.uppercase() !in validCurrencyCodes) {
             errors.add(ValidationError("currency", "Invalid currency code"))
         }
 
         val type = parseTransactionType(request.type)
-        if (request.type == null) {
-            errors.add(ValidationError("type", "type is required"))
-        } else if (type == null) {
+        if (type == null) {
             errors.add(ValidationError("type", "type must be one of: deposit, withdrawal, transfer"))
-        }
-
-        if (request.status != null && parseTransactionStatus(request.status) == null) {
-            errors.add(ValidationError("status", "status must be one of: pending, completed, failed"))
         }
 
         val from = request.fromAccount
         val to = request.toAccount
         if (type != null) {
             when (type) {
-                homework1.models.TransactionType.TRANSFER -> {
+                TransactionType.TRANSFER -> {
                     if (from.isNullOrBlank()) {
                         errors.add(ValidationError("fromAccount", "fromAccount is required for transfer"))
                     }
@@ -59,13 +56,13 @@ class TransactionValidator {
                     }
                 }
 
-                homework1.models.TransactionType.DEPOSIT -> {
+                TransactionType.DEPOSIT -> {
                     if (to.isNullOrBlank()) {
                         errors.add(ValidationError("toAccount", "toAccount is required for deposit"))
                     }
                 }
 
-                homework1.models.TransactionType.WITHDRAWAL -> {
+                TransactionType.WITHDRAWAL -> {
                     if (from.isNullOrBlank()) {
                         errors.add(ValidationError("fromAccount", "fromAccount is required for withdrawal"))
                     }
@@ -95,14 +92,26 @@ class TransactionValidator {
     }
 
     fun toCreateCommand(request: CreateTransactionRequest): CreateTransactionCommand =
-        CreateTransactionCommand(
-            fromAccount = request.fromAccount,
-            toAccount = request.toAccount,
-            amount = request.amount!!,
-            currency = request.currency!!.uppercase(),
-            type = parseTransactionType(request.type)!!,
-            status = parseTransactionStatus(request.status) ?: homework1.models.TransactionStatus.COMPLETED
-        )
+        when (parseTransactionType(request.type)!!) {
+            TransactionType.DEPOSIT -> DepositCommand(
+                toAccount = request.toAccount!!,
+                amount = request.amount,
+                currency = request.currency.uppercase()
+            )
+
+            TransactionType.WITHDRAWAL -> WithdrawalCommand(
+                fromAccount = request.fromAccount!!,
+                amount = request.amount,
+                currency = request.currency.uppercase()
+            )
+
+            TransactionType.TRANSFER -> TransferCommand(
+                fromAccount = request.fromAccount!!,
+                toAccount = request.toAccount!!,
+                amount = request.amount,
+                currency = request.currency.uppercase()
+            )
+        }
 
     fun validateFilters(
         accountId: String?,
