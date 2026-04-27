@@ -88,6 +88,22 @@ fun Route.registerTransactionRoutes(
         val balance = transactionService.getAccountBalance(accountId)
         call.respond(HttpStatusCode.OK, balance)
     }
+
+    get("/accounts/{accountId}/summary") {
+        val accountId = call.parameters["accountId"] ?: run {
+            call.respond(HttpStatusCode.BadRequest, mapOf("error" to "accountId is required"))
+            return@get
+        }
+
+        val accountErrors = transactionValidator.validateAccountId(accountId)
+        if (accountErrors.isNotEmpty()) {
+            call.respondValidation(accountErrors)
+            return@get
+        }
+
+        val summary = transactionService.getAccountSummary(accountId)
+        call.respond(HttpStatusCode.OK, summary)
+    }
 }
 
 private suspend fun ApplicationCall.respondValidation(errors: List<ValidationError>) {

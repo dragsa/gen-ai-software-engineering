@@ -48,6 +48,7 @@
   },
   "lookups": {
     "missingTransactionId": "missing-transaction-id",
-    "invalidAccountId": "ACC-12"
+    "invalidAccountId": "ACC-12",
+    "summaryEmptyAccountId": "ACC-Z9Y8X"
   }
 }

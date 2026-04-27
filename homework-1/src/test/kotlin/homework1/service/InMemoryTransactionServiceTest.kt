@@ -102,4 +102,62 @@ class InMemoryTransactionServiceTest {
         assertEquals("20.0", sourceBalance.balances["USD"])
         assertEquals("30.0", destinationBalance.balances["USD"])
     }
+
+    @Test
+    fun `summary includes all statuses for account sorted by newest first and empty when none`() {
+        var idCounter = 0
+        val timestamps = ArrayDeque(
+            listOf(
+                "2026-01-01T00:00:00Z",
+                "2026-01-01T00:01:00Z",
+                "2026-01-01T00:02:00Z",
+                "2026-01-01T00:03:00Z"
+            )
+        )
+        val service = InMemoryTransactionService(
+            idGenerator = {
+                idCounter += 1
+                "tx-$idCounter"
+            },
+            timestampProvider = { timestamps.removeFirst() }
+        )
+
+        val deposit = service.createTransaction(
+            DepositCommand(
+                toAccount = "ACC-A1B2C",
+                amount = 100.0,
+                currency = "USD"
+            )
+        )
+        val transferOut = service.createTransaction(
+            TransferCommand(
+                fromAccount = "ACC-A1B2C",
+                toAccount = "ACC-D3E4F",
+                amount = 60.0,
+                currency = "USD"
+            )
+        )
+        val failedWithdrawal = service.createTransaction(
+            WithdrawalCommand(
+                fromAccount = "ACC-A1B2C",
+                amount = 100.0,
+                currency = "USD"
+            )
+        )
+        service.createTransaction(
+            DepositCommand(
+                toAccount = "ACC-Z9Y8X",
+                amount = 1.0,
+                currency = "USD"
+            )
+        )
+
+        val summary = service.getAccountSummary("ACC-A1B2C")
+        assertEquals(3, summary.size)
+        assertEquals(listOf(failedWithdrawal.id, transferOut.id, deposit.id), summary.map { it.id })
+        assertTrue(summary.any { it.status == TransactionStatus.FAILED })
+
+        val missingAccountSummary = service.getAccountSummary("ACC-NONE1")
+        assertTrue(missingAccountSummary.isEmpty())
+    }
 }

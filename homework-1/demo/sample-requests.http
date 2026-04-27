@@ -100,6 +100,48 @@ assert_json_field_equals() {
   fi
 }
 
+assert_json_array_ids_equals() {
+  local file="$1"
+  local expected_json_array="$2"
+  python3 - "$file" "$expected_json_array" <<'PY'
+import json
+import sys
+
+response_file = sys.argv[1]
+expected_json_array = sys.argv[2]
+
+with open(response_file, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+expected = json.loads(expected_json_array)
+actual = [item["id"] for item in data]
+
+if actual != expected:
+    raise SystemExit(f"Assertion failed for array ids in {response_file}: expected {expected}, got {actual}")
+PY
+}
+
+assert_json_array_length() {
+  local file="$1"
+  local expected_length="$2"
+  python3 - "$file" "$expected_length" <<'PY'
+import json
+import sys
+
+response_file = sys.argv[1]
+expected_length = int(sys.argv[2])
+
+with open(response_file, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+
+actual_length = len(data)
+if actual_length != expected_length:
+    raise SystemExit(
+        f"Assertion failed for array length in {response_file}: expected {expected_length}, got {actual_length}"
+    )
+PY
+}
+
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
 
@@ -118,11 +160,14 @@ from_filter=$(json_get "filters.from")
 to_filter=$(json_get "filters.to")
 missing_transaction_id=$(json_get "lookups.missingTransactionId")
 invalid_account_id=$(json_get "lookups.invalidAccountId")
+summary_empty_account_id=$(json_get "lookups.summaryEmptyAccountId")
 
 request "POST" "/transactions" "201" "$deposit_payload" "$tmpdir/create-deposit.json"
+deposit_id=$(json_field "$tmpdir/create-deposit.json" "id")
 assert_json_field_equals "$tmpdir/create-deposit.json" "status" "COMPLETED"
 
 request "POST" "/transactions" "201" "$status_override_payload" "$tmpdir/create-with-client-status.json"
+status_override_id=$(json_field "$tmpdir/create-with-client-status.json" "id")
 assert_json_field_equals "$tmpdir/create-with-client-status.json" "status" "COMPLETED"
 
 request "POST" "/transactions" "201" "$transfer_payload" "$tmpdir/create-transfer.json"
@@ -130,6 +175,7 @@ transfer_id=$(json_field "$tmpdir/create-transfer.json" "id")
 assert_json_field_equals "$tmpdir/create-transfer.json" "status" "COMPLETED"
 
 request "POST" "/transactions" "201" "$withdrawal_payload" "$tmpdir/create-withdrawal.json"
+withdrawal_id=$(json_field "$tmpdir/create-withdrawal.json" "id")
 assert_json_field_equals "$tmpdir/create-withdrawal.json" "status" "COMPLETED"
 
 request "POST" "/transactions" "201" "$insufficient_withdrawal_payload" "$tmpdir/create-insufficient-withdrawal.json"
@@ -140,6 +186,12 @@ request "GET" "/transactions" "200" "" "$tmpdir/list-all.json"
 request "GET" "/transactions/$transfer_id" "200" "" "$tmpdir/get-by-id.json"
 request "GET" "/transactions/$failed_withdrawal_id" "200" "" "$tmpdir/get-failed-by-id.json"
 assert_json_field_equals "$tmpdir/get-failed-by-id.json" "status" "FAILED"
+request "GET" "/accounts/$account_id/summary" "200" "" "$tmpdir/account-summary.json"
+assert_json_array_ids_equals \
+  "$tmpdir/account-summary.json" \
+  "[\"$failed_withdrawal_id\",\"$withdrawal_id\",\"$transfer_id\",\"$status_override_id\",\"$deposit_id\"]"
+request "GET" "/accounts/$summary_empty_account_id/summary" "200" "" "$tmpdir/account-summary-empty.json"
+assert_json_array_length "$tmpdir/account-summary-empty.json" "0"
 
 request "GET" "/transactions?accountId=$account_id" "200" "" "$tmpdir/list-by-account.json"
 request "GET" "/transactions?type=$type_filter" "200" "" "$tmpdir/list-by-type.json"
@@ -151,5 +203,6 @@ request "GET" "/accounts/$account_id/balance" "200" "" "$tmpdir/balance.json"
 request "POST" "/transactions" "400" "$invalid_payload" "$tmpdir/invalid-create.json"
 request "GET" "/transactions/$missing_transaction_id" "404" "" "$tmpdir/missing-by-id.json"
 request "GET" "/accounts/$invalid_account_id/balance" "400" "" "$tmpdir/invalid-balance-account.json"
+request "GET" "/accounts/$invalid_account_id/summary" "400" "" "$tmpdir/invalid-summary-account.json"
 
 echo "All API calls completed successfully."
