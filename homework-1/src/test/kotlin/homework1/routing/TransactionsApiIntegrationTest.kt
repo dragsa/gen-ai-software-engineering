@@ -214,6 +214,29 @@ class TransactionsApiIntegrationTest {
         assertEquals("Hello World", response.bodyAsText())
     }
 
+    @Test
+    fun `openapi specification endpoint is available`() = testApplication {
+        application { module() }
+
+        val response = client.get("/openapi.yaml")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val body = response.bodyAsText()
+        assertTrue(body.contains("openapi:"))
+        assertTrue(body.contains("/transactions:"))
+        assertTrue(body.contains("/accounts/{accountId}/summary:"))
+    }
+
+    @Test
+    fun `swagger ui endpoint is available`() = testApplication {
+        application { module() }
+
+        val response = client.get("/swagger")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertTrue(response.bodyAsText().contains("<html", ignoreCase = true))
+    }
+
     private fun parseObject(text: String) = json.parseToJsonElement(text)
 
     private fun extractErrorFields(body: String): Set<String> =

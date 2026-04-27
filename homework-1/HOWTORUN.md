@@ -16,6 +16,19 @@ From the repository root:
 
 Server starts on `http://localhost:8080`.
 
+## OpenAPI and Swagger UI
+
+With the server running locally:
+
+- OpenAPI spec (raw YAML): `http://localhost:8080/openapi.yaml`
+- Swagger UI (manual testing): `http://localhost:8080/swagger`
+
+You can quickly verify the spec endpoint via `curl`:
+
+```bash
+curl http://localhost:8080/openapi.yaml
+```
+
 ## Verify "Hello World"
 
 ```bash
