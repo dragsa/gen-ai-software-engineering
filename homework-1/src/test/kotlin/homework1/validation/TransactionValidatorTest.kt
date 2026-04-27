@@ -1,12 +1,18 @@
 package homework1.validation
 
 import homework1.models.CreateTransactionRequest
+import homework1.models.TransactionType
+import homework1.testsupport.TestFixtures
+import java.time.LocalDate
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.serialization.json.Json
 
 class TransactionValidatorTest {
     private val validator = TransactionValidator()
+    private val json = Json
 
     @Test
     fun `amount must be positive and have at most two decimals`() {
@@ -96,6 +102,66 @@ class TransactionValidatorTest {
     }
 
     @Test
+    fun `create request validates account format for both fromAccount and toAccount`() {
+        val request = CreateTransactionRequest(
+            fromAccount = "BAD",
+            toAccount = "ALSO_BAD",
+            amount = 10.0,
+            currency = "USD",
+            type = "transfer"
+        )
+
+        val errors = validator.validateCreateRequest(request)
+
+        assertTrue(errors.any { it.field == "fromAccount" })
+        assertTrue(errors.any { it.field == "toAccount" })
+    }
+
+    @Test
+    fun `validate filters returns all field errors for invalid input`() {
+        val result = validator.validateFilters(
+            accountId = "ACC-12",
+            typeRaw = "wrong",
+            fromRaw = "2026-99-01",
+            toRaw = "still-not-date"
+        )
+
+        val errorFields = result.errors.map { it.field }.toSet()
+        assertTrue("accountId" in errorFields)
+        assertTrue("type" in errorFields)
+        assertTrue("from" in errorFields)
+        assertTrue("to" in errorFields)
+    }
+
+    @Test
+    fun `validate filters rejects date range where from is after to`() {
+        val result = validator.validateFilters(
+            accountId = null,
+            typeRaw = null,
+            fromRaw = "2026-02-02",
+            toRaw = "2026-01-31"
+        )
+
+        assertTrue(result.errors.any { it.field == "from" })
+    }
+
+    @Test
+    fun `validate filters returns parsed filter for valid values`() {
+        val result = validator.validateFilters(
+            accountId = "ACC-A1B2C",
+            typeRaw = "deposit",
+            fromRaw = "2026-01-01",
+            toRaw = "2026-01-31"
+        )
+
+        assertTrue(result.errors.isEmpty())
+        assertEquals("ACC-A1B2C", result.filter.accountId)
+        assertEquals(TransactionType.DEPOSIT, result.filter.type)
+        assertEquals(LocalDate.parse("2026-01-01"), result.filter.from)
+        assertEquals(LocalDate.parse("2026-01-31"), result.filter.to)
+    }
+
+    @Test
     fun `toCreateCommand maps to typed domain command`() {
         val deposit = validator.toCreateCommand(
             CreateTransactionRequest(
@@ -126,5 +192,26 @@ class TransactionValidatorTest {
         assertTrue(deposit is homework1.models.DepositCommand)
         assertTrue(withdrawal is homework1.models.WithdrawalCommand)
         assertTrue(transfer is homework1.models.TransferCommand)
+    }
+
+    @Test
+    fun `fixture happy payloads stay valid and invalid payload stays invalid`() {
+        val happyPayloads = listOf(
+            "createDeposit",
+            "createTransfer",
+            "createWithdrawal",
+            "createInsufficientWithdrawal",
+            "createWithClientStatus"
+        )
+
+        happyPayloads.forEach { payloadName ->
+            val request = json.decodeFromString<CreateTransactionRequest>(TestFixtures.payload(payloadName))
+            val errors = validator.validateCreateRequest(request)
+            assertTrue(errors.isEmpty(), "Expected fixture '$payloadName' to be valid, got: $errors")
+        }
+
+        val invalidRequest = json.decodeFromString<CreateTransactionRequest>(TestFixtures.payload("invalidTransaction"))
+        val invalidErrors = validator.validateCreateRequest(invalidRequest)
+        assertTrue(invalidErrors.isNotEmpty())
     }
 }

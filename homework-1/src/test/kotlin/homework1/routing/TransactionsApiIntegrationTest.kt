@@ -1,6 +1,7 @@
 package homework1.routing
 
 import homework1.entrypoint.module
+import homework1.testsupport.TestFixtures
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -21,6 +22,23 @@ class TransactionsApiIntegrationTest {
     private val json = Json
 
     @Test
+    fun `create transaction returns validator errors when JSON is valid but payload is semantically invalid`() =
+        testApplication {
+            application { module() }
+
+            val response = client.post("/transactions") {
+                contentType(ContentType.Application.Json)
+                setBody(TestFixtures.payload("invalidTransaction"))
+            }
+
+            assertEquals(HttpStatusCode.BadRequest, response.status)
+            val errorFields = extractErrorFields(response.bodyAsText())
+            assertTrue("amount" in errorFields)
+            assertTrue("currency" in errorFields)
+            assertTrue("fromAccount" in errorFields)
+        }
+
+    @Test
     fun `create transaction enforces mandatory payload shape and ignores client status`() = testApplication {
         application { module() }
 
@@ -35,15 +53,7 @@ class TransactionsApiIntegrationTest {
 
         val clientStatus = client.post("/transactions") {
             contentType(ContentType.Application.Json)
-            setBody(
-                """{
-                    "toAccount":"ACC-A1B2C",
-                    "amount":10.0,
-                    "currency":"USD",
-                    "type":"deposit",
-                    "status":"completed"
-                }"""
-            )
+            setBody(TestFixtures.payload("createWithClientStatus"))
         }
 
         assertEquals(HttpStatusCode.Created, clientStatus.status)
@@ -59,29 +69,21 @@ class TransactionsApiIntegrationTest {
 
         val deposit = client.post("/transactions") {
             contentType(ContentType.Application.Json)
-            setBody("""{"toAccount":"ACC-A1B2C","amount":200.0,"currency":"USD","type":"deposit"}""")
+            setBody(TestFixtures.payload("createDeposit"))
         }
         assertEquals(HttpStatusCode.Created, deposit.status)
         assertEquals("COMPLETED", parseObject(deposit.bodyAsText()).jsonObject.getValue("status").jsonPrimitive.content)
 
         val transfer = client.post("/transactions") {
             contentType(ContentType.Application.Json)
-            setBody(
-                """{
-                    "fromAccount":"ACC-A1B2C",
-                    "toAccount":"ACC-D3E4F",
-                    "amount":150.0,
-                    "currency":"USD",
-                    "type":"transfer"
-                }"""
-            )
+            setBody(TestFixtures.payload("createTransfer"))
         }
         assertEquals(HttpStatusCode.Created, transfer.status)
         assertEquals("COMPLETED", parseObject(transfer.bodyAsText()).jsonObject.getValue("status").jsonPrimitive.content)
 
         val withdrawalFailed = client.post("/transactions") {
             contentType(ContentType.Application.Json)
-            setBody("""{"fromAccount":"ACC-A1B2C","amount":100.0,"currency":"USD","type":"withdrawal"}""")
+            setBody(TestFixtures.payload("createInsufficientWithdrawal"))
         }
         assertEquals(HttpStatusCode.Created, withdrawalFailed.status)
         val failedBody = parseObject(withdrawalFailed.bodyAsText()).jsonObject
@@ -104,7 +106,54 @@ class TransactionsApiIntegrationTest {
         val balancesObject = parseObject(balanceResponse.bodyAsText())
             .jsonObject.getValue("balances")
             .jsonObject
-        assertEquals("50.0", balancesObject.getValue("USD").jsonPrimitive.content)
+        assertEquals("49.75", balancesObject.getValue("USD").jsonPrimitive.content)
+    }
+
+    @Test
+    fun `transactions filters return validation errors for invalid type dates and date range`() = testApplication {
+        application { module() }
+
+        val invalidType = client.get("/transactions?type=wrong")
+        assertEquals(HttpStatusCode.BadRequest, invalidType.status)
+        assertTrue("type" in extractErrorFields(invalidType.bodyAsText()))
+
+        val invalidDates = client.get("/transactions?from=not-a-date&to=still-not-a-date")
+        assertEquals(HttpStatusCode.BadRequest, invalidDates.status)
+        val invalidDateFields = extractErrorFields(invalidDates.bodyAsText())
+        assertTrue("from" in invalidDateFields)
+        assertTrue("to" in invalidDateFields)
+
+        val invalidRange = client.get("/transactions?from=2026-02-10&to=2026-01-10")
+        assertEquals(HttpStatusCode.BadRequest, invalidRange.status)
+        assertTrue("from" in extractErrorFields(invalidRange.bodyAsText()))
+    }
+
+    @Test
+    fun `get transaction by id returns created item and not found for unknown id`() = testApplication {
+        application { module() }
+
+        val created = client.post("/transactions") {
+            contentType(ContentType.Application.Json)
+            setBody(TestFixtures.payload("createDeposit"))
+        }
+        assertEquals(HttpStatusCode.Created, created.status)
+        val createdId = parseObject(created.bodyAsText()).jsonObject.getValue("id").jsonPrimitive.content
+
+        val fetched = client.get("/transactions/$createdId")
+        assertEquals(HttpStatusCode.OK, fetched.status)
+        assertEquals(createdId, parseObject(fetched.bodyAsText()).jsonObject.getValue("id").jsonPrimitive.content)
+
+        val missing = client.get("/transactions/does-not-exist")
+        assertEquals(HttpStatusCode.NotFound, missing.status)
+    }
+
+    @Test
+    fun `balance endpoint validates account id format`() = testApplication {
+        application { module() }
+
+        val invalid = client.get("/accounts/ACC-12/balance")
+        assertEquals(HttpStatusCode.BadRequest, invalid.status)
+        assertTrue("accountId" in extractErrorFields(invalid.bodyAsText()))
     }
 
     @Test
@@ -114,29 +163,21 @@ class TransactionsApiIntegrationTest {
 
             val deposit = client.post("/transactions") {
                 contentType(ContentType.Application.Json)
-                setBody("""{"toAccount":"ACC-A1B2C","amount":200.0,"currency":"USD","type":"deposit"}""")
+                setBody(TestFixtures.payload("createDeposit"))
             }
             assertEquals(HttpStatusCode.Created, deposit.status)
             val depositId = parseObject(deposit.bodyAsText()).jsonObject.getValue("id").jsonPrimitive.content
 
             val transfer = client.post("/transactions") {
                 contentType(ContentType.Application.Json)
-                setBody(
-                    """{
-                        "fromAccount":"ACC-A1B2C",
-                        "toAccount":"ACC-D3E4F",
-                        "amount":150.0,
-                        "currency":"USD",
-                        "type":"transfer"
-                    }"""
-                )
+                setBody(TestFixtures.payload("createTransfer"))
             }
             assertEquals(HttpStatusCode.Created, transfer.status)
             val transferId = parseObject(transfer.bodyAsText()).jsonObject.getValue("id").jsonPrimitive.content
 
             val failedWithdrawal = client.post("/transactions") {
                 contentType(ContentType.Application.Json)
-                setBody("""{"fromAccount":"ACC-A1B2C","amount":100.0,"currency":"USD","type":"withdrawal"}""")
+                setBody(TestFixtures.payload("createInsufficientWithdrawal"))
             }
             assertEquals(HttpStatusCode.Created, failedWithdrawal.status)
             val failedBody = parseObject(failedWithdrawal.bodyAsText()).jsonObject
@@ -153,15 +194,25 @@ class TransactionsApiIntegrationTest {
             )
             assertTrue(summaryArray.any { it.jsonObject.getValue("status").jsonPrimitive.content == "FAILED" })
 
-            val emptySummary = client.get("/accounts/ACC-Z9Y8X/summary")
+            val emptySummary = client.get("/accounts/${TestFixtures.lookup("summaryEmptyAccountId")}/summary")
             assertEquals(HttpStatusCode.OK, emptySummary.status)
             assertEquals(0, parseObject(emptySummary.bodyAsText()).jsonArray.size)
 
-            val invalidAccountSummary = client.get("/accounts/ACC-12/summary")
+            val invalidAccountSummary = client.get("/accounts/${TestFixtures.lookup("invalidAccountId")}/summary")
             assertEquals(HttpStatusCode.BadRequest, invalidAccountSummary.status)
             val invalidFields = extractErrorFields(invalidAccountSummary.bodyAsText())
             assertTrue("accountId" in invalidFields)
         }
+
+    @Test
+    fun `health route returns hello world`() = testApplication {
+        application { module() }
+
+        val response = client.get("/")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("Hello World", response.bodyAsText())
+    }
 
     private fun parseObject(text: String) = json.parseToJsonElement(text)
 

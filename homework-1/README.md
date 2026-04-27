@@ -31,6 +31,20 @@
 The main goal of this project is to create a REST API that will allow users to perform CRUD operations on banking transactions.
 One of the side quests is to not touch the itself code at all, but rather use the Codex tool to generate the API and do the validation.
 
+## ✅ Run All Tests
+
+From the repository root, run:
+
+```bash
+./gradlew :homework-1:clean :homework-1:test --rerun-tasks --console=plain
+```
+
+From inside `homework-1`, run:
+
+```bash
+../gradlew test --rerun-tasks --console=plain
+```
+
 ## 🧱 Architecture Notes
 
 ### API and model choice

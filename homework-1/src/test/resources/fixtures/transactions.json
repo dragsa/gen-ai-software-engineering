@@ -1,0 +1,54 @@
+{
+  "payloads": {
+    "createDeposit": {
+      "toAccount": "ACC-A1B2C",
+      "amount": 200.0,
+      "currency": "USD",
+      "type": "deposit"
+    },
+    "createTransfer": {
+      "fromAccount": "ACC-A1B2C",
+      "toAccount": "ACC-D3E4F",
+      "amount": 150.25,
+      "currency": "USD",
+      "type": "transfer"
+    },
+    "createWithdrawal": {
+      "fromAccount": "ACC-A1B2C",
+      "amount": 40.1,
+      "currency": "USD",
+      "type": "withdrawal"
+    },
+    "createInsufficientWithdrawal": {
+      "fromAccount": "ACC-A1B2C",
+      "amount": 100.0,
+      "currency": "USD",
+      "type": "withdrawal"
+    },
+    "createWithClientStatus": {
+      "toAccount": "ACC-A1B2C",
+      "amount": 10.0,
+      "currency": "USD",
+      "type": "deposit",
+      "status": "completed"
+    },
+    "invalidTransaction": {
+      "fromAccount": "BAD-123",
+      "toAccount": "ACC-11111",
+      "amount": -10.005,
+      "currency": "US",
+      "type": "transfer"
+    }
+  },
+  "filters": {
+    "accountId": "ACC-A1B2C",
+    "type": "transfer",
+    "from": "2000-01-01",
+    "to": "2100-01-01"
+  },
+  "lookups": {
+    "missingTransactionId": "missing-transaction-id",
+    "invalidAccountId": "ACC-12",
+    "summaryEmptyAccountId": "ACC-Z9Y8X"
+  }
+}
