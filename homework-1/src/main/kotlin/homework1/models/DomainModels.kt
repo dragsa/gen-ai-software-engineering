@@ -2,14 +2,29 @@ package homework1.models
 
 import java.time.LocalDate
 
-data class CreateTransactionCommand(
-    val fromAccount: String? = null,
-    val toAccount: String? = null,
-    val amount: Double,
-    val currency: String,
-    val type: TransactionType,
-    val status: TransactionStatus
-)
+sealed interface CreateTransactionCommand {
+    val amount: Double
+    val currency: String
+}
+
+data class DepositCommand(
+    val toAccount: String,
+    override val amount: Double,
+    override val currency: String
+) : CreateTransactionCommand
+
+data class WithdrawalCommand(
+    val fromAccount: String,
+    override val amount: Double,
+    override val currency: String
+) : CreateTransactionCommand
+
+data class TransferCommand(
+    val fromAccount: String,
+    val toAccount: String,
+    override val amount: Double,
+    override val currency: String
+) : CreateTransactionCommand
 
 data class TransactionFilter(
     val accountId: String? = null,

@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 data class CreateTransactionRequest(
     val fromAccount: String? = null,
     val toAccount: String? = null,
-    val amount: Double? = null,
-    val currency: String? = null,
-    val type: String? = null,
+    val amount: Double,
+    val currency: String,
+    val type: String,
     val status: String? = null
 )
 

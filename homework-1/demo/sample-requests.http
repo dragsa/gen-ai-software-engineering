@@ -88,14 +88,28 @@ print(data[field])
 PY
 }
 
+assert_json_field_equals() {
+  local file="$1"
+  local field="$2"
+  local expected="$3"
+  local actual
+  actual=$(json_field "$file" "$field")
+  if [[ "$actual" != "$expected" ]]; then
+    echo "Assertion failed for $field in $file: expected '$expected', got '$actual'" >&2
+    return 1
+  fi
+}
+
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
 
 echo "Running API calls against $APP_URL"
 
-transfer_payload=$(json_get "payloads.createTransfer")
 deposit_payload=$(json_get "payloads.createDeposit")
+transfer_payload=$(json_get "payloads.createTransfer")
 withdrawal_payload=$(json_get "payloads.createWithdrawal")
+insufficient_withdrawal_payload=$(json_get "payloads.createInsufficientWithdrawal")
+status_override_payload=$(json_get "payloads.createWithClientStatus")
 invalid_payload=$(json_get "payloads.invalidTransaction")
 
 account_id=$(json_get "filters.accountId")
@@ -105,14 +119,27 @@ to_filter=$(json_get "filters.to")
 missing_transaction_id=$(json_get "lookups.missingTransactionId")
 invalid_account_id=$(json_get "lookups.invalidAccountId")
 
+request "POST" "/transactions" "201" "$deposit_payload" "$tmpdir/create-deposit.json"
+assert_json_field_equals "$tmpdir/create-deposit.json" "status" "COMPLETED"
+
+request "POST" "/transactions" "201" "$status_override_payload" "$tmpdir/create-with-client-status.json"
+assert_json_field_equals "$tmpdir/create-with-client-status.json" "status" "COMPLETED"
+
 request "POST" "/transactions" "201" "$transfer_payload" "$tmpdir/create-transfer.json"
 transfer_id=$(json_field "$tmpdir/create-transfer.json" "id")
+assert_json_field_equals "$tmpdir/create-transfer.json" "status" "COMPLETED"
 
-request "POST" "/transactions" "201" "$deposit_payload" "$tmpdir/create-deposit.json"
 request "POST" "/transactions" "201" "$withdrawal_payload" "$tmpdir/create-withdrawal.json"
+assert_json_field_equals "$tmpdir/create-withdrawal.json" "status" "COMPLETED"
+
+request "POST" "/transactions" "201" "$insufficient_withdrawal_payload" "$tmpdir/create-insufficient-withdrawal.json"
+failed_withdrawal_id=$(json_field "$tmpdir/create-insufficient-withdrawal.json" "id")
+assert_json_field_equals "$tmpdir/create-insufficient-withdrawal.json" "status" "FAILED"
 
 request "GET" "/transactions" "200" "" "$tmpdir/list-all.json"
 request "GET" "/transactions/$transfer_id" "200" "" "$tmpdir/get-by-id.json"
+request "GET" "/transactions/$failed_withdrawal_id" "200" "" "$tmpdir/get-failed-by-id.json"
+assert_json_field_equals "$tmpdir/get-failed-by-id.json" "status" "FAILED"
 
 request "GET" "/transactions?accountId=$account_id" "200" "" "$tmpdir/list-by-account.json"
 request "GET" "/transactions?type=$type_filter" "200" "" "$tmpdir/list-by-type.json"
