@@ -10,4 +10,5 @@ interface TransactionService {
     fun listTransactions(filter: TransactionFilter): List<Transaction>
     fun getTransactionById(id: String): Transaction?
     fun getAccountBalance(accountId: String): BalanceResponse
+    fun getAccountSummary(accountId: String): List<Transaction>
 }

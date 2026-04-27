@@ -82,6 +82,13 @@ class InMemoryTransactionService(
         )
     }
 
+    override fun getAccountSummary(accountId: String): List<Transaction> =
+        snapshot()
+            .asSequence()
+            .filter { it.fromAccount == accountId || it.toAccount == accountId }
+            .sortedByDescending { Instant.parse(it.timestamp) }
+            .toList()
+
     private fun snapshot(): List<Transaction> =
         synchronized(transactions) { transactions.toList() }
 
