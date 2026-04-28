@@ -11,6 +11,7 @@ so my planned prompt was next.
 but I think it lacks splitting on correct sections and is way to formal.
 
 ====
+
 now, given that we have repo structure, let's build reusable instructions for future you (or your automated colleagues).
 
 follow the approach described in
