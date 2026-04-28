@@ -70,7 +70,9 @@ The implementation uses a clear separation between transport (HTTP API) and doma
 - API create payload uses a single request model:
   - `fromAccount` and `toAccount` are optional at API level.
   - `amount`, `currency`, and `type` are mandatory.
-  - optional client `status` is accepted but ignored.
+  - `amount` is modeled as `BigDecimal` and serialized as decimal string to avoid floating-point precision issues.
+  - `currency` is modeled as `CurrencyCode` enum (full ISO list) and decoded case-insensitively (`usd`/`USD`).
+  - create request does not allow `status`; transaction status is server-derived only.
 - Domain create model is the source of truth and is sealed by transaction type:
   - `DepositCommand(toAccount, amount, currency)`
   - `WithdrawalCommand(fromAccount, amount, currency)`
@@ -89,6 +91,7 @@ The implementation uses a clear separation between transport (HTTP API) and doma
   - provide filtering, balance, and summary reads.
 - The response model is consistent across read endpoints:
   - `Transaction` includes `id`, accounts, `amount`, `currency`, `type`, `timestamp`, `status`.
+  - `BalanceResponse.balances` is `Map<CurrencyCode, BigDecimal>` (JSON object keyed by currency code with decimal-string values).
   - Task 4A summary endpoint (`GET /accounts/{accountId}/summary`) reuses the same `Transaction` response model and returns a list.
 
 Why this model was chosen:
@@ -97,6 +100,8 @@ Why this model was chosen:
 - It keeps domain rules strict and explicit using sealed command types.
 - It avoids pushing business state ownership (`status`) to the client.
 - It keeps endpoint behavior testable and deterministic via service-level logic.
+- It removes runtime dependency on Java `Currency` validation by using a dedicated enum in the contract.
+- It keeps financial arithmetic precise and predictable by using `BigDecimal` end-to-end.
 
 ### API behavior under concurrent access
 

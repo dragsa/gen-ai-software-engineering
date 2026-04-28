@@ -1,6 +1,7 @@
 package homework1.service
 
 import homework1.models.BalanceResponse
+import homework1.models.CurrencyCode
 import homework1.models.CreateTransactionCommand
 import homework1.models.DepositCommand
 import homework1.models.Transaction
@@ -60,12 +61,12 @@ class InMemoryTransactionService(
         snapshot().firstOrNull { it.id == id }
 
     override fun getAccountBalance(accountId: String): BalanceResponse {
-        val balancesByCurrency = mutableMapOf<String, BigDecimal>()
+        val balancesByCurrency = mutableMapOf<CurrencyCode, BigDecimal>()
         snapshot()
             .asSequence()
             .filter { it.status != TransactionStatus.FAILED }
             .forEach { transaction ->
-                val amount = BigDecimal.valueOf(transaction.amount)
+                val amount = transaction.amount
                 if (transaction.toAccount == accountId) {
                     balancesByCurrency[transaction.currency] =
                         (balancesByCurrency[transaction.currency] ?: BigDecimal.ZERO).add(amount)
@@ -78,7 +79,7 @@ class InMemoryTransactionService(
 
         return BalanceResponse(
             accountId = accountId,
-            balances = balancesByCurrency.mapValues { (_, amount) -> amount.toPlainString() }
+            balances = balancesByCurrency
         )
     }
 
@@ -101,7 +102,7 @@ class InMemoryTransactionService(
             is DepositCommand -> return TransactionStatus.COMPLETED
         }
         val available = completedBalanceForCurrency(fromAccount, command.currency, existing)
-        val requested = BigDecimal.valueOf(command.amount)
+        val requested = command.amount
         return if (available.compareTo(requested) >= 0) {
             TransactionStatus.COMPLETED
         } else {
@@ -111,14 +112,14 @@ class InMemoryTransactionService(
 
     private fun completedBalanceForCurrency(
         accountId: String,
-        currency: String,
+        currency: CurrencyCode,
         existing: List<Transaction>
     ): BigDecimal =
         existing.asSequence()
             .filter { it.status == TransactionStatus.COMPLETED }
             .filter { it.currency == currency }
             .fold(BigDecimal.ZERO) { acc, transaction ->
-                val amount = BigDecimal.valueOf(transaction.amount)
+                val amount = transaction.amount
                 var next = acc
                 if (transaction.toAccount == accountId) {
                     next = next.add(amount)
