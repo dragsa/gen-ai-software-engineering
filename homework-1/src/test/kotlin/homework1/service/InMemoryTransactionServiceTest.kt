@@ -1,9 +1,11 @@
 package homework1.service
 
+import homework1.models.CurrencyCode
 import homework1.models.DepositCommand
 import homework1.models.TransactionStatus
 import homework1.models.TransferCommand
 import homework1.models.WithdrawalCommand
+import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -25,8 +27,8 @@ class InMemoryTransactionServiceTest {
         val deposit = service.createTransaction(
             DepositCommand(
                 toAccount = "ACC-A1B2C",
-                amount = 100.0,
-                currency = "USD"
+                amount = BigDecimal("100.00"),
+                currency = CurrencyCode.USD
             )
         )
         assertEquals(TransactionStatus.COMPLETED, deposit.status)
@@ -34,8 +36,8 @@ class InMemoryTransactionServiceTest {
         val withdrawalCompleted = service.createTransaction(
             WithdrawalCommand(
                 fromAccount = "ACC-A1B2C",
-                amount = 40.0,
-                currency = "USD"
+                amount = BigDecimal("40.00"),
+                currency = CurrencyCode.USD
             )
         )
         assertEquals(TransactionStatus.COMPLETED, withdrawalCompleted.status)
@@ -43,14 +45,14 @@ class InMemoryTransactionServiceTest {
         val withdrawalFailed = service.createTransaction(
             WithdrawalCommand(
                 fromAccount = "ACC-A1B2C",
-                amount = 100.0,
-                currency = "USD"
+                amount = BigDecimal("100.00"),
+                currency = CurrencyCode.USD
             )
         )
         assertEquals(TransactionStatus.FAILED, withdrawalFailed.status)
 
         val balance = service.getAccountBalance("ACC-A1B2C")
-        assertEquals("60.0", balance.balances["USD"])
+        assertEquals(BigDecimal("60.00"), balance.balances[CurrencyCode.USD])
 
         val listed = service.listTransactions(homework1.models.TransactionFilter())
         assertEquals(3, listed.size)
@@ -72,8 +74,8 @@ class InMemoryTransactionServiceTest {
         service.createTransaction(
             DepositCommand(
                 toAccount = "ACC-SRC01",
-                amount = 50.0,
-                currency = "USD"
+                amount = BigDecimal("50.00"),
+                currency = CurrencyCode.USD
             )
         )
 
@@ -81,8 +83,8 @@ class InMemoryTransactionServiceTest {
             TransferCommand(
                 fromAccount = "ACC-SRC01",
                 toAccount = "ACC-DST01",
-                amount = 30.0,
-                currency = "USD"
+                amount = BigDecimal("30.00"),
+                currency = CurrencyCode.USD
             )
         )
         assertEquals(TransactionStatus.COMPLETED, completedTransfer.status)
@@ -91,16 +93,16 @@ class InMemoryTransactionServiceTest {
             TransferCommand(
                 fromAccount = "ACC-SRC01",
                 toAccount = "ACC-DST01",
-                amount = 100.0,
-                currency = "USD"
+                amount = BigDecimal("100.00"),
+                currency = CurrencyCode.USD
             )
         )
         assertEquals(TransactionStatus.FAILED, failedTransfer.status)
 
         val sourceBalance = service.getAccountBalance("ACC-SRC01")
         val destinationBalance = service.getAccountBalance("ACC-DST01")
-        assertEquals("20.0", sourceBalance.balances["USD"])
-        assertEquals("30.0", destinationBalance.balances["USD"])
+        assertEquals(BigDecimal("20.00"), sourceBalance.balances[CurrencyCode.USD])
+        assertEquals(BigDecimal("30.00"), destinationBalance.balances[CurrencyCode.USD])
     }
 
     @Test
@@ -125,30 +127,30 @@ class InMemoryTransactionServiceTest {
         val deposit = service.createTransaction(
             DepositCommand(
                 toAccount = "ACC-A1B2C",
-                amount = 100.0,
-                currency = "USD"
+                amount = BigDecimal("100.00"),
+                currency = CurrencyCode.USD
             )
         )
         val transferOut = service.createTransaction(
             TransferCommand(
                 fromAccount = "ACC-A1B2C",
                 toAccount = "ACC-D3E4F",
-                amount = 60.0,
-                currency = "USD"
+                amount = BigDecimal("60.00"),
+                currency = CurrencyCode.USD
             )
         )
         val failedWithdrawal = service.createTransaction(
             WithdrawalCommand(
                 fromAccount = "ACC-A1B2C",
-                amount = 100.0,
-                currency = "USD"
+                amount = BigDecimal("100.00"),
+                currency = CurrencyCode.USD
             )
         )
         service.createTransaction(
             DepositCommand(
                 toAccount = "ACC-Z9Y8X",
-                amount = 1.0,
-                currency = "USD"
+                amount = BigDecimal("1.00"),
+                currency = CurrencyCode.USD
             )
         )
 
@@ -159,5 +161,38 @@ class InMemoryTransactionServiceTest {
 
         val missingAccountSummary = service.getAccountSummary("ACC-NONE1")
         assertTrue(missingAccountSummary.isEmpty())
+    }
+
+    @Test
+    fun `decimal arithmetic stays precise for recurring financial additions and subtractions`() {
+        val service = InMemoryTransactionService(
+            idGenerator = { java.util.UUID.randomUUID().toString() },
+            timestampProvider = { "2026-01-01T00:00:00Z" }
+        )
+
+        service.createTransaction(
+            DepositCommand(
+                toAccount = "ACC-DEC01",
+                amount = BigDecimal("0.10"),
+                currency = CurrencyCode.USD
+            )
+        )
+        service.createTransaction(
+            DepositCommand(
+                toAccount = "ACC-DEC01",
+                amount = BigDecimal("0.20"),
+                currency = CurrencyCode.USD
+            )
+        )
+        service.createTransaction(
+            WithdrawalCommand(
+                fromAccount = "ACC-DEC01",
+                amount = BigDecimal("0.30"),
+                currency = CurrencyCode.USD
+            )
+        )
+
+        val balance = service.getAccountBalance("ACC-DEC01")
+        assertEquals(BigDecimal("0.00"), balance.balances[CurrencyCode.USD])
     }
 }

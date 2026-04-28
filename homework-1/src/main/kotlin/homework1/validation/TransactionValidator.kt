@@ -12,7 +12,6 @@ import homework1.utils.isValidAccount
 import homework1.utils.parseIsoDate
 import homework1.utils.parseTransactionType
 import java.math.BigDecimal
-import java.util.Currency
 
 data class FilterValidationResult(
     val filter: TransactionFilter = TransactionFilter(),
@@ -20,22 +19,16 @@ data class FilterValidationResult(
 )
 
 class TransactionValidator {
-    private val validCurrencyCodes = Currency.getAvailableCurrencies().map { it.currencyCode }.toSet()
-
     fun validateCreateRequest(request: CreateTransactionRequest): List<ValidationError> {
         val errors = mutableListOf<ValidationError>()
 
-        if (request.amount <= 0) {
+        if (request.amount <= BigDecimal.ZERO) {
             errors.add(ValidationError("amount", "Amount must be a positive number"))
         } else {
-            val scale = BigDecimal.valueOf(request.amount).stripTrailingZeros().scale()
+            val scale = request.amount.stripTrailingZeros().scale()
             if (scale > 2) {
                 errors.add(ValidationError("amount", "Amount must have at most 2 decimal places"))
             }
-        }
-
-        if (request.currency.uppercase() !in validCurrencyCodes) {
-            errors.add(ValidationError("currency", "Invalid currency code"))
         }
 
         val type = parseTransactionType(request.type)
@@ -96,20 +89,20 @@ class TransactionValidator {
             TransactionType.DEPOSIT -> DepositCommand(
                 toAccount = request.toAccount!!,
                 amount = request.amount,
-                currency = request.currency.uppercase()
+                currency = request.currency
             )
 
             TransactionType.WITHDRAWAL -> WithdrawalCommand(
                 fromAccount = request.fromAccount!!,
                 amount = request.amount,
-                currency = request.currency.uppercase()
+                currency = request.currency
             )
 
             TransactionType.TRANSFER -> TransferCommand(
                 fromAccount = request.fromAccount!!,
                 toAccount = request.toAccount!!,
                 amount = request.amount,
-                currency = request.currency.uppercase()
+                currency = request.currency
             )
         }
 

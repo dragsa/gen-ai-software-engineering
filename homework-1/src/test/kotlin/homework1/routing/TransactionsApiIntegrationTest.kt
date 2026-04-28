@@ -34,12 +34,11 @@ class TransactionsApiIntegrationTest {
             assertEquals(HttpStatusCode.BadRequest, response.status)
             val errorFields = extractErrorFields(response.bodyAsText())
             assertTrue("amount" in errorFields)
-            assertTrue("currency" in errorFields)
             assertTrue("fromAccount" in errorFields)
         }
 
     @Test
-    fun `create transaction enforces mandatory payload shape and ignores client status`() = testApplication {
+    fun `create transaction enforces mandatory payload shape and rejects client status`() = testApplication {
         application { module() }
 
         val missingRequired = client.post("/transactions") {
@@ -53,14 +52,11 @@ class TransactionsApiIntegrationTest {
 
         val clientStatus = client.post("/transactions") {
             contentType(ContentType.Application.Json)
-            setBody(TestFixtures.payload("createWithClientStatus"))
+            setBody("""{"toAccount":"ACC-A1B2C","amount":"10.00","currency":"USD","type":"deposit","status":"completed"}""")
         }
 
-        assertEquals(HttpStatusCode.Created, clientStatus.status)
-        assertEquals(
-            "COMPLETED",
-            parseObject(clientStatus.bodyAsText()).jsonObject.getValue("status").jsonPrimitive.content
-        )
+        assertEquals(HttpStatusCode.BadRequest, clientStatus.status)
+        assertEquals(setOf("body"), extractErrorFields(clientStatus.bodyAsText()))
     }
 
     @Test
@@ -235,6 +231,19 @@ class TransactionsApiIntegrationTest {
 
         assertEquals(HttpStatusCode.OK, response.status)
         assertTrue(response.bodyAsText().contains("<html", ignoreCase = true))
+    }
+
+    @Test
+    fun `invalid currency payload is rejected as invalid body`() = testApplication {
+        application { module() }
+
+        val response = client.post("/transactions") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"toAccount":"ACC-A1B2C","amount":"10.00","currency":"not-a-code","type":"deposit"}""")
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(setOf("body"), extractErrorFields(response.bodyAsText()))
     }
 
     private fun parseObject(text: String) = json.parseToJsonElement(text)

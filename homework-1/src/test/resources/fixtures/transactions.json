@@ -2,41 +2,34 @@
   "payloads": {
     "createDeposit": {
       "toAccount": "ACC-A1B2C",
-      "amount": 200.0,
+      "amount": "200.00",
       "currency": "USD",
       "type": "deposit"
     },
     "createTransfer": {
       "fromAccount": "ACC-A1B2C",
       "toAccount": "ACC-D3E4F",
-      "amount": 150.25,
-      "currency": "USD",
+      "amount": "150.25",
+      "currency": "usd",
       "type": "transfer"
     },
     "createWithdrawal": {
       "fromAccount": "ACC-A1B2C",
-      "amount": 40.1,
+      "amount": "40.10",
       "currency": "USD",
       "type": "withdrawal"
     },
     "createInsufficientWithdrawal": {
       "fromAccount": "ACC-A1B2C",
-      "amount": 100.0,
+      "amount": "100.00",
       "currency": "USD",
       "type": "withdrawal"
-    },
-    "createWithClientStatus": {
-      "toAccount": "ACC-A1B2C",
-      "amount": 10.0,
-      "currency": "USD",
-      "type": "deposit",
-      "status": "completed"
     },
     "invalidTransaction": {
       "fromAccount": "BAD-123",
       "toAccount": "ACC-11111",
-      "amount": -10.005,
-      "currency": "US",
+      "amount": "-10.005",
+      "currency": "USD",
       "type": "transfer"
     }
   },

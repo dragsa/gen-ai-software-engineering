@@ -1,5 +1,10 @@
 > Task :homework-1:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :homework-1:compileKotlin UP-TO-DATE
 > Task :homework-1:compileJava NO-SOURCE
-> Task :homework-1:processResources NO-SOURCE
+> Task :homework-1:processResources UP-TO-DATE
 > Task :homework-1:classes UP-TO-DATE
+
+> Task :homework-1:run
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.

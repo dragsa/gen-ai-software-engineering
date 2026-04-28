@@ -151,7 +151,6 @@ deposit_payload=$(json_get "payloads.createDeposit")
 transfer_payload=$(json_get "payloads.createTransfer")
 withdrawal_payload=$(json_get "payloads.createWithdrawal")
 insufficient_withdrawal_payload=$(json_get "payloads.createInsufficientWithdrawal")
-status_override_payload=$(json_get "payloads.createWithClientStatus")
 invalid_payload=$(json_get "payloads.invalidTransaction")
 
 account_id=$(json_get "filters.accountId")
@@ -165,10 +164,6 @@ summary_empty_account_id=$(json_get "lookups.summaryEmptyAccountId")
 request "POST" "/transactions" "201" "$deposit_payload" "$tmpdir/create-deposit.json"
 deposit_id=$(json_field "$tmpdir/create-deposit.json" "id")
 assert_json_field_equals "$tmpdir/create-deposit.json" "status" "COMPLETED"
-
-request "POST" "/transactions" "201" "$status_override_payload" "$tmpdir/create-with-client-status.json"
-status_override_id=$(json_field "$tmpdir/create-with-client-status.json" "id")
-assert_json_field_equals "$tmpdir/create-with-client-status.json" "status" "COMPLETED"
 
 request "POST" "/transactions" "201" "$transfer_payload" "$tmpdir/create-transfer.json"
 transfer_id=$(json_field "$tmpdir/create-transfer.json" "id")
@@ -189,7 +184,7 @@ assert_json_field_equals "$tmpdir/get-failed-by-id.json" "status" "FAILED"
 request "GET" "/accounts/$account_id/summary" "200" "" "$tmpdir/account-summary.json"
 assert_json_array_ids_equals \
   "$tmpdir/account-summary.json" \
-  "[\"$failed_withdrawal_id\",\"$withdrawal_id\",\"$transfer_id\",\"$status_override_id\",\"$deposit_id\"]"
+  "[\"$failed_withdrawal_id\",\"$withdrawal_id\",\"$transfer_id\",\"$deposit_id\"]"
 request "GET" "/accounts/$summary_empty_account_id/summary" "200" "" "$tmpdir/account-summary-empty.json"
 assert_json_array_length "$tmpdir/account-summary-empty.json" "0"
 

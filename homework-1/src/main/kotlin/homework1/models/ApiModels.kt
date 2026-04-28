@@ -1,15 +1,16 @@
 package homework1.models
 
+import java.math.BigDecimal
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateTransactionRequest(
     val fromAccount: String? = null,
     val toAccount: String? = null,
-    val amount: Double,
-    val currency: String,
-    val type: String,
-    val status: String? = null
+    @Serializable(with = BigDecimalAsStringSerializer::class)
+    val amount: BigDecimal,
+    val currency: CurrencyCode,
+    val type: String
 )
 
 @Serializable
@@ -17,8 +18,9 @@ data class Transaction(
     val id: String,
     val fromAccount: String? = null,
     val toAccount: String? = null,
-    val amount: Double,
-    val currency: String,
+    @Serializable(with = BigDecimalAsStringSerializer::class)
+    val amount: BigDecimal,
+    val currency: CurrencyCode,
     val type: TransactionType,
     val timestamp: String,
     val status: TransactionStatus
@@ -27,7 +29,7 @@ data class Transaction(
 @Serializable
 data class BalanceResponse(
     val accountId: String,
-    val balances: Map<String, String>
+    val balances: Map<CurrencyCode, @Serializable(with = BigDecimalAsStringSerializer::class) BigDecimal>
 )
 
 @Serializable

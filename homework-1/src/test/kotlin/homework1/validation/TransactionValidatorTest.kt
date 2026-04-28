@@ -1,8 +1,10 @@
 package homework1.validation
 
 import homework1.models.CreateTransactionRequest
+import homework1.models.CurrencyCode
 import homework1.models.TransactionType
 import homework1.testsupport.TestFixtures
+import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,12 +17,12 @@ class TransactionValidatorTest {
     private val json = Json
 
     @Test
-    fun `amount must be positive and have at most two decimals`() {
+    fun `amount must be positive`() {
         val request = CreateTransactionRequest(
             fromAccount = "ACC-A1B2C",
             toAccount = "ACC-D3E4F",
-            amount = -10.005,
-            currency = "USD",
+            amount = BigDecimal("-10.00"),
+            currency = CurrencyCode.USD,
             type = "transfer"
         )
 
@@ -29,31 +31,44 @@ class TransactionValidatorTest {
     }
 
     @Test
-    fun `status in request is ignored by validator`() {
+    fun `amount must have at most two decimals`() {
         val request = CreateTransactionRequest(
-            toAccount = "ACC-A1B2C",
-            amount = 10.0,
-            currency = "USD",
-            type = "deposit",
-            status = "completed"
+            fromAccount = "ACC-A1B2C",
+            toAccount = "ACC-D3E4F",
+            amount = BigDecimal("10.005"),
+            currency = CurrencyCode.USD,
+            type = "transfer"
         )
 
         val errors = validator.validateCreateRequest(request)
+        assertTrue(errors.any { it.field == "amount" })
+    }
 
-        assertFalse(errors.any { it.field == "status" })
+    @Test
+    fun `valid amount with two decimals passes validation`() {
+        val request = CreateTransactionRequest(
+            fromAccount = "ACC-A1B2C",
+            toAccount = "ACC-D3E4F",
+            amount = BigDecimal("10.50"),
+            currency = CurrencyCode.USD,
+            type = "transfer"
+        )
+
+        val errors = validator.validateCreateRequest(request)
+        assertFalse(errors.any { it.field == "amount" })
     }
 
     @Test
     fun `deposit requires toAccount only`() {
         val missingTo = CreateTransactionRequest(
-            amount = 10.0,
-            currency = "USD",
+            amount = BigDecimal("10.00"),
+            currency = CurrencyCode.USD,
             type = "deposit"
         )
         val withTo = CreateTransactionRequest(
             toAccount = "ACC-A1B2C",
-            amount = 10.0,
-            currency = "USD",
+            amount = BigDecimal("10.00"),
+            currency = CurrencyCode.USD,
             type = "deposit"
         )
 
@@ -68,14 +83,14 @@ class TransactionValidatorTest {
     @Test
     fun `withdrawal requires fromAccount only`() {
         val missingFrom = CreateTransactionRequest(
-            amount = 10.0,
-            currency = "USD",
+            amount = BigDecimal("10.00"),
+            currency = CurrencyCode.USD,
             type = "withdrawal"
         )
         val withFrom = CreateTransactionRequest(
             fromAccount = "ACC-A1B2C",
-            amount = 10.0,
-            currency = "USD",
+            amount = BigDecimal("10.00"),
+            currency = CurrencyCode.USD,
             type = "withdrawal"
         )
 
@@ -90,8 +105,8 @@ class TransactionValidatorTest {
     @Test
     fun `transfer requires both fromAccount and toAccount`() {
         val request = CreateTransactionRequest(
-            amount = 10.0,
-            currency = "USD",
+            amount = BigDecimal("10.00"),
+            currency = CurrencyCode.USD,
             type = "transfer"
         )
 
@@ -106,8 +121,8 @@ class TransactionValidatorTest {
         val request = CreateTransactionRequest(
             fromAccount = "BAD",
             toAccount = "ALSO_BAD",
-            amount = 10.0,
-            currency = "USD",
+            amount = BigDecimal("10.00"),
+            currency = CurrencyCode.USD,
             type = "transfer"
         )
 
@@ -166,16 +181,16 @@ class TransactionValidatorTest {
         val deposit = validator.toCreateCommand(
             CreateTransactionRequest(
                 toAccount = "ACC-A1B2C",
-                amount = 10.0,
-                currency = "usd",
+                amount = BigDecimal("10.00"),
+                currency = CurrencyCode.USD,
                 type = "deposit"
             )
         )
         val withdrawal = validator.toCreateCommand(
             CreateTransactionRequest(
                 fromAccount = "ACC-A1B2C",
-                amount = 10.0,
-                currency = "usd",
+                amount = BigDecimal("10.00"),
+                currency = CurrencyCode.USD,
                 type = "withdrawal"
             )
         )
@@ -183,8 +198,8 @@ class TransactionValidatorTest {
             CreateTransactionRequest(
                 fromAccount = "ACC-A1B2C",
                 toAccount = "ACC-D3E4F",
-                amount = 10.0,
-                currency = "usd",
+                amount = BigDecimal("10.00"),
+                currency = CurrencyCode.USD,
                 type = "transfer"
             )
         )
@@ -200,8 +215,7 @@ class TransactionValidatorTest {
             "createDeposit",
             "createTransfer",
             "createWithdrawal",
-            "createInsufficientWithdrawal",
-            "createWithClientStatus"
+            "createInsufficientWithdrawal"
         )
 
         happyPayloads.forEach { payloadName ->
