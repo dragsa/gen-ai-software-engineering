@@ -51,3 +51,6 @@ If a task conflicts with these rules:
 - The rules in this document take precedence
 - The task must be adjusted or rejected accordingly
 ---
+## Sub-files
+- `.agents/docs/STACK.MD` — defines the mandatory technology stack and conventions for new subprojects. New subprojects MUST follow that stack unless their `TASKS.md` explicitly mandates a different language or runtime.
+---
