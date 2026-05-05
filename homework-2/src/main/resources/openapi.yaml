@@ -1,0 +1,465 @@
+openapi: "3.1.0"
+info:
+  title: Customer Support Ticket System
+  description: |
+    REST API for managing customer support tickets with multi-format import,
+    rule-based auto-classification, and full CRUD operations.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+
+  /tickets:
+    post:
+      summary: Create a ticket
+      operationId: createTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicketRequest'
+      parameters:
+        - name: auto_classify
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: When true, auto-classify the ticket immediately after creation.
+      responses:
+        "201":
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+
+    get:
+      summary: List tickets
+      operationId: listTickets
+      parameters:
+        - name: category
+          in: query
+          schema:
+            $ref: '#/components/schemas/Category'
+        - name: priority
+          in: query
+          schema:
+            $ref: '#/components/schemas/Priority'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/Status'
+        - name: assigned_to
+          in: query
+          schema:
+            type: string
+        - name: customer_id
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Case-insensitive substring search across subject and description.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+
+  /tickets/import:
+    post:
+      summary: Bulk import tickets from CSV, JSON, or XML
+      operationId: importTickets
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Import summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportSummaryResponse'
+        "400":
+          $ref: '#/components/responses/Error'
+
+  /tickets/{id}:
+    get:
+      summary: Get a ticket by id
+      operationId: getTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      responses:
+        "200":
+          description: Ticket found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update a ticket (partial update)
+      operationId: updateTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTicketRequest'
+      responses:
+        "200":
+          description: Ticket updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete a ticket
+      operationId: deleteTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      responses:
+        "204":
+          description: Ticket deleted
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+  /tickets/{id}/auto-classify:
+    post:
+      summary: Auto-classify a ticket
+      operationId: autoClassifyTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      responses:
+        "200":
+          description: Classification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassificationResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+components:
+
+  parameters:
+    TicketId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error:
+      description: General error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+
+    Category:
+      type: string
+      enum: [account_access, technical_issue, billing_question, feature_request, bug_report, other]
+
+    Priority:
+      type: string
+      enum: [urgent, high, medium, low]
+
+    Status:
+      type: string
+      enum: [new, in_progress, waiting_customer, resolved, closed]
+
+    Source:
+      type: string
+      enum: [web_form, email, api, chat, phone]
+
+    DeviceType:
+      type: string
+      enum: [desktop, mobile, tablet]
+
+    CreateMetadataRequest:
+      type: object
+      required: [source]
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        browser:
+          type: string
+          nullable: true
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+          nullable: true
+
+    UpdateMetadataRequest:
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+          nullable: true
+        browser:
+          type: string
+          nullable: true
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+          nullable: true
+
+    MetadataResponse:
+      type: object
+      required: [source]
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        browser:
+          type: string
+          nullable: true
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+          nullable: true
+
+    CreateTicketRequest:
+      type: object
+      required: [customer_id, customer_email, customer_name, subject, description]
+      properties:
+        customer_id:
+          type: string
+        customer_email:
+          type: string
+          format: email
+        customer_name:
+          type: string
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        category:
+          $ref: '#/components/schemas/Category'
+          nullable: true
+          description: Defaults to "other" when omitted.
+        priority:
+          $ref: '#/components/schemas/Priority'
+          nullable: true
+          description: Defaults to "medium" when omitted.
+        status:
+          $ref: '#/components/schemas/Status'
+          nullable: true
+          description: Defaults to "new" when omitted.
+        assigned_to:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          default: []
+        metadata:
+          $ref: '#/components/schemas/CreateMetadataRequest'
+          nullable: true
+          description: Defaults to source=api when omitted.
+
+    UpdateTicketRequest:
+      type: object
+      description: All fields optional. Only provided fields are applied (partial update).
+      properties:
+        customer_id:
+          type: string
+          nullable: true
+        customer_email:
+          type: string
+          format: email
+          nullable: true
+        customer_name:
+          type: string
+          nullable: true
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+          nullable: true
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+          nullable: true
+        category:
+          $ref: '#/components/schemas/Category'
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/Priority'
+          nullable: true
+        status:
+          $ref: '#/components/schemas/Status'
+          nullable: true
+        assigned_to:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        metadata:
+          $ref: '#/components/schemas/UpdateMetadataRequest'
+          nullable: true
+
+    TicketResponse:
+      type: object
+      required: [id, customer_id, customer_email, customer_name, subject, description,
+                 category, priority, status, created_at, updated_at, tags, metadata]
+      properties:
+        id:
+          type: string
+          format: uuid
+        customer_id:
+          type: string
+        customer_email:
+          type: string
+        customer_name:
+          type: string
+        subject:
+          type: string
+        description:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+        priority:
+          $ref: '#/components/schemas/Priority'
+        status:
+          $ref: '#/components/schemas/Status'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        assigned_to:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        metadata:
+          $ref: '#/components/schemas/MetadataResponse'
+
+    ImportSummaryResponse:
+      type: object
+      required: [total, successful, failed, failures]
+      properties:
+        total:
+          type: integer
+        successful:
+          type: integer
+        failed:
+          type: integer
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportFailure'
+
+    ImportFailure:
+      type: object
+      required: [row, reason]
+      properties:
+        row:
+          type: integer
+        reason:
+          type: string
+        raw_data:
+          type: string
+          nullable: true
+
+    ClassificationResponse:
+      type: object
+      required: [ticket_id, category, priority, confidence, reasoning, keywords_found]
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+        category:
+          $ref: '#/components/schemas/Category'
+        priority:
+          $ref: '#/components/schemas/Priority'
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        reasoning:
+          type: string
+        keywords_found:
+          type: array
+          items:
+            type: string
+
+    ValidationError:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'

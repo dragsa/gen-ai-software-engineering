@@ -1,30 +1,46 @@
-# ▶️ How to Run the application
-
-> **Status:** module scaffolded only. No application sources have been created yet, so there is nothing runnable. This file will be updated automatically once the application is implemented.
+# ▶️ How to Run — Homework 2: Customer Support Ticket System
 
 ## Prerequisites
 
-- JDK 21+ installed
+- JDK 21+
+- No other local dependencies required (Gradle wrapper is included)
 
-## Module wiring
+## Run the application
 
-The `homework-2` Gradle subproject is registered in the root `settings.gradle.kts` and uses the same dependency stack as `homework-1` (Kotlin JVM, Kotlinx Serialization, Ktor server + content negotiation + Swagger).
-
-Once sources exist under `homework-2/src/main/kotlin`, the application will be runnable from the repository root with:
+From the repository root:
 
 ```bash
 ./gradlew :homework-2:run
 ```
 
-And tests will be runnable with:
+The server starts on **http://localhost:8080**.
+
+| Endpoint | Description |
+|---|---|
+| `GET /swagger` | Swagger UI |
+| `GET /openapi.yaml` | Raw OpenAPI spec |
+
+## Build
 
 ```bash
-./gradlew :homework-2:clean :homework-2:test --rerun-tasks --console=plain
+./gradlew :homework-2:build
 ```
 
-## Verify the module is recognized by Gradle
+## Run tests
 
-From the repository root:
+```bash
+./gradlew :homework-2:test --rerun-tasks --console=plain
+```
+
+## Test coverage report (JaCoCo)
+
+```bash
+./gradlew :homework-2:test jacocoTestReport
+```
+
+Report is generated at: `homework-2/build/reports/jacoco/test/html/index.html`
+
+## Verify the module is recognized by Gradle
 
 ```bash
 ./gradlew projects
