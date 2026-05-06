@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>cust-001</customer_id>
+    <customer_email>alice@example.com</customer_email>
+    <customer_name>Alice Smith</customer_name>
+    <subject>Valid ticket</subject>
+    <description>This ticket has all required fields and should parse successfully</description>
+    <metadata>
+      <source>api</source>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust-002</customer_id>
+    <customer_email>bob@example.com</customer_email>
+    <customer_name>Bob Jones</customer_name>
+    <subject>Missing description ticket</subject>
+    <!-- description element intentionally omitted -->
+    <metadata>
+      <source>email</source>
+    </metadata>
+  </ticket>
+</tickets>

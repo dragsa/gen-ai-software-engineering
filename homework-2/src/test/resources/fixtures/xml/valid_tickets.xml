@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>cust-001</customer_id>
+    <customer_email>alice@example.com</customer_email>
+    <customer_name>Alice Smith</customer_name>
+    <subject>Cannot login to account</subject>
+    <description>I have been unable to login since yesterday morning after a password reset</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <tags>
+      <tag>auth</tag>
+      <tag>login</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Chrome</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust-002</customer_id>
+    <customer_email>bob@example.com</customer_email>
+    <customer_name>Bob Jones</customer_name>
+    <subject>Payment not processed</subject>
+    <description>My payment of $50 was charged but the invoice shows unpaid status</description>
+    <category>billing_question</category>
+    <metadata>
+      <source>email</source>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust-003</customer_id>
+    <customer_email>carol@example.com</customer_email>
+    <customer_name>Carol White</customer_name>
+    <subject>App crashes on startup</subject>
+    <description>The application crashes immediately on startup with a null pointer exception error</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <metadata>
+      <source>api</source>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+</tickets>

@@ -1,0 +1,19 @@
+[
+  {
+    "customer_id": "cust-001",
+    "customer_email": "alice@example.com",
+    "customer_name": "Alice Smith",
+    "subject": "Valid ticket",
+    "description": "This ticket entry is valid and should parse correctly",
+    "metadata": { "source": "api" }
+  },
+  42,
+  {
+    "customer_id": "cust-003",
+    "customer_email": "carol@example.com",
+    "customer_name": "Carol White",
+    "subject": "Another valid ticket",
+    "description": "This ticket entry is also valid and should parse correctly",
+    "metadata": { "source": "chat" }
+  }
+]
