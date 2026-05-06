@@ -1,5 +1,6 @@
 package homework2.service
 
+import homework2.models.ClassificationDecision
 import homework2.models.CreateTicketRequest
 import homework2.models.ImportSummaryResponse
 import homework2.models.Ticket
@@ -41,4 +42,11 @@ interface TicketService {
      * as import failures. Returns a summary of the whole operation.
      */
     fun bulkImport(parsedRows: List<ParsedRow>): ImportSummaryResponse
+
+    /**
+     * Run the auto-classifier on the ticket with the given [id], persist the
+     * resulting category and priority onto the ticket, and return the decision.
+     * Returns null if no ticket with that id exists.
+     */
+    fun classifyTicket(id: String): ClassificationDecision?
 }

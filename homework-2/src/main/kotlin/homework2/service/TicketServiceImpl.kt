@@ -1,6 +1,7 @@
 package homework2.service
 
 import homework2.models.Category
+import homework2.models.ClassificationDecision
 import homework2.models.CreateTicketRequest
 import homework2.models.DeviceType
 import homework2.models.ImportFailure
@@ -11,8 +12,8 @@ import homework2.models.Source
 import homework2.models.Status
 import homework2.models.Ticket
 import homework2.models.TicketFilter
-import homework2.models.UpdateTicketRequest
 import homework2.models.UpdateMetadataRequest
+import homework2.models.UpdateTicketRequest
 import homework2.utils.parsers.ParsedRow
 import homework2.validation.TicketValidator
 import java.time.Instant
@@ -27,6 +28,7 @@ import java.util.UUID
 class TicketServiceImpl(
     private val repository: TicketRepository,
     private val validator: TicketValidator,
+    private val classifier: TicketClassifier = TicketClassifier(),
     private val idGenerator: () -> String = { UUID.randomUUID().toString() },
     private val timestampProvider: () -> String = { Instant.now().toString() }
 ) : TicketService {
@@ -78,6 +80,13 @@ class TicketServiceImpl(
             failed     = failures.size,
             failures   = failures
         )
+    }
+
+    override fun classifyTicket(id: String): ClassificationDecision? {
+        val ticket = repository.findById(id) ?: return null
+        val decision = classifier.classify(ticket)
+        repository.update(id) { it.copy(category = decision.category, priority = decision.priority) }
+        return decision
     }
 
     // --- private helpers ---

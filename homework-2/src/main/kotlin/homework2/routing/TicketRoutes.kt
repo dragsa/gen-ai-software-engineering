@@ -1,6 +1,7 @@
 package homework2.routing
 
 import homework2.models.Category
+import homework2.models.ClassificationResponse
 import homework2.models.ErrorResponse
 import homework2.models.Priority
 import homework2.models.Status
@@ -53,6 +54,11 @@ fun Route.registerTicketRoutes(
             }
 
             val ticket = service.createTicket(req)
+
+            val autoClassify = call.request.queryParameters["auto_classify"]
+                ?.toBooleanStrictOrNull() ?: false
+            if (autoClassify) service.classifyTicket(ticket.id)
+
             call.respond(HttpStatusCode.Created, TicketResponse.from(ticket))
         }
 
@@ -211,6 +217,21 @@ fun Route.registerTicketRoutes(
             }
 
             call.respond(HttpStatusCode.NoContent)
+        }
+
+        // POST /tickets/{id}/auto-classify
+        post("/{id}/auto-classify") {
+            val id = call.parameters["id"] ?: run {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Ticket id is required"))
+                return@post
+            }
+
+            val decision = service.classifyTicket(id) ?: run {
+                call.respond(HttpStatusCode.NotFound, ErrorResponse("Ticket not found"))
+                return@post
+            }
+
+            call.respond(HttpStatusCode.OK, ClassificationResponse.from(decision))
         }
     }
 }
