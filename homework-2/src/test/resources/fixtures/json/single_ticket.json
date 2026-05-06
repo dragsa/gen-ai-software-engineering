@@ -1,0 +1,9 @@
+{
+  "customer_id": "cust-001",
+  "customer_email": "alice@example.com",
+  "customer_name": "Alice Smith",
+  "subject": "Feature request for dark mode",
+  "description": "I would like to request a dark mode feature for the application to reduce eye strain",
+  "category": "feature_request",
+  "metadata": { "source": "web_form" }
+}
