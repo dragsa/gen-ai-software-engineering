@@ -1,6 +1,6 @@
 # 🎫 Homework 2: Customer Support Ticket System
 
-> **Student Name**: Oleksandr Gnatiuk
+> **Student Name**: Andrii Gnatiuk
 > **Date Submitted**: 2026-05-07
 > **AI Tools Used**: Claude (Anthropic) via Cowork
 
@@ -9,6 +9,18 @@
 ## 📋 Project Overview
 
 A Customer Support Ticket System REST API built with Kotlin and Ktor. Supports creating, reading, updating, and deleting tickets; bulk import from CSV / JSON / XML; and an auto-classification endpoint that categorises tickets by keyword and assigns a confidence score. Test coverage is enforced at ≥ 85% instruction coverage via JaCoCo.
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|---|---|
+| [API_REFERENCE.md](API_REFERENCE.md) | All endpoints — request/response shapes, query parameters, enum values, error shapes, and cURL examples |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Component diagram, bulk-import sequence, auto-classify sequence, and design decisions |
+| [TESTING_GUIDE.md](TESTING_GUIDE.md) | Test pyramid, how to run tests, fixture file map, coverage gate explanation |
+| [HOWTORUN.md](HOWTORUN.md) | How to build and start the server |
+| [API_NOTES.md](API_NOTES.md) | Supplementary API design notes |
 
 ---
 
