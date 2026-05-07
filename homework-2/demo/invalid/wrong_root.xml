@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<records>
+  <record>
+    <customer_id>cust-001</customer_id>
+    <customer_email>alice@example.com</customer_email>
+    <customer_name>Alice Smith</customer_name>
+    <subject>This XML will be rejected</subject>
+    <description>The root element is records not tickets or ticket so the parser will return a Failure</description>
+  </record>
+</records>

@@ -8,7 +8,14 @@
 
 ## 📋 Project Overview
 
-A Customer Support Ticket System REST API built with Kotlin and Ktor. Supports creating, reading, updating, and deleting tickets; bulk import from CSV / JSON / XML; and an auto-classification endpoint that categorises tickets by keyword and assigns a confidence score. Test coverage is enforced at ≥ 85% instruction coverage via JaCoCo.
+A Customer Support Ticket System REST API built with Kotlin and Ktor. 
+Supports:
+- creating, reading, updating, and deleting tickets;
+- bulk import from CSV / JSON / XML;
+- auto-classification endpoint that categorises tickets by keyword and assigns a confidence score. 
+
+Test coverage is enforced at ≥ 85% instruction coverage via JaCoCo.
+
 
 ---
 
@@ -20,7 +27,18 @@ A Customer Support Ticket System REST API built with Kotlin and Ktor. Supports c
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Component diagram, bulk-import sequence, auto-classify sequence, and design decisions |
 | [TESTING_GUIDE.md](TESTING_GUIDE.md) | Test pyramid, how to run tests, fixture file map, coverage gate explanation |
 | [HOWTORUN.md](HOWTORUN.md) | How to build and start the server |
-| [API_NOTES.md](API_NOTES.md) | Supplementary API design notes |
+
+---
+
+## Important screenshots
+
+## Functional and performance test results
+
+![img.png](tests.png)
+
+![img.png](tests_coverage.png)
+
+see [JaCoCo coverage gate challenge](#jacoco-coverage-gate-failing-due-to-kotlin-coroutine-bytecode) for more details
 
 ---
 
@@ -90,6 +108,48 @@ The 50% figure in the HTML report is not a real coverage gap — it reflects the
 **What to do (and not do)**
 
 Do not add the continuation-class exclusions to `jacocoTestReport` to make the HTML look cleaner. Doing so hides the generated classes entirely and makes it harder to spot if a genuinely low-coverage class appears in the routing package in the future. Instead, accept that the HTML will show a blended number and interpret the routing package coverage by drilling into individual class rows, where the outer `TicketRoutesKt` class will show high coverage and the `$1$3`, `$1$4` … inner classes will show low coverage for the reasons described above.
+
+---
+
+### Demo CSV import hanging (30-second timeout) on real Netty server
+
+**Symptom**: running `demo/demo.sh` caused `POST /tickets/import` to hang indefinitely (capped at 30 s after adding `--max-time` to curl). Every other endpoint responded instantly. Integration tests for the same route passed without issue.
+
+**Root cause — blocking InputStream on the Netty event loop**
+
+The import route read the uploaded file part using the deprecated `PartData.FileItem.streamProvider()`:
+
+```kotlin
+@Suppress("DEPRECATION")
+fileBytes = part.streamProvider().use { it.readBytes() }
+```
+
+`streamProvider()` wraps Ktor's internal `ByteReadChannel` (coroutine-based, non-blocking) in a blocking `java.io.InputStream`. In Ktor's real Netty engine the route handler coroutine runs close to the Netty I/O thread pool. When `readBytes()` blocks waiting for the stream to reach EOF, it prevents the Netty pipeline from completing delivery of the remaining request-body bytes — a self-reinforcing stall. The integration tests never exposed this because `testApplication` uses Ktor's mock engine, which pre-buffers the entire request body in memory before the handler runs, so `readBytes()` returns immediately without blocking.
+
+`streamProvider()` is marked `@Deprecated` in Ktor 3.x precisely because of this class of problem. The `@Suppress("DEPRECATION")` annotation had been added to silence the compiler warning without addressing the underlying issue.
+
+**Fix**
+
+Wrap the blocking read in `withContext(Dispatchers.IO)` so it executes on Kotlin's IO thread pool, which is designed for blocking calls and does not starve the Netty event loop:
+
+```kotlin
+@Suppress("DEPRECATION")
+fileBytes = withContext(Dispatchers.IO) {
+    part.streamProvider().use { it.readBytes() }
+}
+```
+
+No new dependency is required — `kotlinx.coroutines` is already a transitive dependency via Ktor.
+
+**Secondary issue — tags separator mismatch in demo CSV**
+
+`demo/sample_tickets.csv` used `;` to separate multiple tags within a cell (e.g. `auth;login`), but `CsvTicketParser` splits on `,`. This meant each tags value was stored as a single opaque string rather than individual tags. The CSV was regenerated with `,` as the internal separator and cells quoted where necessary (e.g. `"auth,login"`).
+
+**Steps to avoid on future tasks**
+
+- Do not suppress deprecation warnings silently. When `@Suppress("DEPRECATION")` is added, add a comment explaining *why* the deprecated API is still used and what the migration path is.
+- When an API crosses the coroutine/blocking boundary (returns an `InputStream` from a coroutine context), always wrap the call in `withContext(Dispatchers.IO)`.
+- Include a full end-to-end demo run in the acceptance criteria, not just unit and integration tests. The mock engine can hide engine-specific behaviour that only manifests with real Netty.
 
 ---
 

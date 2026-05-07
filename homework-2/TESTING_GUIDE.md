@@ -25,12 +25,6 @@ graph BT
 ./gradlew :homework-2:test jacocoTestReport
 ```
 
-The HTML report is written to:
-
-```
-homework-2/build/reports/jacoco/test/html/index.html
-```
-
 ### Coverage gate (must be ≥ 85%)
 
 ```bash
@@ -56,6 +50,127 @@ homework-2/build/reports/jacoco/test/html/index.html
 ```bash
 ./gradlew :homework-2:test --tests "homework2.routing.TicketApiTest.POST tickets creates ticket and returns 201"
 ```
+
+### Run by layer
+
+```bash
+# Unit tests only (models, service, parsers, validation)
+./gradlew :homework-2:test \
+  --tests "homework2.models.*" \
+  --tests "homework2.service.*" \
+  --tests "homework2.utils.*" \
+  --tests "homework2.validation.*"
+
+# HTTP-layer integration tests only (routing)
+./gradlew :homework-2:test --tests "homework2.routing.*"
+
+# End-to-end workflow tests only
+./gradlew :homework-2:test --tests "homework2.integration.*"
+
+# Performance / benchmark tests only
+./gradlew :homework-2:test --tests "homework2.performance.*"
+```
+
+---
+
+## Reading test results
+
+### Terminal summary
+
+By default Gradle prints a one-line summary per test class and a final count:
+
+```
+> Task :homework-2:test
+homework2.routing.TicketApiTest > POST tickets creates ticket and returns 201 PASSED
+...
+BUILD SUCCESSFUL in 12s
+42 tests completed, 0 failed
+```
+
+For a failing test the summary shows `FAILED` and the stack trace is printed inline.
+
+To see every test name as it runs (useful for spotting slow tests):
+
+```bash
+./gradlew :homework-2:test --console=plain --info
+```
+
+### HTML test report
+
+Gradle writes a full JUnit results report — separate from the JaCoCo coverage report — after every test run:
+
+```
+homework-2/build/reports/tests/test/index.html
+```
+
+Open it in a browser:
+
+```bash
+open homework-2/build/reports/tests/test/index.html        # macOS
+xdg-open homework-2/build/reports/tests/test/index.html   # Linux
+```
+
+The report shows pass/fail per class and per method, duration of each test, and the full failure message and stack trace for any failures.
+
+### JaCoCo coverage report
+
+```
+homework-2/build/reports/jacoco/test/html/index.html
+```
+
+Shows instruction, branch, and line coverage per package and class. See [Coverage notes](#coverage-notes) for why `homework2.routing` shows ~50% in the report despite the gate passing at ~94%.
+
+### IntelliJ IDEA
+
+- Click the green gutter icon next to any test method or class to run it.
+- Right-click a package → **Run 'Tests in homework2…'** to run all tests in that package.
+- The **Run** tool window shows a pass/fail tree; failed tests display the assertion message and stack trace inline. Click **Rerun Failed Tests** to re-run only the failures.
+
+---
+
+## Performance tests
+
+### What they are
+
+`PerformanceTest.kt` contains five micro-benchmarks that run as ordinary JUnit tests through the same Gradle task — no separate server start is required. Each test exercises the **service layer directly** (no HTTP stack) and asserts that the operation completes within a generous wall-clock budget.
+
+| Test | What it measures | Budget |
+|---|---|---|
+| CSV import 200 rows | Parse + validate + persist | < 3 000 ms |
+| JSON import 200 rows | Parse + validate + persist | < 3 000 ms |
+| Classifier p95 (100 calls) | Rule-based keyword scan | < 50 ms per call |
+| List 1 000 tickets | In-memory filter + return | < 500 ms |
+| Combined filter 1 000 tickets | Category + priority filter | < 200 ms |
+
+Run them in isolation:
+
+```bash
+./gradlew :homework-2:test --tests "homework2.performance.*" --console=plain
+```
+
+Results appear in the terminal summary and in the HTML test report at `build/reports/tests/test/index.html`. A budget breach fails the test with a message such as:
+
+```
+CSV import took 4 123ms — expected < 3 000ms
+```
+
+### What they are not
+
+These are not load tests. They do not:
+- send concurrent HTTP traffic or ramp up virtual users
+- measure throughput (requests/second) under sustained pressure
+- produce a latency histogram or p99 under real load
+- simulate multiple clients hitting the server simultaneously
+
+For genuine load testing, start the server (`./gradlew :homework-2:run`) and point a dedicated tool at it:
+
+| Tool | Language | Notes |
+|---|---|---|
+| [Gatling](https://gatling.io) | Kotlin / Scala DSL | Gradle plugin available; integrates naturally with JVM projects |
+| [k6](https://k6.io) | JavaScript | Lightweight CLI; good for quick HTTP load scripts |
+| [wrk](https://github.com/wg/wrk) | CLI | Minimal setup; useful for raw throughput baselines |
+
+A Gatling scenario for this API would start the server as a separate process, ramp to N virtual users over a defined duration, and produce an HTML report with throughput, latency percentiles, and error rates — none of which the current `PerformanceTest.kt` provides.
 
 ---
 

@@ -1,0 +1,578 @@
+[17:51:23] Demo script started
+[17:51:23] Project: /Users/dragsa/IdeaProjects/gnatiuk/gen-ai-software-engineering/homework-2
+
+══════════════════════════════════════════
+[17:51:23] Building project
+══════════════════════════════════════════
+[17:51:24] Build complete
+
+══════════════════════════════════════════
+[17:51:24] Starting server
+══════════════════════════════════════════
+[17:51:24] Server started with PID 64753
+[17:51:24] Waiting for server on http://localhost:8080 ...
+[17:51:25] Server is up (after 1s)
+
+══════════════════════════════════════════
+[17:51:25] POST /tickets — create three tickets
+══════════════════════════════════════════
+[17:51:25] ▶ Create account_access ticket
+{"id":"2f3116c1-e6b5-4696-b714-2faa5160e917","customer_id":"cust-demo-001","customer_email":"alice@example.com","customer_name":"Alice Smith","subject":"Cannot login after password reset","description":"I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but new credentials are rejected.","category":"account_access","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.886619Z","updated_at":"2026-05-07T14:51:25.886619Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"web_form","browser":null,"device_type":null}}
+[17:51:25] Created ticket id=2f3116c1-e6b5-4696-b714-2faa5160e917
+[17:51:25] ▶ Create billing_question ticket
+{"id":"3bfbcb91-fc68-482c-9c5e-a5f5936732e0","customer_id":"cust-demo-002","customer_email":"bob@example.com","customer_name":"Bob Jones","subject":"Invoice shows wrong amount for March","description":"My invoice for March shows a charge of $299 but I am on the $199 plan. Please review and issue a corrected invoice or refund.","category":"billing_question","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.910493Z","updated_at":"2026-05-07T14:51:25.910493Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"email","browser":null,"device_type":null}}
+[17:51:25] Created ticket id=3bfbcb91-fc68-482c-9c5e-a5f5936732e0
+[17:51:25] ▶ Create technical_issue ticket
+{"id":"ee25fc9d-5eba-4927-9bd5-cd906207452d","customer_id":"cust-demo-003","customer_email":"carol@example.com","customer_name":"Carol White","subject":"App crashes on startup after latest update","description":"The mobile app crashes immediately on launch after the latest update. It worked fine on version 3.1.2. Device is iPhone 15 running iOS 17.4.","category":"technical_issue","priority":"urgent","status":"new","created_at":"2026-05-07T14:51:25.928505Z","updated_at":"2026-05-07T14:51:25.928505Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"api","browser":null,"device_type":"mobile"}}
+[17:51:25] Created ticket id=ee25fc9d-5eba-4927-9bd5-cd906207452d
+
+══════════════════════════════════════════
+[17:51:25] POST /tickets — validation failure (invalid email)
+══════════════════════════════════════════
+[17:51:25] ▶ Validation failure — bad email
+{"error":"Validation failed","details":[{"field":"customer_email","message":"customer_email must be a valid email address"}]}
+
+══════════════════════════════════════════
+[17:51:25] GET /tickets — list and filter
+══════════════════════════════════════════
+[17:51:25] ▶ List all tickets
+[{"id":"2f3116c1-e6b5-4696-b714-2faa5160e917","customer_id":"cust-demo-001","customer_email":"alice@example.com","customer_name":"Alice Smith","subject":"Cannot login after password reset","description":"I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but new credentials are rejected.","category":"account_access","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.886619Z","updated_at":"2026-05-07T14:51:25.886619Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"web_form","browser":null,"device_type":null}},{"id":"3bfbcb91-fc68-482c-9c5e-a5f5936732e0","customer_id":"cust-demo-002","customer_email":"bob@example.com","customer_name":"Bob Jones","subject":"Invoice shows wrong amount for March","description":"My invoice for March shows a charge of $299 but I am on the $199 plan. Please review and issue a corrected invoice or refund.","category":"billing_question","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.910493Z","updated_at":"2026-05-07T14:51:25.910493Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"email","browser":null,"device_type":null}},{"id":"ee25fc9d-5eba-4927-9bd5-cd906207452d","customer_id":"cust-demo-003","customer_email":"carol@example.com","customer_name":"Carol White","subject":"App crashes on startup after latest update","description":"The mobile app crashes immediately on launch after the latest update. It worked fine on version 3.1.2. Device is iPhone 15 running iOS 17.4.","category":"technical_issue","priority":"urgent","status":"new","created_at":"2026-05-07T14:51:25.928505Z","updated_at":"2026-05-07T14:51:25.928505Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"api","browser":null,"device_type":"mobile"}}]
+[17:51:25] ▶ Filter by category=account_access
+[{"id":"2f3116c1-e6b5-4696-b714-2faa5160e917","customer_id":"cust-demo-001","customer_email":"alice@example.com","customer_name":"Alice Smith","subject":"Cannot login after password reset","description":"I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but new credentials are rejected.","category":"account_access","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.886619Z","updated_at":"2026-05-07T14:51:25.886619Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"web_form","browser":null,"device_type":null}}]
+[17:51:25] ▶ Filter by priority=high
+[{"id":"2f3116c1-e6b5-4696-b714-2faa5160e917","customer_id":"cust-demo-001","customer_email":"alice@example.com","customer_name":"Alice Smith","subject":"Cannot login after password reset","description":"I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but new credentials are rejected.","category":"account_access","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.886619Z","updated_at":"2026-05-07T14:51:25.886619Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"web_form","browser":null,"device_type":null}},{"id":"3bfbcb91-fc68-482c-9c5e-a5f5936732e0","customer_id":"cust-demo-002","customer_email":"bob@example.com","customer_name":"Bob Jones","subject":"Invoice shows wrong amount for March","description":"My invoice for March shows a charge of $299 but I am on the $199 plan. Please review and issue a corrected invoice or refund.","category":"billing_question","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.910493Z","updated_at":"2026-05-07T14:51:25.910493Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"email","browser":null,"device_type":null}}]
+[17:51:26] ▶ Search for login
+[{"id":"2f3116c1-e6b5-4696-b714-2faa5160e917","customer_id":"cust-demo-001","customer_email":"alice@example.com","customer_name":"Alice Smith","subject":"Cannot login after password reset","description":"I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but new credentials are rejected.","category":"account_access","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.886619Z","updated_at":"2026-05-07T14:51:25.886619Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"web_form","browser":null,"device_type":null}}]
+
+══════════════════════════════════════════
+[17:51:26] GET /tickets/:id
+══════════════════════════════════════════
+[17:51:26] ▶ Get ticket 2f3116c1-e6b5-4696-b714-2faa5160e917
+{"id":"2f3116c1-e6b5-4696-b714-2faa5160e917","customer_id":"cust-demo-001","customer_email":"alice@example.com","customer_name":"Alice Smith","subject":"Cannot login after password reset","description":"I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but new credentials are rejected.","category":"account_access","priority":"high","status":"new","created_at":"2026-05-07T14:51:25.886619Z","updated_at":"2026-05-07T14:51:25.886619Z","resolved_at":null,"assigned_to":null,"tags":[],"metadata":{"source":"web_form","browser":null,"device_type":null}}
+[17:51:26] ▶ Get non-existent ticket (404)
+{"error":"Ticket not found","details":[]}
+
+══════════════════════════════════════════
+[17:51:26] PUT /tickets/:id — update
+══════════════════════════════════════════
+[17:51:26] ▶ Assign ticket 2f3116c1-e6b5-4696-b714-2faa5160e917 to agent and set in_progress
+{"id":"2f3116c1-e6b5-4696-b714-2faa5160e917","customer_id":"cust-demo-001","customer_email":"alice@example.com","customer_name":"Alice Smith","subject":"Cannot login after password reset","description":"I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but new credentials are rejected.","category":"account_access","priority":"high","status":"in_progress","created_at":"2026-05-07T14:51:25.886619Z","updated_at":"2026-05-07T14:51:26.067673Z","resolved_at":null,"assigned_to":"agent-demo-001","tags":[],"metadata":{"source":"web_form","browser":null,"device_type":null}}
+[17:51:26] ▶ Resolve ticket 3bfbcb91-fc68-482c-9c5e-a5f5936732e0
+{"id":"3bfbcb91-fc68-482c-9c5e-a5f5936732e0","customer_id":"cust-demo-002","customer_email":"bob@example.com","customer_name":"Bob Jones","subject":"Invoice shows wrong amount for March","description":"My invoice for March shows a charge of $299 but I am on the $199 plan. Please review and issue a corrected invoice or refund.","category":"billing_question","priority":"high","status":"resolved","created_at":"2026-05-07T14:51:25.910493Z","updated_at":"2026-05-07T14:51:26.080761Z","resolved_at":"2026-05-07T14:51:26.080761Z","assigned_to":null,"tags":[],"metadata":{"source":"email","browser":null,"device_type":null}}
+
+══════════════════════════════════════════
+[17:51:26] POST /tickets/:id/auto-classify
+══════════════════════════════════════════
+[17:51:26] ▶ Auto-classify ticket ee25fc9d-5eba-4927-9bd5-cd906207452d
+{"ticket_id":"ee25fc9d-5eba-4927-9bd5-cd906207452d","category":"technical_issue","priority":"urgent","confidence":0.36,"reasoning":"Matched category 'technical_issue' (1 keyword(s): crash). Priority set to 'urgent' (keyword(s): immediately).","keywords_found":["crash","immediately"]}
+[17:51:26] ▶ Auto-classify non-existent (404)
+{"error":"Ticket not found","details":[]}
+
+══════════════════════════════════════════
+[17:51:26] POST /tickets/import — CSV (50 rows)
+══════════════════════════════════════════
+[17:51:26] ▶ Import sample_tickets.csv
+{"error":"Cannot determine file format. Provide Content-Type or use a .csv/.json/.xml filename","details":[]}
+
+══════════════════════════════════════════
+[17:51:26] POST /tickets/import — JSON (20 objects)
+══════════════════════════════════════════
+[17:51:26] ▶ Import sample_tickets.json
+{"error":"Cannot determine file format. Provide Content-Type or use a .csv/.json/.xml filename","details":[]}
+
+══════════════════════════════════════════
+[17:51:26] POST /tickets/import — XML (30 elements)
+══════════════════════════════════════════
+[17:51:26] ▶ Import sample_tickets.xml
+{"total":30,"successful":30,"failed":0,"failures":[]}
+
+══════════════════════════════════════════
+[17:51:26] POST /tickets/import — invalid CSV (partial failure)
+══════════════════════════════════════════
+[17:51:26] ▶ Import invalid/invalid_email.csv
+{"error":"Cannot determine file format. Provide Content-Type or use a .csv/.json/.xml filename","details":[]}
+
+══════════════════════════════════════════
+[17:51:26] POST /tickets/import — malformed JSON (parse failure)
+══════════════════════════════════════════
+[17:51:26] ▶ Import invalid/malformed.json
+{"error":"Cannot determine file format. Provide Content-Type or use a .csv/.json/.xml filename","details":[]}
+
+══════════════════════════════════════════
+[17:51:26] DELETE /tickets/:id
+══════════════════════════════════════════
+[17:51:26] ▶ Delete ticket 2f3116c1-e6b5-4696-b714-2faa5160e917 (204)
+
+[17:51:26] ▶ Confirm deleted (404)
+{"error":"Ticket not found","details":[]}
+
+══════════════════════════════════════════
+[17:51:26] Documentation endpoints
+══════════════════════════════════════════
+[17:51:26] ▶ GET /openapi.yaml
+openapi: "3.1.0"
+info:
+  title: Customer Support Ticket System
+  description: |
+    REST API for managing customer support tickets with multi-format import,
+    rule-based auto-classification, and full CRUD operations.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+
+  /tickets:
+    post:
+      summary: Create a ticket
+      operationId: createTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicketRequest'
+      parameters:
+        - name: auto_classify
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: When true, auto-classify the ticket immediately after creation.
+      responses:
+        "201":
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+
+    get:
+      summary: List tickets
+      operationId: listTickets
+      parameters:
+        - name: category
+          in: query
+          schema:
+            $ref: '#/components/schemas/Category'
+        - name: priority
+          in: query
+          schema:
+            $ref: '#/components/schemas/Priority'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/Status'
+        - name: assigned_to
+          in: query
+          schema:
+            type: string
+        - name: customer_id
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Case-insensitive substring search across subject and description.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+
+  /tickets/import:
+    post:
+      summary: Bulk import tickets from CSV, JSON, or XML
+      operationId: importTickets
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Import summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportSummaryResponse'
+        "400":
+          $ref: '#/components/responses/Error'
+
+  /tickets/{id}:
+    get:
+      summary: Get a ticket by id
+      operationId: getTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      responses:
+        "200":
+          description: Ticket found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update a ticket (partial update)
+      operationId: updateTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTicketRequest'
+      responses:
+        "200":
+          description: Ticket updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete a ticket
+      operationId: deleteTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      responses:
+        "204":
+          description: Ticket deleted
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+  /tickets/{id}/auto-classify:
+    post:
+      summary: Auto-classify a ticket
+      operationId: autoClassifyTicket
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      responses:
+        "200":
+          description: Classification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassificationResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+components:
+
+  parameters:
+    TicketId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error:
+      description: General error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+
+    Category:
+      type: string
+      enum: [account_access, technical_issue, billing_question, feature_request, bug_report, other]
+
+    Priority:
+      type: string
+      enum: [urgent, high, medium, low]
+
+    Status:
+      type: string
+      enum: [new, in_progress, waiting_customer, resolved, closed]
+
+    Source:
+      type: string
+      enum: [web_form, email, api, chat, phone]
+
+    DeviceType:
+      type: string
+      enum: [desktop, mobile, tablet]
+
+    CreateMetadataRequest:
+      type: object
+      required: [source]
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        browser:
+          type: string
+          nullable: true
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+          nullable: true
+
+    UpdateMetadataRequest:
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+          nullable: true
+        browser:
+          type: string
+          nullable: true
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+          nullable: true
+
+    MetadataResponse:
+      type: object
+      required: [source]
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        browser:
+          type: string
+          nullable: true
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+          nullable: true
+
+    CreateTicketRequest:
+      type: object
+      required: [customer_id, customer_email, customer_name, subject, description]
+      properties:
+        customer_id:
+          type: string
+        customer_email:
+          type: string
+          format: email
+        customer_name:
+          type: string
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        category:
+          $ref: '#/components/schemas/Category'
+          nullable: true
+          description: Defaults to "other" when omitted.
+        priority:
+          $ref: '#/components/schemas/Priority'
+          nullable: true
+          description: Defaults to "medium" when omitted.
+        status:
+          $ref: '#/components/schemas/Status'
+          nullable: true
+          description: Defaults to "new" when omitted.
+        assigned_to:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          default: []
+        metadata:
+          $ref: '#/components/schemas/CreateMetadataRequest'
+          nullable: true
+          description: Defaults to source=api when omitted.
+
+    UpdateTicketRequest:
+      type: object
+      description: All fields optional. Only provided fields are applied (partial update).
+      properties:
+        customer_id:
+          type: string
+          nullable: true
+        customer_email:
+          type: string
+          format: email
+          nullable: true
+        customer_name:
+          type: string
+          nullable: true
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+          nullable: true
+        description:
+          type: string
+          minLength: 10
+          maxLength: 2000
+          nullable: true
+        category:
+          $ref: '#/components/schemas/Category'
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/Priority'
+          nullable: true
+        status:
+          $ref: '#/components/schemas/Status'
+          nullable: true
+        assigned_to:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        metadata:
+          $ref: '#/components/schemas/UpdateMetadataRequest'
+          nullable: true
+
+    TicketResponse:
+      type: object
+      required: [id, customer_id, customer_email, customer_name, subject, description,
+                 category, priority, status, created_at, updated_at, tags, metadata]
+      properties:
+        id:
+          type: string
+          format: uuid
+        customer_id:
+          type: string
+        customer_email:
+          type: string
+        customer_name:
+          type: string
+        subject:
+          type: string
+        description:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+        priority:
+          $ref: '#/components/schemas/Priority'
+        status:
+          $ref: '#/components/schemas/Status'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        assigned_to:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        metadata:
+          $ref: '#/components/schemas/MetadataResponse'
+
+    ImportSummaryResponse:
+      type: object
+      required: [total, successful, failed, failures]
+      properties:
+        total:
+          type: integer
+        successful:
+          type: integer
+        failed:
+          type: integer
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportFailure'
+
+    ImportFailure:
+      type: object
+      required: [row, reason]
+      properties:
+        row:
+          type: integer
+        reason:
+          type: string
+        raw_data:
+          type: string
+          nullable: true
+
+    ClassificationResponse:
+      type: object
+      required: [ticket_id, category, priority, confidence, reasoning, keywords_found]
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+        category:
+          $ref: '#/components/schemas/Category'
+        priority:
+          $ref: '#/components/schemas/Priority'
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        reasoning:
+          type: string
+        keywords_found:
+          type: array
+          items:
+            type: string
+
+    ValidationError:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+[17:51:26] Stopping server (PID 64753)
