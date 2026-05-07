@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ticket>
+  <customer_id>cust-001</customer_id>
+  <customer_email>alice@example.com</customer_email>
+  <customer_name>Alice Smith</customer_name>
+  <subject>Feature request for dark mode</subject>
+  <description>I would like to request a dark mode feature for the application to reduce eye strain</description>
+  <category>feature_request</category>
+  <metadata>
+    <source>web_form</source>
+  </metadata>
+</ticket>

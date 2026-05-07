@@ -51,3 +51,16 @@ If a task conflicts with these rules:
 - The rules in this document take precedence
 - The task must be adjusted or rejected accordingly
 ---
+## Build Verification
+After every implementation task, the agent **must** run the build for the affected subproject:
+```
+./gradlew :homework-X:build
+```
+where `X` is the subproject number being worked on (e.g. `:homework-2:build` for homework-2).
+The result must be reported before marking the task complete.
+The build must pass with zero errors. Warnings must be investigated and resolved if possible.
+---
+## Sub-files
+- `.agents/docs/STACK.MD` — defines the mandatory technology stack and conventions for new subprojects. New subprojects MUST follow that stack unless their `TASKS.md` explicitly mandates a different language or runtime.
+- `.agents/docs/CODESTYLE.MD` — defines code style rules (import conventions, formatting) that apply to all subprojects without exception.
+---

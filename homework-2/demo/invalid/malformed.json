@@ -1,0 +1,11 @@
+[
+  {
+    "customer_id": "cust-001",
+    "customer_email": "alice@example.com",
+    "customer_name": "Alice Smith",
+    "subject": "Valid ticket",
+    "description": "This first element is fine but the file is truncated before the array closes"
+  },
+  {
+    "customer_id": "cust-002",
+    "customer_email": "bob@example.com"
