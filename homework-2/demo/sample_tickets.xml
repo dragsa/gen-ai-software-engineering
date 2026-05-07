@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>cust-001</customer_id>
+    <customer_email>alice@example.com</customer_email>
+    <customer_name>Alice Smith</customer_name>
+    <subject>Cannot login after password reset</subject>
+    <description>I have been unable to login since yesterday morning after being forced to reset my password. The reset email arrived but entering the new password gives an invalid credentials error.</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <tags><tag>auth</tag><tag>login</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-002</customer_id>
+    <customer_email>bob@example.com</customer_email>
+    <customer_name>Bob Jones</customer_name>
+    <subject>Invoice shows wrong amount for March</subject>
+    <description>My invoice for March shows a charge of $299 but I am on the $199 plan. Please review and issue a corrected invoice or refund the difference to my payment method.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <tags><tag>billing</tag><tag>invoice</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-003</customer_id>
+    <customer_email>carol@example.com</customer_email>
+    <customer_name>Carol White</customer_name>
+    <subject>App crashes on startup after latest update</subject>
+    <description>The mobile app crashes immediately on launch after the latest update. It worked fine on version 3.1.2. Device is iPhone 15 running iOS 17.4. No crash log is generated.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>crash</tag><tag>mobile</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-004</customer_id>
+    <customer_email>dave@example.com</customer_email>
+    <customer_name>Dave Brown</customer_name>
+    <subject>Two-factor authentication codes rejected</subject>
+    <description>My 2FA codes from the authenticator app are always rejected. I have tried regenerating the secret three times and syncing my phone clock but the issue persists on every device.</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <tags><tag>2fa</tag><tag>auth</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-005</customer_id>
+    <customer_email>eve@example.com</customer_email>
+    <customer_name>Eve Davis</customer_name>
+    <subject>Feature request: dark mode support</subject>
+    <description>It would be great to have a dark mode option in the settings. Many users in our organisation work in low-light environments and would benefit from reduced screen brightness.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+    <tags><tag>ui</tag><tag>feature</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-006</customer_id>
+    <customer_email>frank@example.com</customer_email>
+    <customer_name>Frank Miller</customer_name>
+    <subject>Payment declined despite valid card</subject>
+    <description>My credit card payment keeps failing with error code CARD_DECLINED even though my bank confirms there are no blocks on the card and sufficient funds are available.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <tags><tag>payment</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-007</customer_id>
+    <customer_email>grace@example.com</customer_email>
+    <customer_name>Grace Wilson</customer_name>
+    <subject>Production outage: all API calls returning 503</subject>
+    <description>Our entire production environment is down. All API calls return 503 Service Unavailable. This is causing significant revenue loss and needs immediate escalation and remediation.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>outage</tag><tag>production</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-008</customer_id>
+    <customer_email>henry@example.com</customer_email>
+    <customer_name>Henry Moore</customer_name>
+    <subject>Refund not processed after 15 days</subject>
+    <description>I was promised a refund on 15 April and it has now been 15 days with no credit to my account. Order reference RF-2026-0415. Please expedite this.</description>
+    <category>billing_question</category>
+    <priority>urgent</priority>
+    <tags><tag>refund</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-009</customer_id>
+    <customer_email>iris@example.com</customer_email>
+    <customer_name>Iris Taylor</customer_name>
+    <subject>Bug: notifications sent to wrong user</subject>
+    <description>My colleague received email notifications for tickets assigned to me. Steps to reproduce: assign any ticket to user A and observe notification arrives to user B. This is a privacy issue.</description>
+    <category>bug_report</category>
+    <priority>high</priority>
+    <tags><tag>notifications</tag><tag>privacy</tag><tag>bug</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-010</customer_id>
+    <customer_email>jack@example.com</customer_email>
+    <customer_name>Jack Anderson</customer_name>
+    <subject>Critical security vulnerability: ticket ID enumeration</subject>
+    <description>I discovered that it is possible to view other users tickets by incrementing the ticket ID in the URL. This is a critical security vulnerability that exposes customer data.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>security</tag><tag>vulnerability</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-011</customer_id>
+    <customer_email>karen@example.com</customer_email>
+    <customer_name>Karen Thomas</customer_name>
+    <subject>Account locked after failed login attempts</subject>
+    <description>My account got locked after several failed login attempts. I know my password is correct. Please unlock the account and explain the lockout policy including threshold and duration.</description>
+    <category>account_access</category>
+    <priority>medium</priority>
+    <tags><tag>locked</tag><tag>login</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-012</customer_id>
+    <customer_email>leo@example.com</customer_email>
+    <customer_name>Leo Jackson</customer_name>
+    <subject>Dashboard takes 30 seconds to load since Tuesday</subject>
+    <description>The main dashboard takes over 30 seconds to load since the Tuesday deployment. All other pages load normally. This is blocking our entire team from their daily work.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>performance</tag><tag>dashboard</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-013</customer_id>
+    <customer_email>mia@example.com</customer_email>
+    <customer_name>Mia Harris</customer_name>
+    <subject>Feature request: webhook support</subject>
+    <description>Please add webhook support so we can receive real-time events when tickets are created updated or resolved. This is essential for our workflow automation pipeline.</description>
+    <category>feature_request</category>
+    <priority>medium</priority>
+    <tags><tag>webhook</tag><tag>api</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-014</customer_id>
+    <customer_email>noah@example.com</customer_email>
+    <customer_name>Noah Martin</customer_name>
+    <subject>Subscription auto-renewed without notice</subject>
+    <description>My annual subscription was auto-renewed and I was charged $1200 without any renewal reminder email. I would like to cancel and request a full refund under your 30-day money-back guarantee.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <tags><tag>subscription</tag><tag>renewal</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-015</customer_id>
+    <customer_email>olivia@example.com</customer_email>
+    <customer_name>Olivia Garcia</customer_name>
+    <subject>API key stopped working — production integrations broken</subject>
+    <description>My API key stopped working two days ago. I have regenerated it three times but every call returns 401 Unauthorized. Our production integrations are completely broken.</description>
+    <category>technical_issue</category>
+    <priority>urgent</priority>
+    <tags><tag>api</tag><tag>auth</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-016</customer_id>
+    <customer_email>peter@example.com</customer_email>
+    <customer_name>Peter Martinez</customer_name>
+    <subject>Feature request: audit log for ISO 27001 compliance</subject>
+    <description>We need a detailed audit log showing who changed what and when. This is a hard requirement for our ISO 27001 certification renewal in Q3. The log must be exportable as CSV.</description>
+    <category>feature_request</category>
+    <priority>high</priority>
+    <tags><tag>audit</tag><tag>compliance</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-017</customer_id>
+    <customer_email>quinn@example.com</customer_email>
+    <customer_name>Quinn Robinson</customer_name>
+    <subject>GDPR Article 17 data deletion request</subject>
+    <description>Under GDPR Article 17 I am formally requesting the deletion of all personal data associated with my account within 30 days. Please confirm receipt and provide a written timeline.</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <tags><tag>gdpr</tag><tag>privacy</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-018</customer_id>
+    <customer_email>rosa@example.com</customer_email>
+    <customer_name>Rosa Clark</customer_name>
+    <subject>Bug: date filter returns results outside selected range</subject>
+    <description>When I set a custom date range the results include tickets outside that range. Reproduction: go to tickets list, set date from 2026-01-01 to 2026-01-31, observe February tickets appear.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <tags><tag>bug</tag><tag>filter</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-019</customer_id>
+    <customer_email>sam@example.com</customer_email>
+    <customer_name>Sam Rodriguez</customer_name>
+    <subject>Duplicate charge of $149 on my account</subject>
+    <description>I see two identical charges of $149 on my account statement dated 2026-04-01. I only have one active subscription. Please investigate and refund the duplicate charge immediately.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <tags><tag>duplicate</tag><tag>charge</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-020</customer_id>
+    <customer_email>tina@example.com</customer_email>
+    <customer_name>Tina Lewis</customer_name>
+    <subject>Request: SLA tracking and breach alerts</subject>
+    <description>We need SLA tracking so we can see which tickets have breached their response time targets and receive proactive alerts before a breach occurs. Essential for our support team KPIs.</description>
+    <category>feature_request</category>
+    <priority>high</priority>
+    <tags><tag>sla</tag><tag>feature</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-021</customer_id>
+    <customer_email>uma@example.com</customer_email>
+    <customer_name>Uma Lee</customer_name>
+    <subject>SSO configuration failing with signature error</subject>
+    <description>We are trying to set up SAML SSO with our identity provider but keep getting a signature verification error. Our IdP metadata is correctly uploaded and the certificates match.</description>
+    <category>account_access</category>
+    <priority>high</priority>
+    <tags><tag>sso</tag><tag>saml</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-022</customer_id>
+    <customer_email>victor@example.com</customer_email>
+    <customer_name>Victor Walker</customer_name>
+    <subject>Incorrect VAT rate on invoices</subject>
+    <description>The system is calculating 20% VAT on my invoices but I am in a region where the correct rate is 5%. My account country is set correctly to the right jurisdiction.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <tags><tag>tax</tag><tag>billing</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-023</customer_id>
+    <customer_email>wendy@example.com</customer_email>
+    <customer_name>Wendy Hall</customer_name>
+    <subject>Data export only returns partial results</subject>
+    <description>The data export I ran yesterday contains only 1200 records but our account has over 5000 tickets. The export finished without any error message. Expected behaviour: full export.</description>
+    <category>bug_report</category>
+    <priority>high</priority>
+    <tags><tag>export</tag><tag>data</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-024</customer_id>
+    <customer_email>xena@example.com</customer_email>
+    <customer_name>Xena Allen</customer_name>
+    <subject>Session expires after 5 minutes of inactivity</subject>
+    <description>My session expires after about 5 minutes of inactivity even though I have not changed any timeout settings. This is very disruptive during long form fills and report generation.</description>
+    <category>technical_issue</category>
+    <priority>medium</priority>
+    <tags><tag>session</tag><tag>timeout</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-025</customer_id>
+    <customer_email>yuri@example.com</customer_email>
+    <customer_name>Yuri Young</customer_name>
+    <subject>Payment gateway timeout at checkout</subject>
+    <description>Every attempt to pay shows the error Gateway timeout GW-504 at the final checkout step. I have tried three different cards from two different banks. The issue is consistent.</description>
+    <category>billing_question</category>
+    <priority>urgent</priority>
+    <tags><tag>payment</tag><tag>gateway</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-026</customer_id>
+    <customer_email>zara@example.com</customer_email>
+    <customer_name>Zara Hernandez</customer_name>
+    <subject>Email notifications stopped arriving</subject>
+    <description>I stopped receiving email notifications for ticket updates about a week ago. My email address is correct in settings, I have checked spam folders, and all my other email is working fine.</description>
+    <category>technical_issue</category>
+    <priority>medium</priority>
+    <tags><tag>email</tag><tag>notifications</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-027</customer_id>
+    <customer_email>adam@example.com</customer_email>
+    <customer_name>Adam King</customer_name>
+    <subject>Cannot change account email address</subject>
+    <description>The change email form accepts my new address and shows a success message but my account still shows the old email address after refreshing. The change is not being persisted.</description>
+    <category>account_access</category>
+    <priority>medium</priority>
+    <tags><tag>email</tag><tag>account</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-028</customer_id>
+    <customer_email>bella@example.com</customer_email>
+    <customer_name>Bella Wright</customer_name>
+    <subject>Feature request: multi-language support</subject>
+    <description>Our customers are based in Spain and France. We would love the interface to support Spanish and French in addition to English. This would significantly reduce our support volume.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+    <tags><tag>i18n</tag><tag>feature</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-029</customer_id>
+    <customer_email>carlos@example.com</customer_email>
+    <customer_name>Carlos Scott</customer_name>
+    <subject>Discount code not applied at checkout</subject>
+    <description>I entered promo code SAVE20 at checkout but the 20% discount was not applied and I was charged the full amount. The code was shown as valid before I completed the order.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <tags><tag>discount</tag><tag>promo</tag></tags>
+  </ticket>
+  <ticket>
+    <customer_id>cust-030</customer_id>
+    <customer_email>diana@example.com</customer_email>
+    <customer_name>Diana Green</customer_name>
+    <subject>Renewal price higher than quoted price</subject>
+    <description>When I renewed my subscription I was charged $299/month but the price shown during the renewal flow was $249/month. I have a screenshot of the quoted price. Please honour it.</description>
+    <category>billing_question</category>
+    <priority>high</priority>
+    <tags><tag>pricing</tag><tag>renewal</tag></tags>
+  </ticket>
+</tickets>

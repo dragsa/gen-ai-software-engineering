@@ -1,0 +1,244 @@
+### Customer Support Ticket System — sample HTTP requests
+### Run with: IntelliJ IDEA HTTP client or VS Code REST Client
+### Server must be running at http://localhost:8080
+
+@baseUrl = http://localhost:8080
+
+# ============================================================
+# CREATE TICKET
+# ============================================================
+
+### Create a valid ticket (returns 201 with id)
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "customer_id": "cust-001",
+  "customer_email": "alice@example.com",
+  "customer_name": "Alice Smith",
+  "subject": "Cannot login after password reset",
+  "description": "I have been unable to login since yesterday morning after being forced to reset my password. The reset link worked but the new credentials are rejected.",
+  "category": "account_access",
+  "priority": "high",
+  "tags": ["auth", "login"],
+  "metadata": { "source": "web_form", "browser": "Chrome 124", "device_type": "desktop" }
+}
+
+### Create ticket with minimal required fields (returns 201)
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "customer_id": "cust-002",
+  "customer_email": "bob@example.com",
+  "customer_name": "Bob Jones",
+  "subject": "General enquiry",
+  "description": "I have a general enquiry about your service pricing and enterprise plans."
+}
+
+### Create ticket — validation failure: invalid email (returns 400)
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "customer_id": "cust-bad",
+  "customer_email": "not-an-email",
+  "customer_name": "Bad User",
+  "subject": "Subject is fine",
+  "description": "Description is long enough to pass but the email is invalid."
+}
+
+### Create ticket — validation failure: description too short (returns 400)
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "customer_id": "cust-003",
+  "customer_email": "carol@example.com",
+  "customer_name": "Carol White",
+  "subject": "Short description test",
+  "description": "Too short"
+}
+
+# ============================================================
+# LIST TICKETS
+# ============================================================
+
+### List all tickets
+GET {{baseUrl}}/tickets
+
+### Filter by status
+GET {{baseUrl}}/tickets?status=new
+
+### Filter by category
+GET {{baseUrl}}/tickets?category=account_access
+
+### Filter by priority
+GET {{baseUrl}}/tickets?priority=high
+
+### Combined filter: category + priority
+GET {{baseUrl}}/tickets?category=billing_question&priority=urgent
+
+### Full-text search across subject and description
+GET {{baseUrl}}/tickets?search=login
+
+### Filter by assigned agent
+GET {{baseUrl}}/tickets?assigned_to=agent-001
+
+### Invalid enum — returns 400
+GET {{baseUrl}}/tickets?category=not_a_real_category
+
+# ============================================================
+# GET TICKET BY ID
+# ============================================================
+
+### Get ticket by id — replace TICKET_ID with a real id from a create response
+GET {{baseUrl}}/tickets/TICKET_ID
+
+### Get non-existent ticket — returns 404
+GET {{baseUrl}}/tickets/does-not-exist
+
+# ============================================================
+# UPDATE TICKET
+# ============================================================
+
+### Update status and assign agent — replace TICKET_ID
+PUT {{baseUrl}}/tickets/TICKET_ID
+Content-Type: application/json
+
+{
+  "status": "in_progress",
+  "assigned_to": "agent-001"
+}
+
+### Resolve ticket — resolvedAt is set automatically
+PUT {{baseUrl}}/tickets/TICKET_ID
+Content-Type: application/json
+
+{
+  "status": "resolved"
+}
+
+### Update subject only (partial update)
+PUT {{baseUrl}}/tickets/TICKET_ID
+Content-Type: application/json
+
+{
+  "subject": "Updated subject after further investigation"
+}
+
+### Update — invalid email triggers 400
+PUT {{baseUrl}}/tickets/TICKET_ID
+Content-Type: application/json
+
+{
+  "customer_email": "not-valid"
+}
+
+### Update non-existent ticket — returns 404
+PUT {{baseUrl}}/tickets/does-not-exist
+Content-Type: application/json
+
+{
+  "status": "closed"
+}
+
+# ============================================================
+# AUTO-CLASSIFY
+# ============================================================
+
+### Auto-classify ticket — replace TICKET_ID
+POST {{baseUrl}}/tickets/TICKET_ID/auto-classify
+
+### Auto-classify non-existent ticket — returns 404
+POST {{baseUrl}}/tickets/does-not-exist/auto-classify
+
+# ============================================================
+# DELETE TICKET
+# ============================================================
+
+### Delete ticket — returns 204 No Content
+DELETE {{baseUrl}}/tickets/TICKET_ID
+
+### Delete non-existent ticket — returns 404
+DELETE {{baseUrl}}/tickets/does-not-exist
+
+# ============================================================
+# BULK IMPORT
+# ============================================================
+
+### Import CSV file (50 tickets)
+POST {{baseUrl}}/tickets/import
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="sample_tickets.csv"
+Content-Type: text/csv
+
+< ./sample_tickets.csv
+--Boundary--
+
+### Import JSON file (20 tickets)
+POST {{baseUrl}}/tickets/import
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="sample_tickets.json"
+Content-Type: application/json
+
+< ./sample_tickets.json
+--Boundary--
+
+### Import XML file (30 tickets)
+POST {{baseUrl}}/tickets/import
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="sample_tickets.xml"
+Content-Type: application/xml
+
+< ./sample_tickets.xml
+--Boundary--
+
+### Import invalid CSV — 2 rows fail validation, 1 succeeds
+POST {{baseUrl}}/tickets/import
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="invalid_email.csv"
+Content-Type: text/csv
+
+< ./invalid/invalid_email.csv
+--Boundary--
+
+### Import malformed JSON — returns 400
+POST {{baseUrl}}/tickets/import
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="malformed.json"
+Content-Type: application/json
+
+< ./invalid/malformed.json
+--Boundary--
+
+### Import XML with wrong root element — returns 400
+POST {{baseUrl}}/tickets/import
+Content-Type: multipart/form-data; boundary=Boundary
+
+--Boundary
+Content-Disposition: form-data; name="file"; filename="wrong_root.xml"
+Content-Type: application/xml
+
+< ./invalid/wrong_root.xml
+--Boundary--
+
+# ============================================================
+# DOCUMENTATION
+# ============================================================
+
+### OpenAPI specification (YAML)
+GET {{baseUrl}}/openapi.yaml
+
+### Swagger UI
+GET {{baseUrl}}/swagger

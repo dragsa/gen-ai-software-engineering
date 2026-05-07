@@ -28,6 +28,8 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import io.ktor.server.routing.route
 
 fun Route.registerTicketRoutes(
@@ -116,8 +118,12 @@ fun Route.registerTicketRoutes(
                 if (part is PartData.FileItem && fileBytes == null) {
                     fileName = part.originalFileName
                     partContentType = part.contentType?.toString()
+                    // streamProvider() returns a blocking InputStream; run it on the IO
+                    // dispatcher so the Netty event loop can continue delivering bytes.
                     @Suppress("DEPRECATION")
-                    fileBytes = part.streamProvider().use { it.readBytes() }
+                    fileBytes = withContext(Dispatchers.IO) {
+                        part.streamProvider().use { it.readBytes() }
+                    }
                 }
                 part.dispose()
             }
