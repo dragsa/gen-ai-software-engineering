@@ -16,6 +16,25 @@ Supports:
 
 Test coverage is enforced at ≥ 85% instruction coverage via JaCoCo.
 
+---
+
+## How AI was used
+
+Work followed a strict **Plan → Approve → Execute** workflow enforced by `CLAUDE.md`. Each step was planned in writing, presented to the user, and only executed after explicit approval.
+
+0. **Context preparation** Use ChatGPT to create drop-in CLAUDE.MD
+1. **Context preparation** Use Claude Opus to validate CLAUDE.MD and build a plan
+2. **Context preparation** Switch to Claude Sonet for implementation
+3. **Bootstrap** — Gradle module, directory structure, `Main.kt`, `ApplicationModule.kt`, stub `openapi.yaml`.
+4. **Models & validation** — all enums, domain models, `InMemoryTicketRepository` (`ConcurrentHashMap`), `TicketValidator`.
+5. **Parsers, service & routes** — CSV/JSON/XML parsers using `ParsedRow` sealed class, `TicketServiceImpl`, all HTTP routes including bulk import with format detection.
+6. **Auto-classification** — `TicketClassifier` with keyword maps, confidence scoring, decision log, route wiring.
+7. **Test suite** — full pyramid; JaCoCo gate at 85% required multiple diagnosis iterations (see Challenges). User approved each sub-step.
+8. **Documentation** — four docs, Mermaid diagrams, README updated. User directed scope adjustments: fixture files grouped into `csv/`/`json/`/`xml/` subdirectories, cross-references added to README, `TESTING_GUIDE.md` extended with run-by-layer commands and load-testing context.
+9. **Demo & end-to-end tests** — `IntegrationTest.kt`, `PerformanceTest.kt`, demo data files, `demo.sh`. User ran the demo, discovered import hanging; AI diagnosed root cause and applied fix (see Challenges).
+
+Throughout, the user directed scope and priorities; AI proposed concrete plans before touching any file.
+
 
 ---
 
