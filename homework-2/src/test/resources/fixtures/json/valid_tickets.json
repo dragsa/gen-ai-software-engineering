@@ -1,0 +1,34 @@
+[
+  {
+    "customer_id": "cust-001",
+    "customer_email": "alice@example.com",
+    "customer_name": "Alice Smith",
+    "subject": "Cannot login to account",
+    "description": "I have been unable to login since yesterday morning after a password reset",
+    "category": "account_access",
+    "priority": "high",
+    "tags": ["auth", "login"],
+    "metadata": { "source": "web_form", "browser": "Chrome", "device_type": "desktop" }
+  },
+  {
+    "customer_id": "cust-002",
+    "customer_email": "bob@example.com",
+    "customer_name": "Bob Jones",
+    "subject": "Payment not processed",
+    "description": "My payment of $50 was charged but the invoice shows unpaid status",
+    "category": "billing_question",
+    "priority": "medium",
+    "tags": [],
+    "metadata": { "source": "email" }
+  },
+  {
+    "customer_id": "cust-003",
+    "customer_email": "carol@example.com",
+    "customer_name": "Carol White",
+    "subject": "App crashes on startup",
+    "description": "The application crashes immediately on startup with a null pointer exception error",
+    "category": "technical_issue",
+    "priority": "urgent",
+    "metadata": { "source": "api", "device_type": "mobile" }
+  }
+]

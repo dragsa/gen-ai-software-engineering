@@ -1,0 +1,4 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,status,assigned_to,tags,metadata_source,metadata_browser,metadata_device_type
+cust-001,alice@example.com,Alice Smith,Cannot login to account,I have been unable to login since yesterday morning after a password reset,account_access,high,new,agent-1,auth;login,web_form,Chrome,desktop
+cust-002,bob@example.com,Bob Jones,Payment not processed,My payment of $50 was charged but the invoice shows unpaid status,billing_question,medium,in_progress,,billing;payment,email,,
+cust-003,carol@example.com,Carol White,App crashes on startup,The application crashes immediately on startup with a null pointer exception error,technical_issue,urgent,new,agent-2,crash;bug,api,,mobile

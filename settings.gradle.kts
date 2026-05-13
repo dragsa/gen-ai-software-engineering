@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "gen-ai-software-engineering"
 
 include("homework-1")
+include("homework-2")

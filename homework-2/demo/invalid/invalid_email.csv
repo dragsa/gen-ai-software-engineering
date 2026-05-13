@@ -1,0 +1,4 @@
+customer_id,customer_email,customer_name,subject,description
+cust-bad-01,not-an-email,Bad User,Subject is fine,Description is long enough to pass validation but the email above is not valid
+cust-bad-02,also-not-valid@,Another Bad,Another fine subject,Another description that is long enough but the email domain is missing entirely
+cust-ok-01,valid@example.com,Good User,This row is valid,This description is long enough to pass and the email address is correctly formed
