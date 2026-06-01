@@ -22,10 +22,10 @@ for build/run commands.
 
 | Agent | Model | Justification |
 |-------|-------|---------------|
-| Research Verifier | _TBD (Phase 3)_ | Strong reasoning for fact-checking references |
-| Bug Fixer | _TBD (Phase 3)_ | Faster/cheaper for routine edits |
-| Security Verifier | _TBD (Phase 3)_ | Strong reasoning for vulnerability review |
-| Unit Test Generator | _TBD (Phase 3)_ | Mid-tier for test scaffolding |
+| Research Verifier | `claude-opus-4-6` | Accuracy-critical gate: catching a fabricated reference or mismatched snippet here prevents a wrong fix downstream, so it uses the strongest reasoning model. |
+| Bug Fixer | `claude-sonnet-4-6` | Analysis is already done; the work is mechanical (apply pre-specified edits, run tests). A balanced model gives reliable edits at lower cost — the task's "faster/cheaper for routine fixes." |
+| Security Verifier | `claude-opus-4-6` | Security review rewards deep, adversarial reasoning (timing side-channels, secret handling, missing-validation paths). A missed CRITICAL is the worst failure mode, so it uses the strongest model. |
+| Unit Test Generator | `claude-haiku-4-5` | Test scaffolding against an explicit target plus the FIRST checklist is the most routine, high-throughput step; a fast/cheap model fits, with the FIRST skill enforcing quality. |
 
 ## 🛠️ Stack
 
