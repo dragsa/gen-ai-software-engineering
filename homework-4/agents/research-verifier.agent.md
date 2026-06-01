@@ -9,6 +9,7 @@ skills:
   - research-quality-measurement
 inputs:
   - context/bugs/<id>/research/codebase-research.md
+  - context/bugs/<id>/bug-context.md
   - the application source tree
 outputs:
   - context/bugs/<id>/research/verified-research.md
@@ -35,7 +36,8 @@ section layout exactly.
 
 ## Process
 
-1. Read `research/codebase-research.md` for the bug under review.
+1. Read `bug-context.md` (the reported symptom) and `research/codebase-research.md` for the
+   bug under review; use the symptom to judge the **completeness** dimension.
 2. For every cited `file:line`, open the source and confirm it supports the claim.
 3. Diff every quoted snippet against the source (whitespace and identifiers must match).
 4. Record each mismatch as a discrepancy.

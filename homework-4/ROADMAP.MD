@@ -48,16 +48,31 @@ Stack per `.agents/docs/STACK.MD`: Kotlin 2.3.20 / JVM 21, Gradle Kotlin DSL, Kt
 
 ## Phase 3 — Agent Definitions (Tasks 1–4)
 
-**Goal:** Author the four `*.agent.md` files with explicit, justified model selection.
+**Goal:** Author the `*.agent.md` files with explicit, justified model selection.
+
+The four graded Tasks 1–4 cover the verifier, fixer, security verifier, and test generator.
+However, the TASKS run order (Bug Researcher → Research Verifier → Bug Planner → Bug Fixer →
+Security Verifier → Unit Test Generator) requires two **feeder** agents to supply otherwise
+sourceless inputs (`codebase-research.md`, `implementation-plan.md`). The pipeline cannot run
+end-to-end without them, so Phase 3 delivers **six** agents.
+
+Required (Tasks 1–4):
 
 - `research-verifier.agent.md` — strong reasoning model; verifies refs, emits `verified-research.md` using the quality skill.
 - `bug-fixer.agent.md` — faster/cheaper model; applies `implementation-plan.md`, runs tests, emits `fix-summary.md`.
 - `security-verifier.agent.md` — strong reasoning model; reviews changed code, emits `security-report.md` (no edits).
-- `unit-test-generator.agent.md` — mid model; generates FIRST tests for changed code, emits `test-report.md`.
-- Record model + justification in each frontmatter and in README.
+- `unit-test-generator.agent.md` — fast model; generates FIRST tests for changed code, emits `test-report.md`.
 
-**Files:** four `agents/*.agent.md`.
-**Risks:** Each agent must read/write the correct artifacts and load the right skill automatically.
+Custom feeder agents (introduced to complete the pipeline):
+
+- `bug-researcher.agent.md` — sonnet; reads `bug-context.md` + source, emits `research/codebase-research.md`.
+- `bug-planner.agent.md` — sonnet; reads `verified-research.md`, emits `implementation-plan.md`; **gated on the verifier verdict = PASS**.
+
+- Record model + justification in each frontmatter and in README (with a `Custom` column).
+
+**Files:** six `agents/*.agent.md`.
+**Risks:** Each agent must read/write the correct artifacts and load the right skill
+automatically; the Planner must halt on a FAIL verdict so a bad fix is never planned.
 
 ---
 
@@ -70,8 +85,30 @@ Stack per `.agents/docs/STACK.MD`: Kotlin 2.3.20 / JVM 21, Gradle Kotlin DSL, Kt
 - No manual per-agent invocation between steps.
 - Update `HOWTORUN.md` with the command.
 
-**Files:** `run-pipeline.sh`, `HOWTORUN.md`.
-**Risks:** Ordering and artifact hand-off between stages; idempotent reruns.
+### Execution modes
+
+- **All-at-once (default):** resolve every bug under `context/bugs/` in one run, each bug
+  flowing through the full agent chain.
+- **One-by-one:** target a single bug by id/folder, e.g.
+  `./run-pipeline.sh --bug 002-functional-search-misses-matches` (and/or an interactive mode
+  that pauses for confirmation between bugs).
+- Shared driver logic between both modes so the per-bug chain is defined once; mode only
+  controls which bugs are selected and whether it pauses between them.
+
+### Rich logging
+
+- Every stage logs **agent identity** (name + selected model) and the **operation** it is
+  performing (which bug id, which input/output artifact, start/end + status).
+- Consistent, greppable log format (e.g. `[<timestamp>] [<bug-id>] [<agent>:<model>] <phase> — <message>`).
+- Clear per-bug section banners and an end-of-run summary (per bug: verdict, fix status,
+  security findings count, tests pass/fail).
+- Logs written to stdout and persisted (e.g. `docs/logs/pipeline-<timestamp>.log`) for the
+  screenshots/evidence in Phase 6.
+
+**Files:** `run-pipeline.sh` (arg parsing for mode/bug selection + logging helpers),
+`HOWTORUN.md`.
+**Risks:** Ordering and artifact hand-off between stages; idempotent reruns; consistent log
+format across modes; correct bug selection/filtering in one-by-one mode.
 
 ---
 
