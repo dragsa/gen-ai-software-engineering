@@ -5,6 +5,7 @@ description: >
   command after each change, and documents the result in fix-summary.md. Follows the plan
   exactly; stops and reports if tests fail or the plan is ambiguous.
 model: claude-sonnet-4-6
+tools: [Read, Grep, Glob, Edit, Write, Bash]   # only agent that mutates source and runs tests
 inputs:
   - context/bugs/<id>/implementation-plan.md
   - the application source tree

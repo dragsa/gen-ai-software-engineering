@@ -5,6 +5,7 @@ description: >
   against the source, grades research quality using the research-quality-measurement skill,
   and writes verified-research.md. Read-only — never edits source code.
 model: claude-opus-4-6
+tools: [Read, Grep, Glob, Write]   # read-only on source; Write only for its report
 skills:
   - research-quality-measurement
 inputs:

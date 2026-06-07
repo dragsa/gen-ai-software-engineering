@@ -32,6 +32,10 @@ Agents run in this order. `Custom` marks feeder agents introduced to complete th
 | `security-verifier` | `claude-opus-4-6` | No | Security review rewards deep, adversarial reasoning (timing side-channels, secret handling, missing-validation paths). A missed CRITICAL is the worst failure mode, so it uses the strongest model. |
 | `unit-test-generator` | `claude-haiku-4-5` | No | Test scaffolding against an explicit target plus the FIRST checklist is the most routine, high-throughput step; a fast/cheap model fits, with the FIRST skill enforcing quality. |
 
+Each agent also runs under a **least-privilege tool set** declared in its frontmatter — only
+`bug-fixer` may edit source, only `bug-fixer`/`unit-test-generator` get shell access, and the
+reviewers are otherwise read-only. See the tool-policy table in [HOWTORUN.md](HOWTORUN.md).
+
 ## 🛠️ Stack
 
 Kotlin 2.3.20 / JVM 21, Gradle (Kotlin DSL), Ktor 3.4.3 (Netty), kotlinx.serialization,

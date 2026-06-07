@@ -6,6 +6,7 @@ description: >
   exact file:line references and verified snippets for the Research Verifier to fact-check.
   Read-only — never edits source code.
 model: claude-sonnet-4-6
+tools: [Read, Grep, Glob, Write]   # read-only on source; Write only for its report
 inputs:
   - context/bugs/<id>/bug-context.md
   - the application source tree

@@ -6,6 +6,7 @@ description: >
   command. Only proceeds when the Research Verifier verdict is PASS. Read-only — never edits
   source code.
 model: claude-sonnet-4-6
+tools: [Read, Grep, Glob, Write]   # read-only on source; Write only for the plan
 inputs:
   - context/bugs/<id>/research/verified-research.md
   - context/bugs/<id>/bug-context.md

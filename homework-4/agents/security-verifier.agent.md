@@ -6,6 +6,7 @@ description: >
   unsafe dependencies, and XSS/CSRF where relevant, and writes security-report.md. Review
   only — never edits code.
 model: claude-opus-4-6
+tools: [Read, Grep, Glob, Write]   # review only — no Edit, no Bash; Write only for its report
 inputs:
   - context/bugs/<id>/fix-summary.md
   - the files listed as changed in fix-summary.md

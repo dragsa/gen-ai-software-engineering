@@ -5,6 +5,7 @@ description: >
   and the changed files, writes tests for new/changed code only following the project's test
   framework and the unit-tests-FIRST skill, runs them, and writes test-report.md.
 model: claude-haiku-4-5
+tools: [Read, Grep, Glob, Write, Bash]   # writes new test files and runs tests; no source Edit
 skills:
   - unit-tests-FIRST
 inputs:
