@@ -25,7 +25,7 @@ Agents run in this order. `Custom` marks feeder agents introduced to complete th
 
 | Agent | Model | Custom | Justification |
 |-------|-------|--------|---------------|
-| `bug-researcher` | `claude-sonnet-4-6` | Yes | Root-cause discovery is exploratory but bounded by the symptom and a small codebase; sonnet balances investigation with cost, and the opus verifier provides the strong accuracy check. |
+| `bug-researcher` | `claude-opus-4-6` | Yes | Research is graded on reference accuracy (every `file:line` must be exact). Off-by-a-line citations fail the verifier's gate and force reruns, so precise line attribution justifies the strongest model. (Sonnet runs produced correct snippets but off-by-two line numbers, capping quality at L2.) |
 | `research-verifier` | `claude-opus-4-6` | No | Accuracy-critical gate: catching a fabricated reference or mismatched snippet here prevents a wrong fix downstream, so it uses the strongest reasoning model. |
 | `bug-planner` | `claude-sonnet-4-6` | Yes | Turning a confirmed root cause into exact before/after edits is focused design over a small surface; sonnet gives reliable plan quality without top-tier cost. |
 | `bug-fixer` | `claude-sonnet-4-6` | No | Analysis is already done; the work is mechanical (apply pre-specified edits, run tests). A balanced model gives reliable edits at lower cost — the task's "faster/cheaper for routine fixes." |

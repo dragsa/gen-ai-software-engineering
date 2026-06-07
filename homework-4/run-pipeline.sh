@@ -96,7 +96,12 @@ skills_of() {
 }
 
 list_bugs() {
-  find "$BUGS_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort
+  # Portable (BSD/macOS + GNU): iterate immediate subdirectories, print basenames.
+  local d
+  for d in "$BUGS_DIR"/*/; do
+    [ -d "$d" ] || continue
+    basename "$d"
+  done | sort
 }
 
 verdict_pass() {

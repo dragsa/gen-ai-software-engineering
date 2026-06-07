@@ -5,7 +5,7 @@ description: >
   codebase. Reads bug-context.md and the source tree, then writes codebase-research.md with
   exact file:line references and verified snippets for the Research Verifier to fact-check.
   Read-only — never edits source code.
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 tools: [Read, Grep, Glob, Write]   # read-only on source; Write only for its report
 inputs:
   - context/bugs/<id>/bug-context.md
@@ -24,16 +24,21 @@ source code and you **do not** propose the fix — that is the Bug Planner's job
 
 ## Model choice
 
-`claude-sonnet-4-6` — discovery is exploratory but well-bounded by the symptom and a small
-codebase. Sonnet balances investigative reasoning with cost, and the independent Research
-Verifier (`opus`) provides the strong accuracy check on this output.
+`claude-opus-4-6` — the research output is graded by the Research Verifier on **reference
+accuracy**, where every cited `file:line` must point to the exact line. Off-by-a-line errors
+fail the verifier's reference-accuracy gate and force a rerun, so precise line attribution is
+worth the strongest model here rather than a cheaper one. (Earlier sonnet runs produced
+correct snippets but off-by-two line numbers that capped quality at L2.)
 
 ## Process
 
 1. Read `bug-context.md` for the reported symptom, reproduction, and expected behavior.
 2. Locate the entry point that handles the reported request/operation.
 3. Follow the call path to the code responsible for the wrong behavior.
-4. Capture exact `file:line` references and copy snippets verbatim from source.
+4. Capture exact `file:line` references and copy snippets verbatim from source. Derive line
+   numbers mechanically (e.g. `grep -n`/`Read` line markers) — never estimate them; a
+   citation's line must be the line the quoted text actually appears on. Re-check every cited
+   range against the file before writing, including multi-line ranges (start and end line).
 5. State the root cause as a claim supported by those references.
 6. Write `research/codebase-research.md`.
 

@@ -65,7 +65,7 @@ Required (Tasks 1–4):
 
 Custom feeder agents (introduced to complete the pipeline):
 
-- `bug-researcher.agent.md` — sonnet; reads `bug-context.md` + source, emits `research/codebase-research.md`.
+- `bug-researcher.agent.md` — opus; reads `bug-context.md` + source, emits `research/codebase-research.md` (opus for exact `file:line` accuracy, which the verifier gates on).
 - `bug-planner.agent.md` — sonnet; reads `verified-research.md`, emits `implementation-plan.md`; **gated on the verifier verdict = PASS**.
 
 - Record model + justification in each frontmatter and in README (with a `Custom` column).
