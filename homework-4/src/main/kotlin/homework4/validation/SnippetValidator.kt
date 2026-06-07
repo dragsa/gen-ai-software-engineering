@@ -20,7 +20,7 @@ object SnippetValidator {
 
         // BUG A (off-by-one): contract caps title at MAX_TITLE_LENGTH (50), but this
         // check uses `> MAX_TITLE_LENGTH + 1`, so a 51-character title is wrongly accepted.
-        if (request.title.isEmpty() || request.title.length > MAX_TITLE_LENGTH + 1) {
+        if (request.title.isEmpty() || request.title.length > MAX_TITLE_LENGTH) {
             errors.add(
                 ValidationError(
                     field = "title",

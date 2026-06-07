@@ -24,3 +24,7 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }
+
+tasks.withType<Test>().configureEach {
+    environment("ADMIN_TOKEN", "s3cr3t-admin-token")
+}

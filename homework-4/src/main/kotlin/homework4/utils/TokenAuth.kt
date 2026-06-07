@@ -1,22 +1,16 @@
 package homework4.utils
 
-/**
- * Token-based authorization for write operations.
- *
- * SECURITY ISSUE (seeded):
- *   1. Hardcoded secret — the admin token is embedded directly in source and would be
- *      committed to version control.
- *   2. Insecure comparison — `==` performs a non-constant-time String comparison, which is
- *      vulnerable to timing attacks. Token comparison should use a constant-time check and
- *      the secret should come from configuration/environment, not a literal.
- */
+import java.security.MessageDigest
+
 object TokenAuth {
-    // Hardcoded secret (seeded vulnerability).
-    private const val ADMIN_TOKEN = "s3cr3t-admin-token"
+    private val adminToken: String? = System.getenv("ADMIN_TOKEN")
 
     fun isAuthorized(providedToken: String?): Boolean {
         if (providedToken == null) return false
-        // Non-constant-time comparison (seeded vulnerability).
-        return providedToken == ADMIN_TOKEN
+        val expected = adminToken ?: return false
+        return MessageDigest.isEqual(sha256(expected), sha256(providedToken))
     }
+
+    private fun sha256(value: String): ByteArray =
+        MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8))
 }

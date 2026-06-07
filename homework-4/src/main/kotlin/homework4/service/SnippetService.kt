@@ -27,8 +27,6 @@ class InMemorySnippetService : SnippetService {
     override fun get(id: Int): Snippet? = store[id]
 
     override fun search(query: String): List<Snippet> {
-        // BUG B (logic): search is meant to be case-insensitive, but `contains` defaults to
-        // case-sensitive matching, so e.g. searching "hello" misses a title "Hello World".
-        return store.values.filter { it.title.contains(query) }
+        return store.values.filter { it.title.contains(query, ignoreCase = true) }
     }
 }
