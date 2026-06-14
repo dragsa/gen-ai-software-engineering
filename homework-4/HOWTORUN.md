@@ -22,7 +22,7 @@ Serves on `http://localhost:8080`. Endpoints:
 ## Run tests
 
 ```bash
-./gradlew :homework-4:test --rerun-tasks --console=plain
+./gradlew :homework-4:test --rerun-tasks --console=rich
 ```
 
 ## Run the agent pipeline
