@@ -17,22 +17,22 @@ A phased, checklist-driven plan to configure **three external MCP servers** (Git
 
 Checklist:
 
-- [ ] `homework-5/.mcp.json` exists and is the single source of truth for all four servers
-- [ ] No server is configured only in global/user scope
-- [ ] Filesystem server path resolves to a local project directory
-- [ ] No tokens or secrets are hard-coded in committed files
-- [ ] `.gitignore` excludes any local secret/env files
+- [x] `homework-5/.mcp.json` exists and is the single source of truth for all four servers
+- [x] No server is configured only in global/user scope
+- [ ] Filesystem server path resolves to a local project directory _(pending Phase 2 — `FILESYSTEM_MCP_PATH`)_
+- [x] No tokens or secrets are hard-coded in committed files (env-var references only)
+- [x] `.gitignore` excludes any local secret/env files
 
 ### Screenshot quality gate (mandatory between tasks)
 
 Each task is **not complete** — and the next task must **not start** — until its screenshot evidence exists in `homework-5/docs/screenshots/` and clearly shows a successful MCP interaction (request + result). This is the gate enforced throughout this roadmap.
 
-Checklist (repeated per task below):
+Per-task gate status (screenshot in `docs/screenshots/`, shows request + result, sensitive data redacted):
 
-- [ ] Required screenshot(s) saved to `docs/screenshots/` with the exact expected filename
-- [ ] Screenshot shows both the prompt/request and the successful result
-- [ ] Sensitive data redacted (IDs/numbers only where required, e.g. Task 3)
-- [ ] Gate confirmed before moving to the next task
+- [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-list*.png`
+- [ ] Task 2 Filesystem
+- [ ] Task 3 Jira/Notion (redact to IDs/numbers)
+- [ ] Task 4 Custom server
 
 ### Command & tool logging (mandatory)
 
@@ -43,11 +43,13 @@ Every command run and tool used to **add/configure each MCP server** is recorded
 - Keep secrets/tokens redacted in logs (use `***` or env-var names).
 - Logs are committed to the repo as part of the deliverables.
 
-Checklist (repeated per task below):
+Per-task log status (`docs/logs/`, captures commands + tools + result, secrets redacted):
 
-- [ ] Per-task log file created in `docs/logs/` capturing commands + tools used to add the MCP
-- [ ] Log includes command output / result (success or error+resolution)
-- [ ] Secrets redacted in the log
+- [x] `task-0-scaffolding.md` (Phase 0)
+- [x] `task-1-github.md`
+- [ ] `task-2-filesystem.md`
+- [ ] `task-3-jira-or-notion.md`
+- [ ] `task-4-custom.md`
 
 ---
 
@@ -64,11 +66,12 @@ Checklist (repeated per task below):
 
 Checklist:
 
-- [ ] Folder tree matches the Expected Project Structure in `TASKS.md` (plus `docs/logs/`)
-- [ ] `docs/logs/` folder created for command/tool audit trail
-- [ ] `.mcp.json` is valid JSON and parses in the target client
-- [ ] `README.md` and `HOWTORUN.md` placeholders created
-- [ ] `.gitignore` covers secrets + build artifacts
+- [x] Folder tree matches the Expected Project Structure in `TASKS.md` (plus `docs/logs/`)
+- [x] `docs/logs/` folder created for command/tool audit trail
+- [x] `.mcp.json` is valid JSON and parses in the target client (validated; `/doctor` reads it)
+- [x] `README.md` and `HOWTORUN.md` placeholders created
+- [x] `.gitignore` covers secrets + build artifacts
+- [x] Phase 0 logged → `docs/logs/task-0-scaffolding.md`
 
 **Risks:** Committing the wrong (global) config; invalid JSON breaking client startup.
 
@@ -85,19 +88,19 @@ Checklist:
 
 **Verification — choose at least one (alternative approaches accepted):**
 
-- [ ] **Option A (read):** Prompt the client to *list recent pull requests* of the repo and capture the response.
+- [x] **Option A (read):** Prompt the client to *list recent pull requests* of the repo and capture the response. ✅ Listed 9 closed PRs of `dragsa/gen-ai-software-engineering`.
 - [ ] **Option B (read):** Prompt it to *summarize the latest commits* on a branch.
 - [ ] **Option C (write):** Ask it to *create an issue* and confirm it appears in GitHub.
 
 Checklist:
 
-- [ ] GitHub MCP block added to project-local `.mcp.json`
-- [ ] Token supplied via env var (not committed)
-- [ ] Server registers/starts with no errors (verify via client's MCP/server status)
-- [ ] At least one verification option above succeeds
-- [ ] **Log:** `docs/logs/task-1-github.md` records commands + tools used to add the server (secrets redacted)
-- [ ] **Quality gate:** `docs/screenshots/01-reply-github-mcp-result.png` saved showing request + result
-- [ ] Gate confirmed before starting Phase 2
+- [x] GitHub MCP block added to project-local `.mcp.json`
+- [x] Token supplied via env var (not committed) — exported to the session
+- [x] Server registers/starts with no errors (verify via client's MCP/server status) — `github` connected in `/mcp`
+- [x] At least one verification option above succeeds
+- [x] **Log:** `docs/logs/task-1-github.md` records commands + tools used to add the server (secrets redacted)
+- [x] **Quality gate:** screenshots saved — `docs/screenshots/01-prompt-claude-cli-mcp-list.png` (server connected) and `01-prompt-claude-cli-mcp-list-lst-close-PRs.png` (PR list result)
+- [x] Gate confirmed before starting Phase 2
 
 **Risks:** Token scope too narrow (read vs. write); rate limits; org SSO authorization required.
 
@@ -229,8 +232,8 @@ Checklist (all must hold):
 
 Checklist:
 
-- [ ] All 4 screenshots present and correctly named:
-  - [ ] `01-reply-github-mcp-result.png`
+- [ ] All task screenshots present (named `NN-…` per convention):
+  - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-list.png`, `01-prompt-claude-cli-mcp-list-lst-close-PRs.png`
   - [ ] `02-reply-filesystem-mcp-result.png`
   - [ ] `03-reply-jira-or-notion-mcp-result.png`
   - [ ] `04-reply-custom-mcp-read-tool-result.png`

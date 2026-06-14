@@ -32,6 +32,57 @@ export NOTION_MCP_TOKEN=***
 Open the project in your MCP client and reload so it picks up `homework-5/.mcp.json`, then
 confirm each server registers without errors.
 
+### Enabling project-scoped servers (Claude Code)
+
+Servers in a project `.mcp.json` are **not active until approved**, and `${VARS}` are expanded
+from the environment Claude Code was launched in. If `/doctor` detects the file but the servers
+aren't listed under "Manage MCP servers":
+
+1. **Export env vars first, then launch from the same shell** (Claude Code inherits them):
+   ```bash
+   export GITHUB_PERSONAL_ACCESS_TOKEN=***
+   # (Phase 2/3) export FILESYSTEM_MCP_PATH=...  ;  export NOTION_MCP_TOKEN=...
+   cd /Users/dragsa/IdeaProjects/gnatiuk/gen-ai-software-engineering
+   claude          # start (or fully restart) Claude Code here
+   ```
+2. **Approve the project servers.** On first load Claude Code prompts to trust the project's
+   MCP servers — approve it. If you dismissed it earlier, reset and restart:
+   ```bash
+   claude mcp reset-project-choices
+   ```
+3. **Verify:** `claude mcp list` (or `/mcp` in the TUI) should show `github` connected.
+
+> Note: `/doctor` only warns about missing `${VARS}` found in `args`/`env`, **not** in `headers`.
+> So the GitHub block's token won't show as a warning — but if it's unset the server fails auth
+> silently. Confirm `github` shows **connected** in `/mcp`, not just present in the file.
+
+### Task 1 — GitHub MCP (runbook)
+
+The `github` block uses the **official hosted GitHub MCP** (`https://api.githubcopilot.com/mcp/`,
+remote `http` transport) authenticated with a GitHub PAT via `GITHUB_PERSONAL_ACCESS_TOKEN`.
+
+1. **Create a token** — GitHub → Settings → Developer settings → Personal access tokens.
+   Scopes: `repo` (read), plus `pull_requests` / `issues` for the interaction you pick.
+2. **Export it** (do not commit):
+   ```bash
+   cp .env.example .env   # then edit .env, or just export in your shell
+   export GITHUB_PERSONAL_ACCESS_TOKEN=***
+   ```
+3. **Reload the client** so it reads `homework-5/.mcp.json`. In Claude Code: `/mcp` should list
+   `github` as connected. Verify it registers with **no errors**.
+4. **Run one interaction** (pick one — alternatives accepted):
+   - *List recent pull requests* of your repo, or
+   - *Summarize the latest commits* on a branch, or
+   - *Create an issue* and confirm it appears on GitHub.
+5. **Capture the screenshot** of the prompt + result →
+   `docs/screenshots/01-reply-github-mcp-result.png`.
+6. **Log it** — append the commands/tools you used and the outcome to
+   `docs/logs/task-1-github.md`.
+
+> Alternative (local) approach: run the official server locally via Docker
+> `ghcr.io/github/github-mcp-server` with `GITHUB_PERSONAL_ACCESS_TOKEN`, and point a `command`
+> block at it instead of the hosted `http` block. Either satisfies Task 1.
+
 ## 4. Custom server (Phase 4)
 
 ```bash
