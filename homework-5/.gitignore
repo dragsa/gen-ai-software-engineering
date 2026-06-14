@@ -1,0 +1,14 @@
+# Secrets / environment
+*.env
+.env
+.env.*
+*.secret
+mcp.env
+
+# Build artifacts (Kotlin custom server)
+.gradle/
+build/
+out/
+
+# Node (npx server caches, if any local installs)
+node_modules/
