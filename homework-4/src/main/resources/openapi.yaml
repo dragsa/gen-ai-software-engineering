@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: Snippet Vault API
+  version: 1.0.0
+  description: >
+    A minimal snippet store used as the subject of the homework-4 4-agent pipeline.
+    Contains intentionally seeded bugs and a security issue.
+paths:
+  /snippets:
+    post:
+      summary: Create a snippet
+      description: Requires a valid X-Api-Token header.
+      parameters:
+        - in: header
+          name: X-Api-Token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSnippetRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnippetResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+    get:
+      summary: Search snippets by title
+      parameters:
+        - in: query
+          name: q
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Matching snippets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SnippetResponse'
+  /snippets/{id}:
+    get:
+      summary: Retrieve a snippet by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The snippet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnippetResponse'
+        '404':
+          description: Not found
+components:
+  schemas:
+    CreateSnippetRequest:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 50
+        content:
+          type: string
+          minLength: 1
+    SnippetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'

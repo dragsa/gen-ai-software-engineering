@@ -1,0 +1,68 @@
+[2026-06-07T18:50:39Z] [ALL] [pipeline] INFO   — mode=all interactive=false bugs=3 runner=agents/run-agent.sh
+
+================================================================
+  BUG: 001-functional-oversized-title-accepted
+================================================================
+[2026-06-07T18:50:39Z] [001-functional-oversized-title-accepted] [bug-researcher:claude-opus-4-6] RUN    — operation=produce output=research/codebase-research.md inputs=[bug-context.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:51:15Z] [001-functional-oversized-title-accepted] [bug-researcher:claude-opus-4-6] OK     — wrote research/codebase-research.md
+[2026-06-07T18:51:15Z] [001-functional-oversized-title-accepted] [research-verifier:claude-opus-4-6] RUN    — operation=produce output=research/verified-research.md inputs=[bug-context.md research/codebase-research.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:51:15Z] [001-functional-oversized-title-accepted] [research-verifier:claude-opus-4-6] INFO   — skills loaded: research-quality-measurement.md
+[2026-06-07T18:51:56Z] [001-functional-oversized-title-accepted] [research-verifier:claude-opus-4-6] OK     — wrote research/verified-research.md
+[2026-06-07T18:51:56Z] [001-functional-oversized-title-accepted] [pipeline] INFO   — research verdict PASS — proceeding to fix
+[2026-06-07T18:51:56Z] [001-functional-oversized-title-accepted] [bug-planner:claude-sonnet-4-6] RUN    — operation=produce output=implementation-plan.md inputs=[bug-context.md research/verified-research.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:52:28Z] [001-functional-oversized-title-accepted] [bug-planner:claude-sonnet-4-6] OK     — wrote implementation-plan.md
+[2026-06-07T18:52:28Z] [001-functional-oversized-title-accepted] [bug-fixer:claude-sonnet-4-6] RUN    — operation=produce output=fix-summary.md inputs=[implementation-plan.md SRC] tools=[Read, Grep, Glob, Edit, Write, Bash]
+[2026-06-07T18:53:13Z] [001-functional-oversized-title-accepted] [bug-fixer:claude-sonnet-4-6] OK     — wrote fix-summary.md
+[2026-06-07T18:53:13Z] [001-functional-oversized-title-accepted] [security-verifier:claude-opus-4-6] RUN    — operation=produce output=security-report.md inputs=[fix-summary.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:54:31Z] [001-functional-oversized-title-accepted] [security-verifier:claude-opus-4-6] OK     — wrote security-report.md
+[2026-06-07T18:54:31Z] [001-functional-oversized-title-accepted] [unit-test-generator:claude-haiku-4-5] RUN    — operation=produce output=test-report.md inputs=[fix-summary.md SRC] tools=[Read, Grep, Glob, Write, Bash]
+[2026-06-07T18:54:31Z] [001-functional-oversized-title-accepted] [unit-test-generator:claude-haiku-4-5] INFO   — skills loaded: unit-tests-FIRST.md
+[2026-06-07T18:55:46Z] [001-functional-oversized-title-accepted] [unit-test-generator:claude-haiku-4-5] OK     — wrote test-report.md
+
+================================================================
+  BUG: 002-functional-search-misses-matches
+================================================================
+[2026-06-07T18:55:46Z] [002-functional-search-misses-matches] [bug-researcher:claude-opus-4-6] RUN    — operation=produce output=research/codebase-research.md inputs=[bug-context.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:56:20Z] [002-functional-search-misses-matches] [bug-researcher:claude-opus-4-6] OK     — wrote research/codebase-research.md
+[2026-06-07T18:56:20Z] [002-functional-search-misses-matches] [research-verifier:claude-opus-4-6] RUN    — operation=produce output=research/verified-research.md inputs=[bug-context.md research/codebase-research.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:56:20Z] [002-functional-search-misses-matches] [research-verifier:claude-opus-4-6] INFO   — skills loaded: research-quality-measurement.md
+[2026-06-07T18:57:45Z] [002-functional-search-misses-matches] [research-verifier:claude-opus-4-6] OK     — wrote research/verified-research.md
+[2026-06-07T18:57:45Z] [002-functional-search-misses-matches] [pipeline] INFO   — research verdict PASS — proceeding to fix
+[2026-06-07T18:57:45Z] [002-functional-search-misses-matches] [bug-planner:claude-sonnet-4-6] RUN    — operation=produce output=implementation-plan.md inputs=[bug-context.md research/verified-research.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:58:13Z] [002-functional-search-misses-matches] [bug-planner:claude-sonnet-4-6] OK     — wrote implementation-plan.md
+[2026-06-07T18:58:13Z] [002-functional-search-misses-matches] [bug-fixer:claude-sonnet-4-6] RUN    — operation=produce output=fix-summary.md inputs=[implementation-plan.md SRC] tools=[Read, Grep, Glob, Edit, Write, Bash]
+[2026-06-07T18:58:45Z] [002-functional-search-misses-matches] [bug-fixer:claude-sonnet-4-6] OK     — wrote fix-summary.md
+[2026-06-07T18:58:45Z] [002-functional-search-misses-matches] [security-verifier:claude-opus-4-6] RUN    — operation=produce output=security-report.md inputs=[fix-summary.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T18:59:38Z] [002-functional-search-misses-matches] [security-verifier:claude-opus-4-6] OK     — wrote security-report.md
+[2026-06-07T18:59:38Z] [002-functional-search-misses-matches] [unit-test-generator:claude-haiku-4-5] RUN    — operation=produce output=test-report.md inputs=[fix-summary.md SRC] tools=[Read, Grep, Glob, Write, Bash]
+[2026-06-07T18:59:38Z] [002-functional-search-misses-matches] [unit-test-generator:claude-haiku-4-5] INFO   — skills loaded: unit-tests-FIRST.md
+[2026-06-07T19:00:29Z] [002-functional-search-misses-matches] [unit-test-generator:claude-haiku-4-5] OK     — wrote test-report.md
+
+================================================================
+  BUG: 003-security-admin-token-authorization
+================================================================
+[2026-06-07T19:00:29Z] [003-security-admin-token-authorization] [bug-researcher:claude-opus-4-6] RUN    — operation=produce output=research/codebase-research.md inputs=[bug-context.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T19:01:37Z] [003-security-admin-token-authorization] [bug-researcher:claude-opus-4-6] OK     — wrote research/codebase-research.md
+[2026-06-07T19:01:37Z] [003-security-admin-token-authorization] [research-verifier:claude-opus-4-6] RUN    — operation=produce output=research/verified-research.md inputs=[bug-context.md research/codebase-research.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T19:01:37Z] [003-security-admin-token-authorization] [research-verifier:claude-opus-4-6] INFO   — skills loaded: research-quality-measurement.md
+[2026-06-07T19:03:00Z] [003-security-admin-token-authorization] [research-verifier:claude-opus-4-6] OK     — wrote research/verified-research.md
+[2026-06-07T19:03:00Z] [003-security-admin-token-authorization] [pipeline] INFO   — research verdict PASS — proceeding to fix
+[2026-06-07T19:03:00Z] [003-security-admin-token-authorization] [bug-planner:claude-sonnet-4-6] RUN    — operation=produce output=implementation-plan.md inputs=[bug-context.md research/verified-research.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T19:04:56Z] [003-security-admin-token-authorization] [bug-planner:claude-sonnet-4-6] OK     — wrote implementation-plan.md
+[2026-06-07T19:04:56Z] [003-security-admin-token-authorization] [bug-fixer:claude-sonnet-4-6] RUN    — operation=produce output=fix-summary.md inputs=[implementation-plan.md SRC] tools=[Read, Grep, Glob, Edit, Write, Bash]
+[2026-06-07T19:06:07Z] [003-security-admin-token-authorization] [bug-fixer:claude-sonnet-4-6] OK     — wrote fix-summary.md
+[2026-06-07T19:06:07Z] [003-security-admin-token-authorization] [security-verifier:claude-opus-4-6] RUN    — operation=produce output=security-report.md inputs=[fix-summary.md SRC] tools=[Read, Grep, Glob, Write]
+[2026-06-07T19:07:21Z] [003-security-admin-token-authorization] [security-verifier:claude-opus-4-6] OK     — wrote security-report.md
+[2026-06-07T19:07:21Z] [003-security-admin-token-authorization] [unit-test-generator:claude-haiku-4-5] RUN    — operation=produce output=test-report.md inputs=[fix-summary.md SRC] tools=[Read, Grep, Glob, Write, Bash]
+[2026-06-07T19:07:21Z] [003-security-admin-token-authorization] [unit-test-generator:claude-haiku-4-5] INFO   — skills loaded: unit-tests-FIRST.md
+[2026-06-07T19:08:52Z] [003-security-admin-token-authorization] [unit-test-generator:claude-haiku-4-5] OK     — wrote test-report.md
+
+================================================================
+  RUN SUMMARY  (20260607T185039Z)
+================================================================
+  001-functional-oversized-title-accepted       research=[Verdict: PASS] security-findings=10 tests=[**All tests PASS.** Two new test suites were generated to cover the off-by-one fix in `SnippetValidator.kt`:]
+  002-functional-search-misses-matches          research=[Verdict: PASS] security-findings=4 tests=[Generated 10 unit tests for `InMemorySnippetService.search()` covering the case-insensitive search fix. All tests pass.]
+  003-security-admin-token-authorization        research=[Verdict: PASS] security-findings=6 tests=[**PASS** — 11 new unit tests generated and executed. All 11 tests passed. Full test suite across all 4 test classes passed (32 tests total: 6 validation + 6 search + 9 smoke/validator + 11 token auth).]
+
+[2026-06-07T19:08:52Z] [ALL] [pipeline] INFO   — succeeded: 3  failed/halted: 0
+[2026-06-07T19:08:52Z] [ALL] [pipeline] INFO   — log saved to docs/logs/pipeline-20260607T185039Z.log
