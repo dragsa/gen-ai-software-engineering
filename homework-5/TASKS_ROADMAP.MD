@@ -31,14 +31,14 @@ Per-task gate status (screenshot in `docs/screenshots/`, shows request + result,
 
 - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
 - [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
-- [ ] Task 3 Jira/Notion (redact to IDs/numbers)
+- [x] Task 3 Jira — `03-prompt-claude-cli-mcp-00.png`, `03-prompt-claude-cli-mcp-jira-dir-structure.png` (0 bugs in project; see follow-up)
 - [ ] Task 4 Custom server
 
 ### Command & tool logging (mandatory)
 
 Every command run and tool used to **add/configure each MCP server** is recorded under `homework-5/docs/logs/`. This is an audit trail of *how* each server was wired up, separate from the screenshot evidence of results.
 
-- One log file per task: `docs/logs/task-1-github.md`, `task-2-filesystem.md`, `task-3-jira-or-notion.md`, `task-4-custom.md`.
+- One log file per task: `docs/logs/task-1-github.md`, `task-2-filesystem.md`, `task-3-jira.md`, `task-4-custom.md`.
 - Each entry captures: the **command(s)** run (install, `claude mcp add ...`, config edits, server start), the **client/tool** used (e.g. Claude Code CLI, MCP Inspector), the working directory, and the **result/output** (success or error + fix).
 - Keep secrets/tokens redacted in logs (use `***` or env-var names).
 - Logs are committed to the repo as part of the deliverables.
@@ -47,8 +47,8 @@ Per-task log status (`docs/logs/`, captures commands + tools + result, secrets r
 
 - [x] `task-0-scaffolding.md` (Phase 0)
 - [x] `task-1-github.md`
-- [ ] `task-2-filesystem.md`
-- [ ] `task-3-jira-or-notion.md`
+- [x] `task-2-filesystem.md`
+- [x] `task-3-jira.md`
 - [ ] `task-4-custom.md`
 
 ---
@@ -137,28 +137,30 @@ Checklist:
 ## Phase 3 — Task 3: Jira **or** Notion MCP ⭐⭐
 
 **Goal:** Connect the client to Jira **or** Notion and run the required "last 5 bugs" query.
+**Chosen platform: Jira** — official Atlassian Remote MCP (`https://mcp.atlassian.com/v1/sse`, SSE, OAuth).
 
-- Decide **Jira or Notion** (pick the one you have a real project/workspace in).
-- Add the chosen MCP server block to `homework-5/.mcp.json` with credentials via env vars.
+- Decide **Jira or Notion** (pick the one you have a real project/workspace in). ✅ Jira.
+- Add the chosen MCP server block to `homework-5/.mcp.json` (Jira uses OAuth — no committed creds). ✅
 - Restart/reload and confirm registration.
 - **Make the required request:** *"Give me the tickets/pages of the last 5 bugs on a project"* against a real project.
 - Capture the full response; **redact** sensitive content — show only ticket keys / page numbers.
 
 **Verification — alternative approaches by platform:**
 
-- [ ] **Jira path:** request returns the last 5 bug **tickets** (e.g. `PROJ-123`), optionally cross-checked via a JQL-style query (`issuetype = Bug ORDER BY created DESC`).
-- [ ] **Notion path:** request returns the last 5 bug **pages** (page IDs/titles), optionally cross-checked against the bug database/view.
+- [~] **Jira path:** request executed (`project = SCRUM AND issuetype = Bug ORDER BY created DESC`) → **0 bug-type issues** in project SCRUM (only 5 Stories exist). Valid result, but no bugs to show → see follow-up below.
+- [ ] **Notion path:** n/a — Jira chosen.
 
 Checklist:
 
-- [ ] Platform chosen (Jira or Notion) and noted in README/HOWTORUN
-- [ ] MCP block added to project-local `.mcp.json`; credentials via env vars
-- [ ] Server registers/starts with no errors
-- [ ] The exact "last 5 bugs" request returns valid results
-- [ ] Response redacted to IDs/numbers only (no sensitive info)
-- [ ] **Log:** `docs/logs/task-3-jira-or-notion.md` records commands + tools used to add the server (secrets redacted)
-- [ ] **Quality gate:** `docs/screenshots/03-reply-jira-or-notion-mcp-result.png` saved showing request + redacted response
-- [ ] Gate confirmed before starting Phase 4
+- [x] Platform chosen (Jira or Notion) and noted in README/HOWTORUN — **Jira**, official Atlassian Remote MCP
+- [x] MCP block added to project-local `.mcp.json` — `jira`; endpoint updated to streamable HTTP `…/v1/mcp` (SSE deprecates 2026-06-30)
+- [x] Server registers/starts with no errors — `jira` connected, 31 tools
+- [x] The exact "last 5 bugs" request returns valid results — JQL ran; project SCRUM has 0 bugs (only Stories)
+- [x] Response redacted to IDs/numbers only — only issue keys/types shown (test data; no sensitive content)
+- [x] **Log:** `docs/logs/task-3-jira.md` records commands + tools used + result
+- [x] **Quality gate:** screenshots saved — `03-prompt-claude-cli-mcp-00.png` (connected) and `03-prompt-claude-cli-mcp-jira-dir-structure.png` (query result)
+- [x] **Follow-up resolved:** decision = record "no bugs, but 5 Stories present" (SCRUM-1…5); no sample bugs created
+- [x] Gate confirmed before starting Phase 4
 
 **Risks:** API token/permission scope; project key/database ID discovery; accidental exposure of sensitive ticket content in the screenshot.
 
@@ -235,12 +237,12 @@ Checklist:
 - [ ] All task screenshots present (named `NN-…` per convention):
   - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
   - [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
-  - [ ] `03-…-jira-or-notion-….png`
+  - [x] Task 3 Jira — `03-prompt-claude-cli-mcp-00.png`, `03-prompt-claude-cli-mcp-jira-dir-structure.png`
   - [ ] `04-…-custom-mcp-read-tool-….png`
 - [ ] All 4 command/tool logs present in `docs/logs/`:
-  - [ ] `task-1-github.md`
-  - [ ] `task-2-filesystem.md`
-  - [ ] `task-3-jira-or-notion.md`
+  - [x] `task-1-github.md`
+  - [x] `task-2-filesystem.md`
+  - [x] `task-3-jira.md`
   - [ ] `task-4-custom.md`
 - [ ] `README.md` finalized (author + deviation note) — **after explicit user approval**
 - [ ] `HOWTORUN.md` accurate and reproducible

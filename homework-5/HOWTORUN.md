@@ -17,7 +17,7 @@ config). Secrets are supplied via environment variables referenced in that file:
 |----------|---------|-------|
 | `GITHUB_PERSONAL_ACCESS_TOKEN` | GitHub MCP | Phase 1 — fill before use |
 | `FILESYSTEM_MCP_PATH` | Filesystem MCP | Phase 2 — absolute path to a local project dir |
-| `NOTION_MCP_TOKEN` | Notion MCP | Phase 3 — or swap block for Jira |
+| _(none)_ | Jira MCP | Phase 3 — official Atlassian Remote MCP uses OAuth, no env var |
 
 Set them in your shell (do **not** commit real values), e.g.:
 
@@ -107,6 +107,30 @@ Node.js (`npx`).
 
 > Keep the path inside the project so access is scoped locally — do not point it at `$HOME` or
 > the filesystem root.
+
+### Task 3 — Jira MCP (runbook)
+
+The `jira` block uses the **official Atlassian Remote MCP** at
+`https://mcp.atlassian.com/v1/mcp` (Streamable HTTP). Auth is **OAuth** — no API token in the
+repo. (The older `…/v1/sse` SSE endpoint deprecates after **2026-06-30**; this config uses the
+streamable-HTTP endpoint. After switching, reconnect via `/mcp` — re-auth may be required.)
+
+1. **Reload** the client so it sees the `jira` block, then **authenticate**:
+   in Claude Code run `/mcp`, select `jira`, and complete the Atlassian OAuth login in the
+   browser (authorize your Cloud site). Confirm `jira` shows **connected**.
+2. **Make the required request** against a real project:
+   > "Give me the tickets of the last 5 bugs on a project."
+   (Equivalent JQL the server may run: `project = <KEY> AND issuetype = Bug ORDER BY created DESC`
+   limited to 5.)
+3. **Redact before screenshotting** — show only ticket **keys/numbers** (e.g. `PROJ-123`), not
+   summaries/descriptions or any sensitive content.
+4. **Capture the screenshot** of prompt + redacted result →
+   `docs/screenshots/03-…-jira-….png`.
+5. **Log it** in `docs/logs/task-3-jira.md`.
+
+> Alternative: community `mcp-atlassian` (Docker or `uvx`) with `JIRA_URL` + `JIRA_USERNAME` +
+> `JIRA_API_TOKEN` env vars. Either satisfies Task 3; the hosted OAuth server avoids committing
+> credentials.
 
 ## 4. Custom server (Phase 4)
 
