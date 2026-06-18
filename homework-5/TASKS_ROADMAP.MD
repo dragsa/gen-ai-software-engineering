@@ -29,8 +29,8 @@ Each task is **not complete** — and the next task must **not start** — until
 
 Per-task gate status (screenshot in `docs/screenshots/`, shows request + result, sensitive data redacted):
 
-- [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-list*.png`
-- [ ] Task 2 Filesystem
+- [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
+- [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
 - [ ] Task 3 Jira/Notion (redact to IDs/numbers)
 - [ ] Task 4 Custom server
 
@@ -99,7 +99,7 @@ Checklist:
 - [x] Server registers/starts with no errors (verify via client's MCP/server status) — `github` connected in `/mcp`
 - [x] At least one verification option above succeeds
 - [x] **Log:** `docs/logs/task-1-github.md` records commands + tools used to add the server (secrets redacted)
-- [x] **Quality gate:** screenshots saved — `docs/screenshots/01-prompt-claude-cli-mcp-list.png` (server connected) and `01-prompt-claude-cli-mcp-list-lst-close-PRs.png` (PR list result)
+- [x] **Quality gate:** screenshots saved — `docs/screenshots/01-prompt-claude-cli-mcp-00.png` (server connected) and `01-prompt-claude-cli-mcp-git-closed-PRs.png` (PR list result)
 - [x] Gate confirmed before starting Phase 2
 
 **Risks:** Token scope too narrow (read vs. write); rate limits; org SSO authorization required.
@@ -116,19 +116,19 @@ Checklist:
 
 **Verification — choose at least one (alternatives accepted):**
 
-- [ ] **Option A:** Prompt the client to *list files* in the configured directory.
+- [x] **Option A:** Prompt the client to *list files* in the configured directory. ✅ Full recursive listing of `homework-5/`.
 - [ ] **Option B:** Prompt it to *read a specific file* (e.g. `homework-5/TASKS.md`) and show contents.
-- [ ] **Option C:** Prompt it to *summarize the directory structure*.
+- [x] **Option C:** Prompt it to *summarize the directory structure*. ✅ Rendered as a Path/Type/Notes table.
 
 Checklist:
 
-- [ ] Filesystem MCP block added with a **local** path (requirement)
-- [ ] Path is project-scoped, not an unrelated global location
-- [ ] Server registers/starts with no errors
-- [ ] At least one verification option above succeeds
-- [ ] **Log:** `docs/logs/task-2-filesystem.md` records commands + tools used to add the server
-- [ ] **Quality gate:** `docs/screenshots/02-reply-filesystem-mcp-result.png` saved showing request + result
-- [ ] Gate confirmed before starting Phase 3
+- [x] Filesystem MCP block added with a **local** path (requirement) — `npx … server-filesystem ${FILESYSTEM_MCP_PATH}`
+- [x] Path is project-scoped, not an unrelated global location — `…/homework-5` (confirmed via `list_allowed_directories`)
+- [x] Server registers/starts with no errors — `filesystem` connected in `/mcp`
+- [x] At least one verification option above succeeds — `directory_tree` returned the listing
+- [x] **Log:** `docs/logs/task-2-filesystem.md` records commands + tools used to add the server
+- [x] **Quality gate:** screenshots saved — `02-prompt-claude-cli-mcp-00.png` (connected) and `02-prompt-claude-cli-mcp-filesystem-dir-structure.png` (result)
+- [x] Gate confirmed before starting Phase 3
 
 **Risks:** Over-broad path (granting access beyond the project); path separators on Windows vs. Unix; permission denials.
 
@@ -233,10 +233,10 @@ Checklist (all must hold):
 Checklist:
 
 - [ ] All task screenshots present (named `NN-…` per convention):
-  - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-list.png`, `01-prompt-claude-cli-mcp-list-lst-close-PRs.png`
-  - [ ] `02-reply-filesystem-mcp-result.png`
-  - [ ] `03-reply-jira-or-notion-mcp-result.png`
-  - [ ] `04-reply-custom-mcp-read-tool-result.png`
+  - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
+  - [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
+  - [ ] `03-…-jira-or-notion-….png`
+  - [ ] `04-…-custom-mcp-read-tool-….png`
 - [ ] All 4 command/tool logs present in `docs/logs/`:
   - [ ] `task-1-github.md`
   - [ ] `task-2-filesystem.md`

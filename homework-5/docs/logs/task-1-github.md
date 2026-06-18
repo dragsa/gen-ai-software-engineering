@@ -33,8 +33,8 @@ PR #3 ("Sync main upstream") closed without merging; others merged 2026-05-03 �
 
 ## Evidence
 
-- Screenshot: `docs/screenshots/01-prompt-claude-cli-mcp-list.png` — `github` connected in /mcp
-- Screenshot: `docs/screenshots/01-prompt-claude-cli-mcp-list-lst-close-PRs.png` — PR list result
+- Screenshot: `docs/screenshots/01-prompt-claude-cli-mcp-00.png` — `github` connected in /mcp
+- Screenshot: `docs/screenshots/01-prompt-claude-cli-mcp-git-closed-PRs.png` — PR list result
 
 ## Troubleshooting note (2026-06-14)
 

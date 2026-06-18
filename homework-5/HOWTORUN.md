@@ -83,6 +83,31 @@ remote `http` transport) authenticated with a GitHub PAT via `GITHUB_PERSONAL_AC
 > `ghcr.io/github/github-mcp-server` with `GITHUB_PERSONAL_ACCESS_TOKEN`, and point a `command`
 > block at it instead of the hosted `http` block. Either satisfies Task 1.
 
+### Task 2 — Filesystem MCP (runbook)
+
+The `filesystem` block runs the official `@modelcontextprotocol/server-filesystem` via `npx`
+(stdio), scoped to **a local project directory** passed as `${FILESYSTEM_MCP_PATH}`. Requires
+Node.js (`npx`).
+
+1. **Point it at a local dir** (the repo or `homework-5/` — keep it project-local):
+   ```bash
+   export FILESYSTEM_MCP_PATH="/Users/dragsa/IdeaProjects/gnatiuk/gen-ai-software-engineering/homework-5"
+   ```
+   Export in the shell **before** launching Claude Code (it expands `${VARS}` at launch and the
+   path appears in `args`, so `/doctor` validates it).
+2. **Reload/approve** the project servers (see "Enabling project-scoped servers" above); confirm
+   `filesystem` shows **connected** in `/mcp`.
+3. **Run one interaction** (pick one — alternatives accepted):
+   - *List files* in the configured directory, or
+   - *Read a file* (e.g. `TASKS.md`) and show its contents, or
+   - *Summarize the directory structure*.
+4. **Capture the screenshot** of prompt + result →
+   `docs/screenshots/02-…-filesystem-….png` (use your `NN-prompt/reply-…` naming).
+5. **Log it** in `docs/logs/task-2-filesystem.md`.
+
+> Keep the path inside the project so access is scoped locally — do not point it at `$HOME` or
+> the filesystem root.
+
 ## 4. Custom server (Phase 4)
 
 ```bash
