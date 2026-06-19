@@ -5,7 +5,7 @@
 ## 1. Prerequisites
 
 - Node.js (for `npx`-based servers: Filesystem)
-- JDK 21 + Gradle wrapper (for the custom Kotlin server)
+- Python 3.10+ and `pip` (for the custom FastMCP server)
 - An MCP client (Claude Code) that reads project-scoped `.mcp.json`
 
 ## 2. Configuration (project-local)
@@ -135,10 +135,10 @@ streamable-HTTP endpoint. After switching, reconnect via `/mcp` — re-auth may 
 ## 4. Custom server (Phase 4)
 
 ```bash
-# build
-./gradlew :homework-5:build
-# run (stdio MCP server; launched by the client via .mcp.json)
-./gradlew :homework-5:run -q --console=plain
+# install dependencies (fastmcp)
+pip install -r custom-mcp-server/requirements.txt
+# run (stdio MCP server; also launched by the client via .mcp.json)
+python custom-mcp-server/server.py
 ```
 
 Test the `read` tool (default `word_count` = 30, and a custom value) — see Phase 4 of

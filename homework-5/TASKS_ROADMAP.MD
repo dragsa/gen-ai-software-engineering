@@ -1,8 +1,8 @@
 # Homework-5 — Implementation Roadmap (TASKS_ROADMAP)
 
-A phased, checklist-driven plan to configure **three external MCP servers** (GitHub, Filesystem, Jira **or** Notion) and build **one custom MCP server in Kotlin**, with **screenshot evidence as the quality gate** between every task.
+A phased, checklist-driven plan to configure **three external MCP servers** (GitHub, Filesystem, Jira **or** Notion) and build **one custom MCP server with FastMCP**, with **screenshot evidence as the quality gate** between every task.
 
-> **Stack note / explicit override:** `homework-5/TASKS.md` (read-only) literally specifies a Python **FastMCP** server (`server.py`, `requirements.txt`/`fastmcp`). Per explicit user instruction, the custom server is implemented in **Kotlin** instead, aligning with the mandated stack in `.agents/docs/STACK.MD` (Kotlin 2.3.20 / JVM 21, Gradle Kotlin DSL, version catalog). FastMCP has no Kotlin equivalent, so the **official MCP Kotlin SDK** (`io.modelcontextprotocol:kotlin-sdk`) is used to expose the Resource and `read` Tool. This override (Kotlin instead of FastMCP) must be noted in `README.md`. No cross-subproject coupling is introduced.
+> **Stack note / deviation:** `.agents/docs/STACK.MD` mandates Kotlin/Gradle. `homework-5/TASKS.md` explicitly mandates a **Python + FastMCP** custom server (`server.py`, `requirements.txt`/`fastmcp`), so this subproject deviates for the `custom-mcp-server/` only — allowed because a subproject's `TASKS.md` may mandate a different runtime. The deviation and its rationale should be recorded in `README.md` (per STACK.MD Deviation Policy). No cross-subproject coupling is introduced.
 
 ---
 
@@ -60,7 +60,7 @@ Per-task log status (`docs/logs/`, captures commands + tools + result, secrets r
 - Create the `homework-5/` structure: `custom-mcp-server/`, `docs/screenshots/`, `docs/logs/`.
 - Seed `homework-5/.mcp.json` with empty/placeholder server blocks (filled per phase).
 - Seed `README.md` (description + author name placeholder) and `HOWTORUN.md` (install/run/connect/usage placeholders).
-- Add `.gitignore` entries for secrets and build artifacts (`.gradle/`, `build/`, `*.env`).
+- Add `.gitignore` entries for secrets and Python artifacts (`.venv/`, `__pycache__/`, `*.env`).
 
 **Files:** `homework-5/.mcp.json`, `README.md`, `HOWTORUN.md`, `.gitignore`, `docs/logs/`, folder tree.
 
@@ -166,59 +166,55 @@ Checklist:
 
 ---
 
-## Phase 4 — Task 4: Custom MCP Server in Kotlin (MCP Kotlin SDK) ⭐⭐⭐
+## Phase 4 — Task 4: Custom MCP Server with FastMCP ⭐⭐⭐
 
-**Goal:** Build a custom MCP server in **Kotlin** exposing a **Resource** and a `read` **Tool** over `lorem-ipsum.md`, wired into the project-local config. (FastMCP equivalent: official **MCP Kotlin SDK**, `io.modelcontextprotocol:kotlin-sdk`.)
+**Goal:** Build a custom MCP server in **Python with FastMCP** exposing a **Resource** and a `read` **Tool** over `lorem-ipsum.md`, wired into the project-local config. (Per TASKS.md.)
 
 ### 4.1 — Implement the server
 
-- Register `homework-5` as a Gradle subproject in the root `settings.gradle.kts`; add `homework-5/build.gradle.kts` via the version catalog (`application` plugin, `mainClass` set to the server entrypoint).
-- Add the MCP Kotlin SDK dependency to `gradle/libs.versions.toml` and reference it from the subproject build.
-- Create the server under `custom-mcp-server/` (or `src/main/kotlin/homework5/...` per STACK.MD package layout) — e.g. an `entrypoint` `main()` that starts an MCP server over **stdio**.
+- Create `custom-mcp-server/server.py` implementing FastMCP.
 - Create `custom-mcp-server/lorem-ipsum.md` with enough text (well over 30 words).
 - Add a **Resource** URI that reads `lorem-ipsum.md`, accepts `word_count` (**default 30**), and returns exactly that many words.
 - Add a **Tool** named `read` with an optional `word_count` param that returns the resource content.
+- Add `requirements.txt` (or `pyproject.toml`) that **explicitly includes `fastmcp`**.
 
 Checklist:
 
-- [ ] `homework-5` registered in root `settings.gradle.kts`; `build.gradle.kts` uses the version catalog
-- [ ] MCP Kotlin SDK (`io.modelcontextprotocol:kotlin-sdk`) added to `gradle/libs.versions.toml` and the subproject
-- [ ] Kotlin server entrypoint (`main()`) starts an MCP server (stdio transport)
-- [ ] No wildcard imports (CODESTYLE.MD); package matches directory structure
+- [ ] `custom-mcp-server/server.py` implements FastMCP
+- [ ] `requirements.txt` / `pyproject.toml` lists `fastmcp` explicitly
 - [ ] `lorem-ipsum.md` present with > 30 words of source text
 - [ ] Resource reads the file, honors `word_count` (default 30), returns exactly N words
 - [ ] `read` tool present with optional `word_count`, returns resource content
 
 ### 4.2 — Wire into project-local config & document
 
-- Add the custom server block to `homework-5/.mcp.json` using a **project-relative** launch command (e.g. `./gradlew :homework-5:run -q` from the repo root, or a built jar invoked with `java -jar`).
-- Write `HOWTORUN.md`: build the server (`./gradlew :homework-5:build`), run it, connect MCP config, and use/test the `read` tool.
+- Add the custom server block to `homework-5/.mcp.json` using a **project-relative** launch command (e.g. `python custom-mcp-server/server.py`, or `fastmcp run custom-mcp-server/server.py`).
+- Write `HOWTORUN.md`: install dependencies, run the server, connect MCP config, and use/test the `read` tool.
 - Add the short doc explanation: **Resources** = URIs Claude can read from (files, APIs); **Tools** = actions Claude can call to perform operations.
 
 Checklist:
 
 - [ ] Custom server registered in project-local `.mcp.json` with a project-relative command
-- [ ] `HOWTORUN.md` covers build / run / connect / use-and-test
+- [ ] `HOWTORUN.md` covers install / run / connect / use-and-test
 - [ ] Resources-vs-Tools explanation included in docs
 
 ### 4.3 — Verify (alternative approaches accepted)
 
-- [ ] **Option A (build + direct run):** `./gradlew :homework-5:build` passes (zero errors per AGENTS.md), then start the server and confirm it boots without errors.
-- [ ] **Option B (MCP Inspector):** Launch the server under the MCP Inspector, list resources/tools, and call `read`; confirm word-limited output.
+- [ ] **Option A (direct run):** Start `server.py` standalone (e.g. `python custom-mcp-server/server.py`) and confirm it boots without errors.
+- [ ] **Option B (FastMCP dev / MCP Inspector):** Run via `fastmcp dev` / MCP Inspector, list resources/tools, and call `read`; confirm word-limited output.
 - [ ] **Option C (client end-to-end):** From the client, call the `read` tool (default 30 and a custom `word_count`) and confirm exactly N words returned.
 
 Checklist (all must hold):
 
-- [ ] `./gradlew :homework-5:build` passes with zero errors (warnings investigated)
-- [ ] Startup command works and is verified
+- [ ] Startup command/script works and is verified
 - [ ] `.mcp.json` is valid and points at the custom server
-- [ ] MCP Kotlin SDK confirmed present in the version catalog + subproject dependencies
+- [ ] `fastmcp` confirmed present in dependencies
 - [ ] `read` with default returns 30 words; with custom value returns exactly that many
-- [ ] **Log:** `docs/logs/task-4-custom.md` records build/run commands + tools used to add the server
-- [ ] **Quality gate:** `docs/screenshots/04-reply-custom-mcp-read-tool-result.png` saved showing a successful `read` call/result
+- [ ] **Log:** `docs/logs/task-4-custom.md` records install/run commands + tools used to add the server
+- [ ] **Quality gate:** `docs/screenshots/04-…-custom-mcp-read-tool-….png` saved showing a successful `read` call/result
 - [ ] Gate confirmed before starting Phase 5
 
-**Risks:** Word-count off-by-one (tokenization/whitespace edge cases); MCP Kotlin SDK version/API drift; stdio transport must match the client config; default not applied when param omitted; Gradle `mainClass`/run wiring for a long-lived stdio process.
+**Risks:** Word-count off-by-one (tokenization/whitespace edge cases); FastMCP version/API drift; stdio transport must match the client config; default not applied when param omitted; Python environment/venv reproducibility.
 
 ---
 
@@ -228,7 +224,7 @@ Checklist (all must hold):
 
 - Confirm all four screenshots exist in `docs/screenshots/` with the expected filenames.
 - Confirm all four command/tool logs exist in `docs/logs/` and are secret-free.
-- Finalize `README.md`: description, author name, platform chosen for Task 3, and the **Kotlin-instead-of-FastMCP override rationale** — **request permission before modifying `README.md` per AGENTS.md.**
+- Finalize `README.md`: description, author name, platform chosen for Task 3, and the **Python/FastMCP deviation rationale** (per STACK.MD) — **request permission before modifying `README.md` per AGENTS.md.**
 - Ensure `HOWTORUN.md` reflects the actual commands and env vars.
 - Open a PR with a summary and the screenshots; commit `.mcp.json`, `custom-mcp-server/`, dependencies, and `docs/`.
 
@@ -256,8 +252,8 @@ Checklist:
 ## Final Deliverables Checklist (maps to TASKS.md)
 
 - [ ] Project-local `.mcp.json` registers all **four** servers
-- [ ] Kotlin custom MCP server with Resource + `read` Tool (MCP Kotlin SDK)
-- [ ] MCP Kotlin SDK declared in `gradle/libs.versions.toml` + `homework-5/build.gradle.kts`
+- [ ] `custom-mcp-server/server.py` (FastMCP) with Resource + `read` Tool
+- [ ] `requirements.txt` / `pyproject.toml` including `fastmcp`
 - [ ] `custom-mcp-server/lorem-ipsum.md` source text
 - [ ] `docs/screenshots/` with all four result screenshots
 - [ ] `docs/logs/` with all four command/tool audit logs (secrets redacted)

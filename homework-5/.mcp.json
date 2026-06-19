@@ -20,11 +20,9 @@
       "url": "https://mcp.atlassian.com/v1/mcp"
     },
     "custom-lorem": {
-      "command": "./gradlew",
+      "command": "python",
       "args": [
-        ":homework-5:run",
-        "-q",
-        "--console=plain"
+        "custom-mcp-server/server.py"
       ]
     }
   }
