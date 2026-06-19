@@ -1,0 +1,16 @@
+# Secrets / environment
+*.env
+.env
+.env.*
+*.secret
+mcp.env
+
+# Python (custom FastMCP server)
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node (npx server caches, if any local installs)
+node_modules/

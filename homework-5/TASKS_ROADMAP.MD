@@ -1,0 +1,269 @@
+# Homework-5 — Implementation Roadmap (TASKS_ROADMAP)
+
+A phased, checklist-driven plan to configure **three external MCP servers** (GitHub, Filesystem, Jira **or** Notion) and build **one custom MCP server with FastMCP**, with **screenshot evidence as the quality gate** between every task.
+
+> **Stack note / deviation:** `.agents/docs/STACK.MD` mandates Kotlin/Gradle. `homework-5/TASKS.md` explicitly mandates a **Python + FastMCP** custom server (`server.py`, `requirements.txt`/`fastmcp`), so this subproject deviates for the `custom-mcp-server/` only — allowed because a subproject's `TASKS.md` may mandate a different runtime. The deviation and its rationale should be recorded in `README.md` (per STACK.MD Deviation Policy). No cross-subproject coupling is introduced.
+
+---
+
+## Global Conventions (apply to every phase)
+
+### MCP configuration is PROJECT-LOCAL (mandatory)
+
+- All MCP servers are registered in a **project-scoped** config committed to the repo: `homework-5/.mcp.json` (Claude Code project scope) — **not** the user/global config (`~/.claude.json` / `~/.config`).
+- The **Filesystem** MCP path points at a **local project directory** (e.g. this repo or `homework-5/`), using a path relative to the project where the client allows it.
+- The **custom** MCP server is launched from inside the project (`homework-5/custom-mcp-server/`) using a project-relative command.
+- Secrets/tokens are **never** committed: reference them via environment variables in `.mcp.json` and document the variables in `HOWTORUN.md`. Add any real env file to `.gitignore`.
+
+Checklist:
+
+- [x] `homework-5/.mcp.json` exists and is the single source of truth for all four servers
+- [x] No server is configured only in global/user scope
+- [x] Filesystem server path resolves to a local project directory — `…/homework-5` (confirmed via `list_allowed_directories`)
+- [x] No tokens or secrets are hard-coded in committed files (env-var references only)
+- [x] `.gitignore` excludes any local secret/env files
+
+### Screenshot quality gate (mandatory between tasks)
+
+Each task is **not complete** — and the next task must **not start** — until its screenshot evidence exists in `homework-5/docs/screenshots/` and clearly shows a successful MCP interaction (request + result). This is the gate enforced throughout this roadmap.
+
+Per-task gate status (screenshot in `docs/screenshots/`, shows request + result, sensitive data redacted):
+
+- [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
+- [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
+- [x] Task 3 Jira — `03-prompt-claude-cli-mcp-00.png`, `03-prompt-claude-cli-mcp-jira-dir-structure.png` (0 bugs in project; see follow-up)
+- [x] Task 4 Custom server — `04-prompt-claude-cli-mcp-00.png`, `04-prompt-claude-cli-mcp-custom-tools.png`, `04-prompt-claude-cli-mcp-custom-interaction.png`
+
+### Command & tool logging (mandatory)
+
+Every command run and tool used to **add/configure each MCP server** is recorded under `homework-5/docs/logs/`. This is an audit trail of *how* each server was wired up, separate from the screenshot evidence of results.
+
+- One log file per task: `docs/logs/task-1-github.md`, `task-2-filesystem.md`, `task-3-jira.md`, `task-4-custom.md`.
+- Each entry captures: the **command(s)** run (install, `claude mcp add ...`, config edits, server start), the **client/tool** used (e.g. Claude Code CLI, MCP Inspector), the working directory, and the **result/output** (success or error + fix).
+- Keep secrets/tokens redacted in logs (use `***` or env-var names).
+- Logs are committed to the repo as part of the deliverables.
+
+Per-task log status (`docs/logs/`, captures commands + tools + result, secrets redacted):
+
+- [x] `task-0-scaffolding.md` (Phase 0)
+- [x] `task-1-github.md`
+- [x] `task-2-filesystem.md`
+- [x] `task-3-jira.md`
+- [x] `task-4-custom.md` (build/test + client end-to-end result logged)
+
+---
+
+## Phase 0 — Scaffolding & Project-Local Config
+
+**Goal:** Establish the folder contract and the project-local MCP config shell.
+
+- Create the `homework-5/` structure: `custom-mcp-server/`, `docs/screenshots/`, `docs/logs/`.
+- Seed `homework-5/.mcp.json` with empty/placeholder server blocks (filled per phase).
+- Seed `README.md` (description + author name placeholder) and `HOWTORUN.md` (install/run/connect/usage placeholders).
+- Add `.gitignore` entries for secrets and Python artifacts (`.venv/`, `__pycache__/`, `*.env`).
+
+**Files:** `homework-5/.mcp.json`, `README.md`, `HOWTORUN.md`, `.gitignore`, `docs/logs/`, folder tree.
+
+Checklist:
+
+- [x] Folder tree matches the Expected Project Structure in `TASKS.md` (plus `docs/logs/`)
+- [x] `docs/logs/` folder created for command/tool audit trail
+- [x] `.mcp.json` is valid JSON and parses in the target client (validated; `/doctor` reads it)
+- [x] `README.md` and `HOWTORUN.md` placeholders created
+- [x] `.gitignore` covers secrets + build artifacts
+- [x] Phase 0 logged → `docs/logs/task-0-scaffolding.md`
+
+**Risks:** Committing the wrong (global) config; invalid JSON breaking client startup.
+
+---
+
+## Phase 1 — Task 1: GitHub MCP ⭐
+
+**Goal:** Connect the client to GitHub via the official GitHub MCP server, registered project-locally.
+
+- Add the GitHub MCP server block to `homework-5/.mcp.json`.
+- Provide a GitHub token via env var (`GITHUB_PERSONAL_ACCESS_TOKEN` or equivalent), referenced in config — not hard-coded.
+- Restart/reload the client and confirm the server registers without errors.
+- Perform **at least one** successful interaction against your repository.
+
+**Verification — choose at least one (alternative approaches accepted):**
+
+- [x] **Option A (read):** Prompt the client to *list recent pull requests* of the repo and capture the response. ✅ Listed 9 closed PRs of `dragsa/gen-ai-software-engineering`.
+- [ ] **Option B (read):** Prompt it to *summarize the latest commits* on a branch.
+- [ ] **Option C (write):** Ask it to *create an issue* and confirm it appears in GitHub.
+
+Checklist:
+
+- [x] GitHub MCP block added to project-local `.mcp.json`
+- [x] Token supplied via env var (not committed) — exported to the session
+- [x] Server registers/starts with no errors (verify via client's MCP/server status) — `github` connected in `/mcp`
+- [x] At least one verification option above succeeds
+- [x] **Log:** `docs/logs/task-1-github.md` records commands + tools used to add the server (secrets redacted)
+- [x] **Quality gate:** screenshots saved — `docs/screenshots/01-prompt-claude-cli-mcp-00.png` (server connected) and `01-prompt-claude-cli-mcp-git-closed-PRs.png` (PR list result)
+- [x] Gate confirmed before starting Phase 2
+
+**Risks:** Token scope too narrow (read vs. write); rate limits; org SSO authorization required.
+
+---
+
+## Phase 2 — Task 2: Filesystem MCP ⭐
+
+**Goal:** Connect the client to a **local project directory** via the Filesystem MCP server.
+
+- Add the Filesystem MCP server block to `homework-5/.mcp.json`, with the allowed path set to a **local** directory (e.g. the repo root or `homework-5/`).
+- Restart/reload and confirm registration.
+- Perform **at least one** successful interaction.
+
+**Verification — choose at least one (alternatives accepted):**
+
+- [x] **Option A:** Prompt the client to *list files* in the configured directory. ✅ Full recursive listing of `homework-5/`.
+- [ ] **Option B:** Prompt it to *read a specific file* (e.g. `homework-5/TASKS.md`) and show contents.
+- [x] **Option C:** Prompt it to *summarize the directory structure*. ✅ Rendered as a Path/Type/Notes table.
+
+Checklist:
+
+- [x] Filesystem MCP block added with a **local** path (requirement) — `npx … server-filesystem ${FILESYSTEM_MCP_PATH}`
+- [x] Path is project-scoped, not an unrelated global location — `…/homework-5` (confirmed via `list_allowed_directories`)
+- [x] Server registers/starts with no errors — `filesystem` connected in `/mcp`
+- [x] At least one verification option above succeeds — `directory_tree` returned the listing
+- [x] **Log:** `docs/logs/task-2-filesystem.md` records commands + tools used to add the server
+- [x] **Quality gate:** screenshots saved — `02-prompt-claude-cli-mcp-00.png` (connected) and `02-prompt-claude-cli-mcp-filesystem-dir-structure.png` (result)
+- [x] Gate confirmed before starting Phase 3
+
+**Risks:** Over-broad path (granting access beyond the project); path separators on Windows vs. Unix; permission denials.
+
+---
+
+## Phase 3 — Task 3: Jira **or** Notion MCP ⭐⭐
+
+**Goal:** Connect the client to Jira **or** Notion and run the required "last 5 bugs" query.
+**Chosen platform: Jira** — official Atlassian Remote MCP (`https://mcp.atlassian.com/v1/sse`, SSE, OAuth).
+
+- Decide **Jira or Notion** (pick the one you have a real project/workspace in). ✅ Jira.
+- Add the chosen MCP server block to `homework-5/.mcp.json` (Jira uses OAuth — no committed creds). ✅
+- Restart/reload and confirm registration.
+- **Make the required request:** *"Give me the tickets/pages of the last 5 bugs on a project"* against a real project.
+- Capture the full response; **redact** sensitive content — show only ticket keys / page numbers.
+
+**Verification — alternative approaches by platform:**
+
+- [~] **Jira path:** request executed (`project = SCRUM AND issuetype = Bug ORDER BY created DESC`) → **0 bug-type issues** in project SCRUM (only 5 Stories exist). Valid result, but no bugs to show → see follow-up below.
+- [ ] **Notion path:** n/a — Jira chosen.
+
+Checklist:
+
+- [x] Platform chosen (Jira or Notion) and noted in README/HOWTORUN — **Jira**, official Atlassian Remote MCP
+- [x] MCP block added to project-local `.mcp.json` — `jira`; endpoint updated to streamable HTTP `…/v1/mcp` (SSE deprecates 2026-06-30)
+- [x] Server registers/starts with no errors — `jira` connected, 31 tools
+- [x] The exact "last 5 bugs" request returns valid results — JQL ran; project SCRUM has 0 bugs (only Stories)
+- [x] Response redacted to IDs/numbers only — only issue keys/types shown (test data; no sensitive content)
+- [x] **Log:** `docs/logs/task-3-jira.md` records commands + tools used + result
+- [x] **Quality gate:** screenshots saved — `03-prompt-claude-cli-mcp-00.png` (connected) and `03-prompt-claude-cli-mcp-jira-dir-structure.png` (query result)
+- [x] **Follow-up resolved:** decision = record "no bugs, but 5 Stories present" (SCRUM-1…5); no sample bugs created
+- [x] Gate confirmed before starting Phase 4
+
+**Risks:** API token/permission scope; project key/database ID discovery; accidental exposure of sensitive ticket content in the screenshot.
+
+---
+
+## Phase 4 — Task 4: Custom MCP Server with FastMCP ⭐⭐⭐
+
+**Goal:** Build a custom MCP server in **Python with FastMCP** exposing a **Resource** and a `read` **Tool** over `lorem-ipsum.md`, wired into the project-local config. (Per TASKS.md.)
+
+### 4.1 — Implement the server
+
+- Create `custom-mcp-server/server.py` implementing FastMCP.
+- Create `custom-mcp-server/lorem-ipsum.md` with enough text (well over 30 words).
+- Add a **Resource** URI that reads `lorem-ipsum.md`, accepts `word_count` (**default 30**), and returns exactly that many words.
+- Add a **Tool** named `read` with an optional `word_count` param that returns the resource content.
+- Add `requirements.txt` (or `pyproject.toml`) that **explicitly includes `fastmcp`**.
+
+Checklist:
+
+- [x] `custom-mcp-server/server.py` implements FastMCP
+- [x] `requirements.txt` / `pyproject.toml` lists `fastmcp` explicitly — `fastmcp>=2.0`
+- [x] `lorem-ipsum.md` present with > 30 words of source text — 69 words
+- [x] Resource reads the file, honors `word_count` (default 30), returns exactly N words — verified (stubbed)
+- [x] `read` tool present with optional `word_count`, returns resource content — verified (stubbed)
+
+### 4.2 — Wire into project-local config & document
+
+- Add the custom server block to `homework-5/.mcp.json` using a **project-relative** launch command (e.g. `python custom-mcp-server/server.py`, or `fastmcp run custom-mcp-server/server.py`).
+- Write `HOWTORUN.md`: install dependencies, run the server, connect MCP config, and use/test the `read` tool.
+- Add the short doc explanation: **Resources** = URIs Claude can read from (files, APIs); **Tools** = actions Claude can call to perform operations.
+
+Checklist:
+
+- [x] Custom server registered in project-local `.mcp.json` with a project-relative command — `custom-mcp-server/.venv/bin/python3 custom-mcp-server/server.py` (venv interpreter)
+- [x] `HOWTORUN.md` covers install / run / connect / use-and-test
+- [x] Resources-vs-Tools explanation included in docs
+
+### 4.3 — Verify (alternative approaches accepted)
+
+- [x] **Option A (direct run):** logic verified in sandbox (fastmcp stubbed); real server boots under the venv on the client — `custom-lorem` connected in `/mcp`.
+- [ ] **Option B (FastMCP dev / MCP Inspector):** not used (Option C covered it).
+- [x] **Option C (client end-to-end):** ✅ `read` (default) → 30 words; `read` 5 → exactly 5 words, in Claude Code.
+
+Checklist (all must hold):
+
+- [x] Startup command/script works and is verified — `custom-lorem` connected end-to-end in `/mcp`
+- [x] `.mcp.json` is valid and points at the custom server
+- [x] `fastmcp` confirmed present in dependencies
+- [x] `read` with default returns 30 words; with custom value returns exactly that many — verified (default 30; read 5 → 5)
+- [x] **Log:** `docs/logs/task-4-custom.md` records install/run commands + tools used to add the server
+- [x] **Quality gate:** screenshots saved — `04-prompt-claude-cli-mcp-00.png` (resource listed), `04-prompt-claude-cli-mcp-custom-tools.png` (read tool), `04-prompt-claude-cli-mcp-custom-interaction.png` (default 30 + read 5)
+- [x] Gate confirmed before starting Phase 5
+
+**Risks:** Word-count off-by-one (tokenization/whitespace edge cases); FastMCP version/API drift; stdio transport must match the client config; default not applied when param omitted; Python environment/venv reproducibility.
+
+---
+
+## Phase 5 — Evidence, Docs & Submission
+
+**Goal:** Package all deliverables for review.
+
+- Confirm all four screenshots exist in `docs/screenshots/` with the expected filenames.
+- Confirm all four command/tool logs exist in `docs/logs/` and are secret-free.
+- Finalize `README.md`: description, author name, platform chosen for Task 3, and the **Python/FastMCP deviation rationale** (per STACK.MD) — **request permission before modifying `README.md` per AGENTS.md.**
+- Ensure `HOWTORUN.md` reflects the actual commands and env vars.
+- Open a PR with a summary and the screenshots; commit `.mcp.json`, `custom-mcp-server/`, dependencies, and `docs/`.
+
+Checklist:
+
+- [x] All task screenshots present (named `NN-…` per convention):
+  - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
+  - [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
+  - [x] Task 3 Jira — `03-prompt-claude-cli-mcp-00.png`, `03-prompt-claude-cli-mcp-jira-dir-structure.png`
+  - [x] Task 4 Custom — `04-prompt-claude-cli-mcp-00.png`, `04-…-custom-tools.png`, `04-…-custom-interaction.png`
+- [x] All 4 command/tool logs present in `docs/logs/`:
+  - [x] `task-1-github.md`
+  - [x] `task-2-filesystem.md`
+  - [x] `task-3-jira.md`
+  - [x] `task-4-custom.md`
+- [x] `README.md` finalized (what was done, servers, resources-vs-tools, custom MCP details, final tree, deviation) — user-approved
+- [x] `HOWTORUN.md` accurate and reproducible
+
+**Risks:** README edits gated on user approval; forgetting to commit `.mcp.json` or the custom server; leaking secrets in the PR diff.
+
+---
+
+## Final Deliverables Checklist (maps to TASKS.md)
+
+- [x] Project-local `.mcp.json` registers all **four** servers (github, filesystem, jira, custom-lorem)
+- [x] `custom-mcp-server/server.py` (FastMCP) with Resource + `read` Tool
+- [x] `requirements.txt` / `pyproject.toml` including `fastmcp`
+- [x] `custom-mcp-server/lorem-ipsum.md` source text (69 words)
+- [x] `docs/screenshots/` with all four result screenshots
+- [x] `docs/logs/` with all four command/tool audit logs (secrets redacted)
+- [x] `README.md` (description + author) and `HOWTORUN.md` (install/run/connect/usage) — finalized
+
+---
+
+## Cross-Cutting Constraints
+
+- MCP configuration **project-local**, never global; Filesystem path **local**; secrets via env vars only.
+- **Screenshot evidence is the quality gate** — no task is done, and no next task starts, without it.
+- **Command/tool logging is mandatory** — every step to add an MCP is recorded in `docs/logs/` (secrets redacted).
+- `TASKS.md` is read-only; `README.md` edits require user permission (AGENTS.md).
+- Subproject isolation: no cross-subproject coupling; minimal, scoped changes.
+- Per project CLAUDE.md: Plan → **Approve** → Execute. This roadmap is the plan; execution awaits approval.
