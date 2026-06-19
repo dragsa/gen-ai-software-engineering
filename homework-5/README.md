@@ -1,6 +1,10 @@
-# Homework 5 — Configure MCP Servers (GitHub, Filesystem, Jira, Custom)
+# Homework 5: Configure MCP Servers (GitHub, Filesystem, Jira, Custom)
 
-**Author:** dragsa (to.gnatuk@gmail.com)
+- **Student Name**: Andrii Gnatiuk
+- **Date Submitted**: 19.06.2026
+- **AI Tools Used**: Claude (Anthropic) via Cowork, test via Claude CLI
+
+---
 
 Configure three external MCP servers and build one custom MCP server, all registered in a
 **project-local** `.mcp.json`, demonstrated against Claude Code with screenshot evidence per task.
