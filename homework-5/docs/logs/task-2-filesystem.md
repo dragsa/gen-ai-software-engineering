@@ -37,3 +37,23 @@ confirmed the server is scoped to the project path.
 
 - Screenshot: `docs/screenshots/02-prompt-claude-cli-mcp-00.png` — `filesystem` listed/connected (listMcpResources)
 - Screenshot: `docs/screenshots/02-prompt-claude-cli-mcp-filesystem-dir-structure.png` — dir listing table result
+
+## How this server was added (commands & actions)
+
+Method: **declarative** — edited project-scoped `homework-5/.mcp.json` directly (no `claude mcp add`).
+
+Equivalent imperative command (for reference):
+
+```bash
+claude mcp add --scope project filesystem -- \
+  npx -y @modelcontextprotocol/server-filesystem "${FILESYSTEM_MCP_PATH}"
+```
+
+Client actions actually performed:
+```text
+export FILESYSTEM_MCP_PATH="…/gen-ai-software-engineering/homework-5"
+claude                                  # restart so ${VAR} expands in args
+/mcp  (approve project servers)         # filesystem -> connected (14 tools)
+# interaction prompt:
+"using mcp filesystem, list all files in homework-5 dir and give summary of entities in table form"
+```

@@ -50,3 +50,21 @@ record "no bugs exist yet" as the result.
 Recorded as: **no Bug-type issues in SCRUM, but 5 Stories present** (SCRUM-1…SCRUM-5).
 The required "last 5 bugs" request was executed correctly and returned valid results (empty for
 bugs). Evidence screenshots retained; no sample bugs created. Task 3 gate satisfied.
+
+## How this server was added (commands & actions)
+
+Method: **declarative** — edited project-scoped `homework-5/.mcp.json` directly (no `claude mcp add`).
+
+Equivalent imperative command (for reference):
+
+```bash
+claude mcp add --scope project --transport http jira https://mcp.atlassian.com/v1/mcp
+```
+
+Client actions actually performed:
+```text
+claude                                  # reload so it reads the jira block
+/mcp  -> jira -> Authenticate           # Atlassian OAuth in browser -> connected (31 tools)
+# interaction prompt:
+"using jira mcp Give me the tickets/pages of the last 5 bugs on a project"
+```

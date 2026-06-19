@@ -51,3 +51,24 @@ Resolution steps:
 
 Note: `/doctor` does not scan `headers` for `${VARS}`, so the GitHub token never appears as a
 missing-env warning — connection status must be checked in `/mcp`.
+
+## How this server was added (commands & actions)
+
+Method: **declarative** — edited project-scoped `homework-5/.mcp.json` directly (no `claude mcp add`).
+
+Equivalent imperative command (for reference; produces the same project-scoped entry):
+
+```bash
+claude mcp add --scope project --transport http github \
+  https://api.githubcopilot.com/mcp/ \
+  --header "Authorization: Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+```
+
+Client actions actually performed:
+```text
+export GITHUB_PERSONAL_ACCESS_TOKEN=***   # in the shell that launches claude
+claude                                     # restart so it reads .mcp.json + inherits the token
+/mcp  -> github -> Reconnect/Authenticate  # bring server online
+# interaction prompt:
+"List recent closed PRs of this repo"
+```
