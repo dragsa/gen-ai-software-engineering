@@ -20,7 +20,7 @@
       "url": "https://mcp.atlassian.com/v1/mcp"
     },
     "custom-lorem": {
-      "command": "python",
+      "command": "custom-mcp-server/.venv/bin/python3",
       "args": [
         "custom-mcp-server/server.py"
       ]

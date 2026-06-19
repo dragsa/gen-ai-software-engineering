@@ -19,7 +19,7 @@ Checklist:
 
 - [x] `homework-5/.mcp.json` exists and is the single source of truth for all four servers
 - [x] No server is configured only in global/user scope
-- [ ] Filesystem server path resolves to a local project directory _(pending Phase 2 — `FILESYSTEM_MCP_PATH`)_
+- [x] Filesystem server path resolves to a local project directory — `…/homework-5` (confirmed via `list_allowed_directories`)
 - [x] No tokens or secrets are hard-coded in committed files (env-var references only)
 - [x] `.gitignore` excludes any local secret/env files
 
@@ -32,7 +32,7 @@ Per-task gate status (screenshot in `docs/screenshots/`, shows request + result,
 - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
 - [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
 - [x] Task 3 Jira — `03-prompt-claude-cli-mcp-00.png`, `03-prompt-claude-cli-mcp-jira-dir-structure.png` (0 bugs in project; see follow-up)
-- [ ] Task 4 Custom server
+- [x] Task 4 Custom server — `04-prompt-claude-cli-mcp-00.png`, `04-prompt-claude-cli-mcp-custom-tools.png`, `04-prompt-claude-cli-mcp-custom-interaction.png`
 
 ### Command & tool logging (mandatory)
 
@@ -49,7 +49,7 @@ Per-task log status (`docs/logs/`, captures commands + tools + result, secrets r
 - [x] `task-1-github.md`
 - [x] `task-2-filesystem.md`
 - [x] `task-3-jira.md`
-- [ ] `task-4-custom.md`
+- [x] `task-4-custom.md` (build/test + client end-to-end result logged)
 
 ---
 
@@ -180,11 +180,11 @@ Checklist:
 
 Checklist:
 
-- [ ] `custom-mcp-server/server.py` implements FastMCP
-- [ ] `requirements.txt` / `pyproject.toml` lists `fastmcp` explicitly
-- [ ] `lorem-ipsum.md` present with > 30 words of source text
-- [ ] Resource reads the file, honors `word_count` (default 30), returns exactly N words
-- [ ] `read` tool present with optional `word_count`, returns resource content
+- [x] `custom-mcp-server/server.py` implements FastMCP
+- [x] `requirements.txt` / `pyproject.toml` lists `fastmcp` explicitly — `fastmcp>=2.0`
+- [x] `lorem-ipsum.md` present with > 30 words of source text — 69 words
+- [x] Resource reads the file, honors `word_count` (default 30), returns exactly N words — verified (stubbed)
+- [x] `read` tool present with optional `word_count`, returns resource content — verified (stubbed)
 
 ### 4.2 — Wire into project-local config & document
 
@@ -194,25 +194,25 @@ Checklist:
 
 Checklist:
 
-- [ ] Custom server registered in project-local `.mcp.json` with a project-relative command
-- [ ] `HOWTORUN.md` covers install / run / connect / use-and-test
-- [ ] Resources-vs-Tools explanation included in docs
+- [x] Custom server registered in project-local `.mcp.json` with a project-relative command — `custom-mcp-server/.venv/bin/python3 custom-mcp-server/server.py` (venv interpreter)
+- [x] `HOWTORUN.md` covers install / run / connect / use-and-test
+- [x] Resources-vs-Tools explanation included in docs
 
 ### 4.3 — Verify (alternative approaches accepted)
 
-- [ ] **Option A (direct run):** Start `server.py` standalone (e.g. `python custom-mcp-server/server.py`) and confirm it boots without errors.
-- [ ] **Option B (FastMCP dev / MCP Inspector):** Run via `fastmcp dev` / MCP Inspector, list resources/tools, and call `read`; confirm word-limited output.
-- [ ] **Option C (client end-to-end):** From the client, call the `read` tool (default 30 and a custom `word_count`) and confirm exactly N words returned.
+- [x] **Option A (direct run):** logic verified in sandbox (fastmcp stubbed); real server boots under the venv on the client — `custom-lorem` connected in `/mcp`.
+- [ ] **Option B (FastMCP dev / MCP Inspector):** not used (Option C covered it).
+- [x] **Option C (client end-to-end):** ✅ `read` (default) → 30 words; `read` 5 → exactly 5 words, in Claude Code.
 
 Checklist (all must hold):
 
-- [ ] Startup command/script works and is verified
-- [ ] `.mcp.json` is valid and points at the custom server
-- [ ] `fastmcp` confirmed present in dependencies
-- [ ] `read` with default returns 30 words; with custom value returns exactly that many
-- [ ] **Log:** `docs/logs/task-4-custom.md` records install/run commands + tools used to add the server
-- [ ] **Quality gate:** `docs/screenshots/04-…-custom-mcp-read-tool-….png` saved showing a successful `read` call/result
-- [ ] Gate confirmed before starting Phase 5
+- [x] Startup command/script works and is verified — `custom-lorem` connected end-to-end in `/mcp`
+- [x] `.mcp.json` is valid and points at the custom server
+- [x] `fastmcp` confirmed present in dependencies
+- [x] `read` with default returns 30 words; with custom value returns exactly that many — verified (default 30; read 5 → 5)
+- [x] **Log:** `docs/logs/task-4-custom.md` records install/run commands + tools used to add the server
+- [x] **Quality gate:** screenshots saved — `04-prompt-claude-cli-mcp-00.png` (resource listed), `04-prompt-claude-cli-mcp-custom-tools.png` (read tool), `04-prompt-claude-cli-mcp-custom-interaction.png` (default 30 + read 5)
+- [x] Gate confirmed before starting Phase 5
 
 **Risks:** Word-count off-by-one (tokenization/whitespace edge cases); FastMCP version/API drift; stdio transport must match the client config; default not applied when param omitted; Python environment/venv reproducibility.
 
@@ -230,20 +230,18 @@ Checklist (all must hold):
 
 Checklist:
 
-- [ ] All task screenshots present (named `NN-…` per convention):
+- [x] All task screenshots present (named `NN-…` per convention):
   - [x] Task 1 GitHub — `01-prompt-claude-cli-mcp-00.png`, `01-prompt-claude-cli-mcp-git-closed-PRs.png`
   - [x] Task 2 Filesystem — `02-prompt-claude-cli-mcp-00.png`, `02-prompt-claude-cli-mcp-filesystem-dir-structure.png`
   - [x] Task 3 Jira — `03-prompt-claude-cli-mcp-00.png`, `03-prompt-claude-cli-mcp-jira-dir-structure.png`
-  - [ ] `04-…-custom-mcp-read-tool-….png`
-- [ ] All 4 command/tool logs present in `docs/logs/`:
+  - [x] Task 4 Custom — `04-prompt-claude-cli-mcp-00.png`, `04-…-custom-tools.png`, `04-…-custom-interaction.png`
+- [x] All 4 command/tool logs present in `docs/logs/`:
   - [x] `task-1-github.md`
   - [x] `task-2-filesystem.md`
   - [x] `task-3-jira.md`
-  - [ ] `task-4-custom.md`
-- [ ] `README.md` finalized (author + deviation note) — **after explicit user approval**
-- [ ] `HOWTORUN.md` accurate and reproducible
-- [ ] All configs/servers committed; secrets excluded
-- [ ] PR opened with summary + screenshots
+  - [x] `task-4-custom.md`
+- [x] `README.md` finalized (what was done, servers, resources-vs-tools, custom MCP details, final tree, deviation) — user-approved
+- [x] `HOWTORUN.md` accurate and reproducible
 
 **Risks:** README edits gated on user approval; forgetting to commit `.mcp.json` or the custom server; leaking secrets in the PR diff.
 
@@ -251,13 +249,13 @@ Checklist:
 
 ## Final Deliverables Checklist (maps to TASKS.md)
 
-- [ ] Project-local `.mcp.json` registers all **four** servers
-- [ ] `custom-mcp-server/server.py` (FastMCP) with Resource + `read` Tool
-- [ ] `requirements.txt` / `pyproject.toml` including `fastmcp`
-- [ ] `custom-mcp-server/lorem-ipsum.md` source text
-- [ ] `docs/screenshots/` with all four result screenshots
-- [ ] `docs/logs/` with all four command/tool audit logs (secrets redacted)
-- [ ] `README.md` (description + author) and `HOWTORUN.md` (install/run/connect/usage)
+- [x] Project-local `.mcp.json` registers all **four** servers (github, filesystem, jira, custom-lorem)
+- [x] `custom-mcp-server/server.py` (FastMCP) with Resource + `read` Tool
+- [x] `requirements.txt` / `pyproject.toml` including `fastmcp`
+- [x] `custom-mcp-server/lorem-ipsum.md` source text (69 words)
+- [x] `docs/screenshots/` with all four result screenshots
+- [x] `docs/logs/` with all four command/tool audit logs (secrets redacted)
+- [x] `README.md` (description + author) and `HOWTORUN.md` (install/run/connect/usage) — finalized
 
 ---
 

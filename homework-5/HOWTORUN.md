@@ -5,7 +5,9 @@
 ## 1. Prerequisites
 
 - Node.js (for `npx`-based servers: Filesystem)
-- Python 3.10+ and `pip` (for the custom FastMCP server)
+- Python **3.10+** and `pip` (FastMCP 2.x requires ≥ 3.10). Note: macOS's built-in `python3` is
+  often 3.9 — check with `python3 --version`; if older, install a newer one (e.g.
+  `brew install python@3.12`) and use `python3.12` explicitly below.
 - An MCP client (Claude Code) that reads project-scoped `.mcp.json`
 
 ## 2. Configuration (project-local)
@@ -132,19 +134,45 @@ streamable-HTTP endpoint. After switching, reconnect via `/mcp` — re-auth may 
 > `JIRA_API_TOKEN` env vars. Either satisfies Task 3; the hosted OAuth server avoids committing
 > credentials.
 
-## 4. Custom server (Phase 4)
+### Task 4 — Custom MCP Server (FastMCP) (runbook)
 
-```bash
-# install dependencies (fastmcp)
-pip install -r custom-mcp-server/requirements.txt
-# run (stdio MCP server; also launched by the client via .mcp.json)
-python custom-mcp-server/server.py
-```
+The `custom-lorem` block runs `custom-mcp-server/server.py` (FastMCP) over `lorem-ipsum.md`.
 
-Test the `read` tool (default `word_count` = 30, and a custom value) — see Phase 4 of
-`TASKS_ROADMAP.MD`.
+- **Resources** are URIs Claude reads from: `lorem://words` (first 30 words) and
+  `lorem://words/{word_count}` (first N words).
+- **Tools** are actions Claude calls: `read` with an optional `word_count` (default `30`).
 
-## 5. Evidence
+1. **Create the venv and install dependencies** — **required**, because `.mcp.json` launches the
+   server via `custom-mcp-server/.venv/bin/python3`, so the venv must exist at that path with
+   `fastmcp` installed. Build it with a **3.10+** interpreter (use `python3.12` if your default
+   `python3` is older — see Prerequisites):
+   ```bash
+   cd custom-mcp-server
+   python3.12 -m venv .venv                 # or: python3 -m venv .venv  (only if python3 is >=3.10)
+   .venv/bin/python -m pip install --upgrade pip
+   .venv/bin/pip install -r requirements.txt
+   .venv/bin/python --version               # verify 3.10+ ; should NOT be 3.9.x
+   ```
+   (Calling `.venv/bin/...` directly means you don't need to `activate` the venv. If you prefer,
+   `source .venv/bin/activate` first and drop the `.venv/bin/` prefixes.)
+2. **Reload/connect** — the client launches it via `.mcp.json`
+   (`custom-lorem` → `custom-mcp-server/.venv/bin/python3 custom-mcp-server/server.py`), which
+   uses the **venv interpreter directly**, so no PATH/activation is needed before starting Claude
+   Code. Confirm `custom-lorem` shows **connected** in `/mcp`. To run standalone:
+   `.venv/bin/python3 server.py` (stdio) or `fastmcp dev server.py` (MCP Inspector).
+3. **Call the `read` tool** — once with no args (returns 30 words) and once with `word_count`
+   (e.g. 5) → exactly that many words.
+4. **Capture the screenshot** of prompt + result →
+   `docs/screenshots/04-…-custom-mcp-read-tool-….png`.
+5. **Log it** in `docs/logs/task-4-custom.md`.
+
+> The `.mcp.json` command points at `custom-mcp-server/.venv/bin/python3`, so the server always
+> runs under the 3.12 venv where `fastmcp` is installed — no global `python3` change or venv
+> activation required. (Paths are relative to the project dir where Claude Code is launched.)
+> `server.py` resolves `lorem-ipsum.md` relative to itself, so the working directory doesn't
+> affect file reads.
+
+## 4. Evidence
 
 - Result screenshots → `docs/screenshots/`
 - Command/tool audit logs → `docs/logs/`
