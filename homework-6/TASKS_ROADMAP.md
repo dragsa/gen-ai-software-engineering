@@ -120,7 +120,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [x] Folder tree created (single flat `homework6` package)
 - [x] `shared/{input,processing,output,results}/.gitkeep` present
 - [x] `README.md` / `HOWTORUN.md` placeholders + `.gitignore`
-- [ ] **Gate:** `./gradlew :homework-6:build` succeeds on the empty skeleton — ⚠️ **blocked in this sandbox** (JDK 11 only; Gradle 9.3 + JVM-21 toolchain need JDK 17+, and the proxy allowlist blocks the Gradle distribution + Maven Central). **Run once locally to confirm.**
+- [x] **Gate:** `./gradlew :homework-6:build` succeeds on the empty skeleton — ✅ verified locally (BUILD SUCCESSFUL, 9 tasks; Kover `minBound(80)` DSL accepted).
 
 ---
 
@@ -146,12 +146,12 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 
 **Checklist:**
 
-- [ ] `.claude/commands/write-spec.md` skill authored
-- [ ] `specification.md` — all 5 sections present
-- [ ] Low-Level Tasks: one entry per runtime agent (`Task/Prompt/File/Function/Details`)
-- [ ] Decision rules for TXN001–TXN008 encoded in the spec
-- [ ] `agents.md` extended with project context (agents, message format, shared-dir protocol)
-- [ ] **Gate:** `write-spec` runs and regenerates a template-conformant spec
+- [x] `.claude/commands/write-spec.md` skill authored
+- [x] `specification.md` — all 5 sections present
+- [x] Low-Level Tasks: one entry per runtime agent (`Task/Prompt/File/Function/Details`)
+- [x] Decision rules for TXN001–TXN008 encoded in the spec
+- [x] `agents.md` extended with project context (agents, message format, shared-dir protocol)
+- [x] **Gate:** `write-spec` runs and regenerates a template-conformant spec — ✅ verified via `/write-spec` in Claude Code (regenerated `specification.md`; all 5 sections + per-agent Low-Level Tasks present)
 
 ---
 
