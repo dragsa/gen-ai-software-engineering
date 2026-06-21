@@ -17,3 +17,4 @@ rootProject.name = "gen-ai-software-engineering"
 include("homework-1")
 include("homework-2")
 include("homework-4")
+include("homework-6")
