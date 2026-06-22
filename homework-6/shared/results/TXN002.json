@@ -1,0 +1,28 @@
+{
+    "message_id": "852c6d7f-310f-407e-8b1e-abc692b14d4b",
+    "timestamp": "2026-06-22T20:47:51.819198Z",
+    "source_agent": "fraud_detector",
+    "target_agent": "results",
+    "message_type": "transaction",
+    "data": {
+        "transaction_id": "TXN002",
+        "timestamp": "2026-03-16T09:15:00Z",
+        "source_account": "ACC-1002",
+        "destination_account": "ACC-3001",
+        "amount": "25000.00",
+        "currency": "USD",
+        "transaction_type": "wire_transfer",
+        "description": "Equipment purchase",
+        "metadata": {
+            "channel": "branch",
+            "country": "US"
+        },
+        "status": "flagged_for_review",
+        "reason": null,
+        "risk_score": 60,
+        "risk_reasons": [
+            "high_value"
+        ],
+        "near_threshold": false
+    }
+}

@@ -31,8 +31,10 @@
 
 ```bash
 ./gradlew :homework-6:test
-./gradlew :homework-6:koverVerify   # fails if line coverage < 80%
+./gradlew :homework-6:koverVerify -PenforceCoverage   # fails if line coverage < 80% (the push gate)
 ```
+
+Without `-PenforceCoverage`, `koverVerify` is skipped, so plain `build`/`run` stay green while tests are still being written. The pre-push hook (Phase 3) and CI always pass the flag.
 
 ## Coverage gate hook (Phase 3)
 

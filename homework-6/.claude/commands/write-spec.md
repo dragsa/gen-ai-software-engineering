@@ -35,15 +35,15 @@ Follow the template exactly. The document MUST contain all five sections:
 2. **Mid-Level Objectives** — 4-5 concrete, testable requirements.
 3. **Implementation Notes** — `BigDecimal` for money (never `Double`/`float`); ISO 4217
    currency codes; audit trail with ISO-8601 timestamp, agent name, transaction id, outcome;
-   PII (account numbers, names) never logged in plaintext; Kotlin single flat `homework6`
-   package; kotlinx.serialization for JSON.
+   PII (account numbers, names) never logged in plaintext; Kotlin split into `homework6.common`
+   (models + utils) and `homework6.agent` (agents + model) packages; kotlinx.serialization for JSON.
 4. **Context** — beginning state (`sample-transactions.json`) and ending state (results in
    `shared/results/`, a pipeline summary, test coverage >= 90%).
 5. **Low-Level Tasks** — **one entry per agent**, each in this exact format:
    ```
    Task: [Agent Name]
    Prompt: "[Exact prompt to give Claude Code]"
-   File to CREATE: src/main/kotlin/homework6/[Name].kt
+   File to CREATE: src/main/kotlin/homework6/agent/[Name].kt (agents) or src/main/kotlin/homework6/common/[Name].kt (models/utils)
    Function to CREATE: fun process(message: AgentMessage): AgentMessage
    Details: [What the agent checks, transforms, or decides]
    ```

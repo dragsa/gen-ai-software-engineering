@@ -56,7 +56,7 @@ This satisfies all three constraints at once:
 
 `.agents/docs/STACK.MD` mandates **Kotlin 2.3.20 / JVM 21 / Gradle Kotlin DSL**. The pipeline (integrator + runtime agents + tests) is therefore **Kotlin**.
 
-**Structure — single flat package (approved):** all Kotlin classes live in **one package `homework6`** (no `entrypoint/service/models/validation/utils` sub-packages). This is a deliberate simplification under `AGENTS.MD` ("prefer simpler architecture", "avoid introducing new abstractions unless clearly necessary") for a small, self-contained capstone. STACK.MD's multi-package layout is intended for the Ktor web subprojects; this is a CLI pipeline with a handful of classes, so the split would be over-engineering. The simplification is recorded in `README.md`. Tests mirror this in a single test package.
+**Structure — two packages (approved):** Kotlin classes are split into **`homework6.common`** (shared models + utils: `AgentMessage`, `TransactionData`, `BigDecimalSerializer`, `Iso4217`, `AuditLogger`, `SharedDirs`, `MessageIo`, `Samples`, `AgentRunner`) and **`homework6.agent`** (the runtime agents + their model: `TransactionValidator`, `FraudDetector`, `ReportingAgent`, `PipelineSummary`, `Integrator`). This is a focused middle ground under `AGENTS.MD` ("prefer simpler architecture") rather than STACK.MD's full `entrypoint/service/models/validation/utils` layout, which is intended for the Ktor web subprojects. The structure is recorded in `README.md`.
 
 `TASKS.md` Task 4 explicitly mandates a **FastMCP** server (`mcp/server.py`, Python). Per STACK.MD's **Deviation Policy**, a subproject may deviate *only where its `TASKS.md` mandates it* — so the deviation is confined to `mcp/` (Python), exactly as `homework-5` deviated. Both the Python deviation and the single-package simplification are recorded in `README.md`. No cross-subproject coupling.
 
@@ -70,7 +70,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - Hook script committed at `homework-6/.githooks/pre-push` (repo-tracked, not the un-committable `.git/hooks/`).
 - Activated via `git config core.hooksPath homework-6/.githooks` (documented in `HOWTORUN.md`; can be set in a Gradle/init step).
 - Also surfaced as a Claude Code hook entry in `.claude/settings.json` so the gate is visible to the meta-agent workflow, and reproduced in CI (`.github/workflows`) so the gate holds even if a local hook is skipped with `--no-verify`.
-- Evidence: `docs/screenshots/hook-trigger.png` shows the push **blocked** at <80%, then passing at ≥80%.
+- Evidence: `docs/screenshots/03-hook-trigger.png` shows the push **blocked** at <80%, then passing at ≥80%.
 
 ---
 
@@ -82,6 +82,12 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - **Code style** (`.agents/docs/CODESTYLE.MD`): no wildcard imports; one class/top-level function per file where practical; package names mirror directories.
 - **Register the subproject:** add `include("homework-6")` to the root `settings.gradle.kts` (currently missing).
 - **Screenshot gate:** a task is not "done" until its required screenshot exists in `docs/screenshots/` **and** is referenced in the PR description.
+- **Screenshot naming convention:** files use a phase-numbered prefix `NN-<description>.png` (matching homework-4/-5), not the bare names in `TASKS.md`. Canonical set:
+  - Phase 1 — `01-write-spec.png`
+  - Phase 2 — `02-run-pipeline-log.png`, `02-run-pipeline-result.png` (≙ `pipeline-run.png`)
+  - Phase 3 — `03-run-pipeline-skill.png` (≙ `skill-run-pipeline.png`), `03-validate-transactions-skill.png`, `03-hook-trigger.png` (≙ `hook-trigger.png`)
+  - Phase 4 — `04-mcp-context7.png`, `04-mcp-custom-tool.png` (together ≙ `mcp-interaction.png`)
+  - Phase 5 — `05-test-coverage.png` (≙ `test-coverage.png`)
 - **Secrets:** never commit tokens; context7 config via `mcp.json`, env-vars documented in `HOWTORUN.md`.
 
 ---
@@ -100,7 +106,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
   ├── agents/                      (runtime agent Kotlin sources may live under src/, see note)
   ├── mcp/server.py
   ├── shared/{input,processing,output,results}/.gitkeep
-  ├── src/main/kotlin/homework6/        (all classes in one flat package)
+  ├── src/main/kotlin/homework6/{common,agent}/   (common = models+utils, agent = agents+model)
   ├── src/test/kotlin/homework6/
   ├── docs/{screenshots,logs}/
   ├── specification.md  agents.md  research-notes.md
@@ -117,7 +123,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [x] `include("homework-6")` added to root `settings.gradle.kts`
 - [x] `homework-6/build.gradle.kts` (application + Kover plugins, per-agent run tasks, `mainClass`)
 - [x] Kover added to `gradle/libs.versions.toml` (`0.9.1`) + root `build.gradle.kts` (`apply false`)
-- [x] Folder tree created (single flat `homework6` package)
+- [x] Folder tree created (`homework6.common` + `homework6.agent` packages)
 - [x] `shared/{input,processing,output,results}/.gitkeep` present
 - [x] `README.md` / `HOWTORUN.md` placeholders + `.gitignore`
 - [x] **Gate:** `./gradlew :homework-6:build` succeeds on the empty skeleton — ✅ verified locally (BUILD SUCCESSFUL, 9 tasks; Kover `minBound(80)` DSL accepted).
@@ -167,18 +173,19 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - **Integrator** (the `main` class, package `homework6`): sets up `shared/` dirs, loads `sample-transactions.json`, runs agents **in order** (in-process by default; can dispatch to separate processes), monitors `shared/results/`. Every transaction ends in `shared/results/`.
 - **context7 usage (mandatory):** during code-gen, run **≥ 2 context7 queries** (e.g. "Kotlin BigDecimal rounding", "kotlinx.serialization custom serializer") and document each in **`research-notes.md`** (search term, returned library ID, applied insight).
 
-**Files:** `src/main/kotlin/homework6/...` (agents, integrator, models), `research-notes.md`.
+**Files:** `src/main/kotlin/homework6/common/` (models + utils), `src/main/kotlin/homework6/agent/` (agents, integrator, summary model), `research-notes.md`.
 **Risks:** float creep (enforce `BigDecimal`); message-schema drift between agents; file-lock/ordering races in separate-process mode (mitigate: atomic move `processing`→`output`).
 
 **Checklist:**
 
-- [ ] `AgentMessage` + `Transaction` models (`@Serializable`, `BigDecimal` serializer)
-- [ ] `TransactionValidator` (callable class + `main`, `--dry-run`)
-- [ ] `FraudDetector` (callable class + `main`)
-- [ ] `ReportingAgent` (callable class + `main`)
-- [ ] Integrator `main` — sets up `shared/`, loads samples, runs agents in order
-- [ ] ≥ 2 context7 queries documented in `research-notes.md`
-- [ ] **Gate:** `./gradlew :homework-6:run` lands all 8 txns in `shared/results/` as valid JSON; `pipeline-run.png` captured
+- [x] `AgentMessage` + `Transaction` models (`@Serializable`, `BigDecimal` serializer)
+- [x] `TransactionValidator` (callable object + `main`, `--dry-run`)
+- [x] `FraudDetector` (callable object + `main`)
+- [x] `ReportingAgent` (callable object + `main`, `summarize`)
+- [x] Integrator `Integrator.run(base, sample)` + `main` — seeds `shared/`, runs agents in order through `processing/`
+- [x] ≥ 2 context7 queries documented in `research-notes.md`
+- [x] Logic verified against the 8-txn ground-truth table (Python simulation matches spec exactly)
+- [x] **Gate:** `./gradlew :homework-6:run` lands all 8 txns in `shared/results/` as valid JSON — ✅ verified (TXN001–008 + `pipeline-summary.json`/`.txt`); captured `02-run-pipeline-log.png`, `02-run-pipeline-result.png`
 
 ---
 
@@ -199,7 +206,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [ ] `.githooks/pre-push` runs Kover and blocks push when coverage < 80%
 - [ ] Gate mirrored in `.claude/settings.json` and CI (`.github/workflows`)
 - [ ] `git config core.hooksPath homework-6/.githooks` documented in `HOWTORUN.md`
-- [ ] **Gate:** `/run-pipeline` executes; `skill-run-pipeline.png` + `hook-trigger.png` (blocked then allowed) captured
+- [ ] **Gate:** `/run-pipeline` executes; `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png` + `03-hook-trigger.png` (blocked then allowed) captured
 
 ---
 
@@ -219,7 +226,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [ ] `mcp/server.py` — `get_transaction_status`, `list_pipeline_results`, resource `pipeline://summary`
 - [ ] `mcp/requirements.txt` (fastmcp); `.gitignore` covers `.venv/`
 - [ ] `mcp.json` — both `context7` and `pipeline-status` configured
-- [ ] **Gate:** both servers respond; `mcp-interaction.png` shows context7 result **and** a custom tool call
+- [ ] **Gate:** both servers respond; `04-mcp-context7.png` + `04-mcp-custom-tool.png` show a context7 result **and** a custom tool call
 
 ---
 
@@ -239,7 +246,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [ ] 1 integration test of the full pipeline (isolated temp `shared/`)
 - [ ] `README.md` — student name, agent bullets, ASCII diagram, tech-stack table, deviation note
 - [ ] `HOWTORUN.md` — numbered setup → run → test → MCP → demo steps
-- [ ] **Gate:** `./gradlew :homework-6:test` green; Kover ≥ 80% (aim ≥ 90%); `test-coverage.png` captured
+- [ ] **Gate:** `./gradlew :homework-6:test` green; Kover ≥ 80% (aim ≥ 90%); `05-test-coverage.png` captured
 
 ---
 
@@ -248,7 +255,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 **Goal:** prove every success-criterion before opening the PR.
 
 - Run full build + tests + pipeline + both MCP servers end-to-end; confirm the gate **blocks** a sub-80% push (temporarily drop a test to demonstrate) then passes.
-- Collect all **5 screenshots** in `docs/screenshots/`: `pipeline-run.png`, `test-coverage.png`, `skill-run-pipeline.png`, `hook-trigger.png`, `mcp-interaction.png`.
+- Collect all required screenshots in `docs/screenshots/` (numbered convention): `01-write-spec.png`, `02-run-pipeline-log.png`, `02-run-pipeline-result.png`, `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png`, `04-mcp-context7.png`, `04-mcp-custom-tool.png`, `05-test-coverage.png`.
 - Walk the **Success Criteria** and **Deliverables Checklist** tables in `TASKS.md`; tick each.
 - Write the **detailed PR description** (summary, AI tools used, how to verify, embedded screenshots) on `claude/homework-6-submission` → fork `main`; reviewer `Alexey-Popov`. (Bare PRs are rejected.)
 
@@ -270,10 +277,10 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 | TASKS.md item | Phase | Screenshot / evidence |
 |---|---|---|
 | Task 1 — spec + `write-spec` skill | 1 | `specification.md`, `agents.md` |
-| Task 2 — pipeline (≥3 agents) + context7 | 2 | `pipeline-run.png`, `research-notes.md` |
-| Task 3 — 2 skills + coverage gate hook | 3 | `skill-run-pipeline.png`, `hook-trigger.png` |
-| Task 4 — context7 + custom FastMCP | 4 | `mcp-interaction.png`, `mcp.json`, `mcp/server.py` |
-| Task 5 — tests + README (name) + HOWTORUN | 5 | `test-coverage.png`, README w/ ASCII diagram |
+| Task 2 — pipeline (≥3 agents) + context7 | 2 | `02-run-pipeline-log.png`, `02-run-pipeline-result.png`, `research-notes.md` |
+| Task 3 — 2 skills + coverage gate hook | 3 | `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png` |
+| Task 4 — context7 + custom FastMCP | 4 | `04-mcp-context7.png`, `04-mcp-custom-tool.png`, `mcp.json`, `mcp/server.py` |
+| Task 5 — tests + README (name) + HOWTORUN | 5 | `05-test-coverage.png`, README w/ ASCII diagram |
 | Submission — 5 shots in PR | 6 | PR description |
 
 ---
@@ -283,6 +290,6 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 1. **Third runtime agent:** ✅ **Reporting Agent**.
 2. **Default demo mode:** ✅ **in-process orchestration**, with per-agent `main()` + Gradle run tasks kept for the separate-execution demo.
 3. **Coverage:** ✅ gate at **80%** (mandatory), aim **≥ 90%**.
-4. **Structure:** ✅ **single flat `homework6` package** (no sub-package split); deviation noted in `README.md`.
+4. **Structure:** ✅ **two packages** — `homework6.common` (models + utils) and `homework6.agent` (agents + model); noted in `README.md`.
 
 *Plan approved — ready to execute from Phase 0 on the next go-ahead.*

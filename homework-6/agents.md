@@ -67,7 +67,7 @@ Standard message envelope:
 - Money: `BigDecimal` + `RoundingMode.HALF_UP`, never `Double`/`Float`. Amounts parse from JSON strings.
 - Currency: ISO 4217 allow-list (USD, EUR, GBP, JPY, CHF, CAD, AUD, …).
 - Audit log line: `timestamp(ISO-8601) | agent | transaction_id | outcome`; mask account numbers, never log names.
-- Kotlin, single flat `homework6` package; no wildcard imports.
+- Kotlin, two packages: `homework6.common` (shared models + utils) and `homework6.agent` (agents + their model); no wildcard imports.
 - Build verification after each implementation task: `./gradlew :homework-6:build`.
 
 ## Stack deviations

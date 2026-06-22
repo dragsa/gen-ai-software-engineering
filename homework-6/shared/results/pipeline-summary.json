@@ -1,0 +1,19 @@
+{
+    "total": 8,
+    "by_status": {
+        "settled": 3,
+        "flagged_for_review": 3,
+        "rejected": 2
+    },
+    "settled_totals_by_currency": {
+        "USD": "14699.99"
+    },
+    "ctr_over_10k": [
+        "TXN002",
+        "TXN005"
+    ],
+    "cross_border": [
+        "TXN004",
+        "TXN007"
+    ]
+}

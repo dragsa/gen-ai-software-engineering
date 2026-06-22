@@ -1,0 +1,26 @@
+{
+    "message_id": "7900ae53-5cf0-43b6-a97b-6311d4a293e2",
+    "timestamp": "2026-06-22T20:47:51.820375Z",
+    "source_agent": "transaction_validator",
+    "target_agent": "results",
+    "message_type": "transaction",
+    "data": {
+        "transaction_id": "TXN006",
+        "timestamp": "2026-03-16T10:05:00Z",
+        "source_account": "ACC-1006",
+        "destination_account": "ACC-7700",
+        "amount": "200.00",
+        "currency": "XYZ",
+        "transaction_type": "transfer",
+        "description": "Test payment",
+        "metadata": {
+            "channel": "online",
+            "country": "US"
+        },
+        "status": "rejected",
+        "reason": "currency XYZ not in ISO 4217 allow-list",
+        "risk_score": null,
+        "risk_reasons": [],
+        "near_threshold": null
+    }
+}

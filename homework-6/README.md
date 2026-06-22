@@ -15,5 +15,5 @@ See `TASKS_ROADMAP.md` for the phased implementation plan and `HOWTORUN.md` for 
 ## Stack notes / deviations
 
 - **Pipeline:** Kotlin 2.3.20 / JVM 21 / Gradle Kotlin DSL (per `.agents/docs/STACK.MD`).
-- **Single flat package** `homework6` (no `entrypoint/service/...` split) — a deliberate simplification for a small CLI pipeline, per `AGENTS.MD` ("prefer simpler architecture").
+- **Two packages** under `homework6`: `homework6.common` (shared models + utils) and `homework6.agent` (the runtime agents + their model) — a focused split rather than STACK.MD's full `entrypoint/service/...` layout, appropriate for a small CLI pipeline per `AGENTS.MD` ("prefer simpler architecture").
 - **MCP server** (`mcp/server.py`) deviates to **Python + FastMCP**, as mandated by `TASKS.md` Task 4 (allowed under STACK.MD's Deviation Policy).
