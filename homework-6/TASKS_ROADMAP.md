@@ -195,18 +195,20 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 
 - **`.claude/commands/run-pipeline.md`** — checks `sample-transactions.json`, clears `shared/`, runs the pipeline, summarizes `shared/results/`, reports rejects + reasons.
 - **`.claude/commands/validate-transactions.md`** — runs validator in `--dry-run`; reports total/valid/invalid + reasons as a table.
-- **Coverage gate** (decision 0.4): `.githooks/pre-push` runs Kover, blocks push < 80%; mirrored in `.claude/settings.json` and CI.
+- **Coverage gate** (decision 0.4): `.githooks/pre-push` runs `koverVerify -PenforceCoverage`, blocks push < 80%; mirrored in `.claude/settings.json` and CI.
 
-**Files:** the two command files, `.githooks/pre-push`, `.claude/settings.json`.
+> **Sequencing note:** the test suite is written in **Phase 5** (Task 5 / Agent 4), so coverage is still 0% here. That is fine for Task 3 — `hook-trigger.png` only needs to show the hook **firing / blocking the push**, which a 0%-coverage repo does. After Phase 5 the same hook passes; re-run then if you also want to show the green state.
+
+**Files:** the two command files, `.githooks/pre-push`, `.claude/settings.json`, `.github/workflows/`.
 
 **Checklist:**
 
 - [ ] `.claude/commands/run-pipeline.md`
 - [ ] `.claude/commands/validate-transactions.md`
-- [ ] `.githooks/pre-push` runs Kover and blocks push when coverage < 80%
+- [ ] `.githooks/pre-push` runs `koverVerify -PenforceCoverage` and blocks push when coverage < 80%
 - [ ] Gate mirrored in `.claude/settings.json` and CI (`.github/workflows`)
 - [ ] `git config core.hooksPath homework-6/.githooks` documented in `HOWTORUN.md`
-- [ ] **Gate:** `/run-pipeline` executes; `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png` + `03-hook-trigger.png` (blocked then allowed) captured
+- [ ] **Gate:** `/run-pipeline` executes; `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png` + `03-hook-trigger.png` (hook blocking the push) captured
 
 ---
 
@@ -234,11 +236,11 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 
 **Goal:** test suite at ≥ 80% (aim ≥ 90%) + complete docs.
 
-- **Tests** (`src/test/kotlin/homework6/`, kotlin-test-junit): unit tests per runtime agent (happy path + each reject reason from the 8 samples) + **1 integration test** of the full pipeline. Isolate from real `shared/` using a temp dir per test (no shared mutable state — FIRST).
+- **Tests** (`src/test/kotlin/homework6/`, kotlin-test-junit): unit tests per runtime agent (happy path + each reject reason from the 8 samples) + **1 integration test** of the full pipeline. Isolate from real `shared/` using a temp dir per test (no shared mutable state — FIRST). Once tests pass ≥ 80%, the Phase 3 pre-push hook flips from blocking to passing.
 - **`README.md`** (ask permission before writing, per AGENTS.MD): **student name** (author / "Created by"), what the system does, one bullet per agent, **ASCII architecture diagram** of the pipeline flow, tech-stack table, Kotlin/Python deviation note.
 - **`HOWTORUN.md`**: numbered setup → run → test → MCP → demo steps (incl. `git config core.hooksPath`).
 
-**Files:** `tests/`, `README.md`, `HOWTORUN.md`.
+**Files:** `src/test/kotlin/homework6/...`, `README.md`, `HOWTORUN.md`.
 
 **Checklist:**
 
