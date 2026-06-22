@@ -208,7 +208,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [x] `.githooks/pre-push` runs `koverVerify -PenforceCoverage` and blocks push when coverage < 80%
 - [x] Gate mirrored in `.claude/settings.json` (PreToolUse guard blocks `git push` in a Claude session)
 - [x] `git config core.hooksPath homework-6/.githooks` documented in `HOWTORUN.md`
-- [ ] **Gate:** enable hooksPath, run `/run-pipeline` + `/validate-transactions`, attempt a `git push` to see it blocked at 0% coverage — capture `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png` (run on your machine)
+- [x] **Gate:** ✅ verified on machine — `/run-pipeline` (correct summary, `processing/` empty), `/validate-transactions` (8/6/2), and `git push` **blocked** by the pre-push hook at 0% coverage (`koverVerify FAILED`). Captured `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png`.
 
 ---
 

@@ -1,6 +1,6 @@
 {
-    "message_id": "163839a6-c54a-46f0-b447-3dfa5cdc1c80",
-    "timestamp": "2026-06-22T20:47:51.813663Z",
+    "message_id": "37291dfa-4064-4a55-8d3e-33153709ffb8",
+    "timestamp": "2026-06-22T21:58:28.223525Z",
     "source_agent": "fraud_detector",
     "target_agent": "results",
     "message_type": "transaction",

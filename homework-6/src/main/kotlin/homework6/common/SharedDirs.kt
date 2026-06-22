@@ -3,7 +3,6 @@ package homework6.common
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.deleteIfExists
-import kotlin.io.path.isDirectory
 
 /**
  * Resolves and manages the four `shared/` subdirectories used for file-based agent communication.
@@ -19,14 +18,17 @@ data class SharedDirs(val root: Path) {
         listOf(input, processing, output, results).forEach { Files.createDirectories(it) }
     }
 
-    /** Recreates empty input/processing/output/results so a run starts from a clean state. */
+    /**
+     * Ensures input/processing/output/results exist and clears stale message files so a run starts
+     * clean. The `.gitkeep` placeholders that keep the (otherwise empty) directories in git are
+     * preserved.
+     */
     fun clearAndCreate() {
         listOf(input, processing, output, results).forEach { dir ->
-            if (dir.isDirectory()) {
-                Files.list(dir).use { stream -> stream.toList() }.forEach { it.deleteIfExists() }
-            } else {
-                Files.createDirectories(dir)
-            }
+            Files.createDirectories(dir)
+            Files.list(dir).use { stream -> stream.toList() }
+                .filter { it.fileName.toString() != ".gitkeep" }
+                .forEach { it.deleteIfExists() }
         }
     }
 
