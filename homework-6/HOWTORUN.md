@@ -1,11 +1,13 @@
 # How to Run — Homework 6
 
-> 🚧 **Placeholder (Phase 0 scaffolding).** Steps are completed as each phase lands; finalized in Phase 5.
+> Note: the test suite and the custom MCP server are still being finalized; the commands below reflect the intended workflow and the parts already in place.
 
 ## Prerequisites
 
-- JDK 21 (Gradle toolchain resolves it)
-- Python 3.10+ (for the `mcp/` FastMCP server — Phase 4)
+- JDK 21 (the Gradle toolchain resolves it automatically)
+- Python 3.10+ (only for the custom FastMCP server under `mcp/`)
+
+All Gradle commands are run from the **repository root**.
 
 ## Build
 
@@ -13,35 +15,54 @@
 ./gradlew :homework-6:build
 ```
 
-## Run the pipeline (in-process default — Phase 2)
+## Run the full pipeline
+
+In-process orchestration (default demo): the integrator seeds `shared/`, runs the agents in order, and writes results.
 
 ```bash
 ./gradlew :homework-6:run
 ```
 
-## Run a single agent as a separate process (Phase 2)
+All 8 transactions land in `shared/results/` (one JSON each) plus `pipeline-summary.json` / `pipeline-summary.txt`.
+
+## Run a single agent as a separate process
+
+Each runtime agent also has its own entry point and communicates only through the `shared/` JSON directories.
 
 ```bash
-./gradlew :homework-6:runValidator -Pargs="--dry-run"
-./gradlew :homework-6:runFraudDetector
-./gradlew :homework-6:runReporting
+./gradlew :homework-6:runValidator -Pargs="--dry-run"   # validate sample-transactions.json, no file moves
+./gradlew :homework-6:runFraudDetector                  # drains shared/output/ -> shared/results/
+./gradlew :homework-6:runReporting                      # summarizes shared/results/
 ```
 
-## Tests & coverage (Phase 5)
+## Slash-command skills (Claude Code)
+
+```text
+/run-pipeline            # clears shared/, runs the pipeline, summarizes results, reports rejects
+/validate-transactions   # runs the validator in dry-run and prints a valid/invalid table
+```
+
+## Tests & coverage
 
 ```bash
 ./gradlew :homework-6:test
-./gradlew :homework-6:koverVerify -PenforceCoverage   # fails if line coverage < 80% (the push gate)
+./gradlew :homework-6:koverVerify -PenforceCoverage   # fails if line coverage < 80%
 ```
 
-Without `-PenforceCoverage`, `koverVerify` is skipped, so plain `build`/`run` stay green while tests are still being written. The pre-push hook (Phase 3) and CI always pass the flag.
+Without `-PenforceCoverage`, `koverVerify` is skipped, so a plain `build` / `run` stays green while the test suite is still being written.
 
-## Coverage gate hook (Phase 3)
+## Coverage gate hook (pre-push)
+
+Enable the gate once per clone:
 
 ```bash
-git config core.hooksPath homework-6/.githooks   # enables the pre-push 80% gate
+git config core.hooksPath homework-6/.githooks
 ```
 
-## MCP servers (Phase 4)
+On every `git push`, `.githooks/pre-push` runs `koverVerify -PenforceCoverage` and **blocks the push if line coverage < 80%**. Bypass deliberately with `git push --no-verify`.
 
-Configured in `mcp.json` (context7 + custom `pipeline-status`). See that file and `research-notes.md`.
+The same gate is mirrored for Claude sessions: `.claude/settings.json` registers a `PreToolUse` guard (`.githooks/claude-pre-push-guard.sh`) that blocks a `git push` issued from inside Claude Code when coverage is below 80%.
+
+## MCP servers
+
+Both servers are configured in `mcp.json`: `context7` (framework docs lookup) and the custom `pipeline-status` server (`mcp/server.py`) exposing `get_transaction_status`, `list_pipeline_results`, and the `pipeline://summary` resource. See `research-notes.md` for the context7 queries used during development.

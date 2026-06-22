@@ -69,7 +69,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 
 - Hook script committed at `homework-6/.githooks/pre-push` (repo-tracked, not the un-committable `.git/hooks/`).
 - Activated via `git config core.hooksPath homework-6/.githooks` (documented in `HOWTORUN.md`; can be set in a Gradle/init step).
-- Also surfaced as a Claude Code hook entry in `.claude/settings.json` so the gate is visible to the meta-agent workflow, and reproduced in CI (`.github/workflows`) so the gate holds even if a local hook is skipped with `--no-verify`.
+- Also surfaced as a Claude Code hook entry in `.claude/settings.json` so the gate also fires on a `git push` issued from inside a Claude session.
 - Evidence: `docs/screenshots/03-hook-trigger.png` shows the push **blocked** at <80%, then passing at ≥80%.
 
 ---
@@ -195,20 +195,20 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 
 - **`.claude/commands/run-pipeline.md`** — checks `sample-transactions.json`, clears `shared/`, runs the pipeline, summarizes `shared/results/`, reports rejects + reasons.
 - **`.claude/commands/validate-transactions.md`** — runs validator in `--dry-run`; reports total/valid/invalid + reasons as a table.
-- **Coverage gate** (decision 0.4): `.githooks/pre-push` runs `koverVerify -PenforceCoverage`, blocks push < 80%; mirrored in `.claude/settings.json` and CI.
+- **Coverage gate** (decision 0.4): `.githooks/pre-push` runs `koverVerify -PenforceCoverage`, blocks push < 80%; mirrored in `.claude/settings.json` (Claude-session guard).
 
 > **Sequencing note:** the test suite is written in **Phase 5** (Task 5 / Agent 4), so coverage is still 0% here. That is fine for Task 3 — `hook-trigger.png` only needs to show the hook **firing / blocking the push**, which a 0%-coverage repo does. After Phase 5 the same hook passes; re-run then if you also want to show the green state.
 
-**Files:** the two command files, `.githooks/pre-push`, `.claude/settings.json`, `.github/workflows/`.
+**Files:** the two command files, `.githooks/pre-push`, `.githooks/claude-pre-push-guard.sh`, `.githooks/README.md`, `.claude/settings.json`.
 
 **Checklist:**
 
-- [ ] `.claude/commands/run-pipeline.md`
-- [ ] `.claude/commands/validate-transactions.md`
-- [ ] `.githooks/pre-push` runs `koverVerify -PenforceCoverage` and blocks push when coverage < 80%
-- [ ] Gate mirrored in `.claude/settings.json` and CI (`.github/workflows`)
-- [ ] `git config core.hooksPath homework-6/.githooks` documented in `HOWTORUN.md`
-- [ ] **Gate:** `/run-pipeline` executes; `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png` + `03-hook-trigger.png` (hook blocking the push) captured
+- [x] `.claude/commands/run-pipeline.md`
+- [x] `.claude/commands/validate-transactions.md`
+- [x] `.githooks/pre-push` runs `koverVerify -PenforceCoverage` and blocks push when coverage < 80%
+- [x] Gate mirrored in `.claude/settings.json` (PreToolUse guard blocks `git push` in a Claude session)
+- [x] `git config core.hooksPath homework-6/.githooks` documented in `HOWTORUN.md`
+- [ ] **Gate:** enable hooksPath, run `/run-pipeline` + `/validate-transactions`, attempt a `git push` to see it blocked at 0% coverage — capture `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png` (run on your machine)
 
 ---
 

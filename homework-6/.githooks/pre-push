@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Git pre-push hook — blocks the push if homework-6 line coverage is < 80%.
+# Enable once per clone:  git config core.hooksPath homework-6/.githooks
+#
+# Test without pushing:  bash homework-6/.githooks/pre-push
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+echo "[pre-push] homework-6 coverage gate (line coverage must be >= 80%)..."
+if ./gradlew :homework-6:koverVerify -PenforceCoverage --console=plain; then
+  echo "[pre-push] passed — allowing push."
+else
+  echo "[pre-push] BLOCKED: line coverage < 80%. Push aborted (bypass with: git push --no-verify)." >&2
+  exit 1
+fi
