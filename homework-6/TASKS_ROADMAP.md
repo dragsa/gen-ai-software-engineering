@@ -70,7 +70,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - Hook script committed at `homework-6/.githooks/pre-push` (repo-tracked, not the un-committable `.git/hooks/`).
 - Activated via `git config core.hooksPath homework-6/.githooks` (documented in `HOWTORUN.md`; can be set in a Gradle/init step).
 - Also surfaced as a Claude Code hook entry in `.claude/settings.json` so the gate also fires on a `git push` issued from inside a Claude session.
-- Evidence: `docs/screenshots/03-hook-trigger.png` shows the push **blocked** at <80%, then passing at ≥80%.
+- Evidence: `docs/screenshots/03-hook-triggered.png` shows the push **blocked** at <80%, then passing at ≥80%.
 
 ---
 
@@ -85,9 +85,9 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - **Screenshot naming convention:** files use a phase-numbered prefix `NN-<description>.png` (matching homework-4/-5), not the bare names in `TASKS.md`. Canonical set:
   - Phase 1 — `01-write-spec.png`
   - Phase 2 — `02-run-pipeline-log.png`, `02-run-pipeline-result.png` (≙ `pipeline-run.png`)
-  - Phase 3 — `03-run-pipeline-skill.png` (≙ `skill-run-pipeline.png`), `03-validate-transactions-skill.png`, `03-hook-trigger.png` (≙ `hook-trigger.png`)
+  - Phase 3 — `03-run-pipeline-skill.png` (≙ `skill-run-pipeline.png`), `03-validate-transaction-skill.png`, `03-hook-triggered.png` (≙ `hook-trigger.png`)
   - Phase 4 — `04-mcp-context7.png`, `04-mcp-custom-tool.png` (together ≙ `mcp-interaction.png`)
-  - Phase 5 — `05-test-coverage.png` (≙ `test-coverage.png`)
+  - Phase 5 — `05-test-coverage.png` (≙ `test-coverage.png`), `05-generate-docs.png` (`/write-docs` Agent 4 run), `05-test-hook-triggered.png` (gate **passing** after tests)
 - **Secrets:** never commit tokens; context7 config via `.mcp.json`, env-vars documented in `HOWTORUN.md`.
 
 ---
@@ -208,7 +208,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [x] `.githooks/pre-push` runs `koverVerify -PenforceCoverage` and blocks push when coverage < 80%
 - [x] Gate mirrored in `.claude/settings.json` (PreToolUse guard blocks `git push` in a Claude session)
 - [x] `git config core.hooksPath homework-6/.githooks` documented in `HOWTORUN.md`
-- [x] **Gate:** ✅ verified on machine — `/run-pipeline` (correct summary, `processing/` empty), `/validate-transactions` (8/6/2), and `git push` **blocked** by the pre-push hook at 0% coverage (`koverVerify FAILED`). Captured `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png`.
+- [x] **Gate:** ✅ verified on machine — `/run-pipeline` (correct summary, `processing/` empty), `/validate-transactions` (8/6/2), and `git push` **blocked** by the pre-push hook at 0% coverage (`koverVerify FAILED`). Captured `03-run-pipeline-skill.png`, `03-validate-transaction-skill.png`, `03-hook-triggered.png`.
 
 ---
 
@@ -251,7 +251,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 - [x] Agent 4 entity: `.claude/commands/write-docs.md` (documentation meta-agent, parallel to `/write-spec`)
 - [x] `README.md` — student name, agent bullets, ASCII diagram, tech-stack table, deviation note
 - [x] `HOWTORUN.md` — numbered setup → run → test → MCP → demo steps
-- [ ] **Gate:** `./gradlew :homework-6:test` green; `koverVerify -PenforceCoverage` ≥ 80% (aim ≥ 90%); `05-test-coverage.png` captured (run on your machine)
+- [x] **Gate:** ✅ verified on machine — 37/37 tests pass; `koverVerify -PenforceCoverage` PASSED (≥ 80%) so the pre-push hook now allows the push (gate flipped from blocking to passing). Captured `05-test-coverage.png`, `05-generate-docs.png` (`/write-docs` run), `05-test-hook-triggered.png` (hook passing).
 
 ---
 
@@ -260,7 +260,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 **Goal:** prove every success-criterion before opening the PR.
 
 - Run full build + tests + pipeline + both MCP servers end-to-end; confirm the gate **blocks** a sub-80% push (temporarily drop a test to demonstrate) then passes.
-- Collect all required screenshots in `docs/screenshots/` (numbered convention): `01-write-spec.png`, `02-run-pipeline-log.png`, `02-run-pipeline-result.png`, `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png`, `04-mcp-context7.png`, `04-mcp-custom-tool.png`, `05-test-coverage.png`.
+- Collect all delivered screenshots in `docs/screenshots/` (all ✅ committed): `01-write-spec.png`, `02-run-pipeline-log.png`, `02-run-pipeline-result.png`, `03-run-pipeline-skill.png`, `03-validate-transaction-skill.png`, `03-hook-triggered.png`, `04-mcp-context7.png`, `04-mcp-custom-tool.png`, `05-test-coverage.png`, `05-generate-docs.png`, `05-test-hook-triggered.png`.
 - Walk the **Success Criteria** and **Deliverables Checklist** tables in `TASKS.md`; tick each.
 - Write the **detailed PR description** (summary, AI tools used, how to verify, embedded screenshots) on `claude/homework-6-submission` → fork `main`; reviewer `Alexey-Popov`. (Bare PRs are rejected.)
 
@@ -268,12 +268,12 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 
 **Checklist:**
 
-- [ ] Full build + tests + pipeline + both MCP servers pass end-to-end
-- [ ] Coverage gate demonstrated blocking < 80%, then passing
-- [ ] All 5 screenshots in `docs/screenshots/`
-- [ ] `TASKS.md` Success Criteria + Deliverables Checklist all ticked
-- [ ] No wildcard imports / no `float`/`Double` for money / no plaintext PII / no secrets
-- [ ] Detailed PR description with embedded screenshots; reviewer `Alexey-Popov`
+- [x] Full build + tests + pipeline + both MCP servers pass end-to-end (verified on machine)
+- [x] Coverage gate demonstrated blocking < 80% (`03-hook-triggered.png`), then passing (`05-test-hook-triggered.png`)
+- [x] All 11 screenshots committed in `docs/screenshots/`
+- [x] No wildcard imports / no `Double`/`Float` for money (only a comment) / no secrets — verified by grep
+- [x] Detailed PR description drafted → `docs/PR_DESCRIPTION.md` (reviewer `Alexey-Popov`)
+- [ ] Open the PR on the fork (`claude/homework-6-submission` → `main`), paste `PR_DESCRIPTION.md`, drag in screenshots
 
 ---
 
@@ -283,9 +283,9 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 |---|---|---|
 | Task 1 — spec + `write-spec` skill | 1 | `specification.md`, `agents.md` |
 | Task 2 — pipeline (≥3 agents) + context7 | 2 | `02-run-pipeline-log.png`, `02-run-pipeline-result.png`, `research-notes.md` |
-| Task 3 — 2 skills + coverage gate hook | 3 | `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png` |
+| Task 3 — 2 skills + coverage gate hook | 3 | `03-run-pipeline-skill.png`, `03-validate-transaction-skill.png`, `03-hook-triggered.png` |
 | Task 4 — context7 + custom FastMCP | 4 | `04-mcp-context7.png`, `04-mcp-custom-tool.png`, `.mcp.json`, `mcp/server.py` |
-| Task 5 — tests + README (name) + HOWTORUN | 5 | `05-test-coverage.png`, README w/ ASCII diagram |
+| Task 5 — tests + README (name) + HOWTORUN | 5 | `05-test-coverage.png`, `05-test-hook-triggered.png`, `05-generate-docs.png`, README w/ ASCII diagram |
 | Submission — 5 shots in PR | 6 | PR description |
 
 ---
