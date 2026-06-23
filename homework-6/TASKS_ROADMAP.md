@@ -88,7 +88,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
   - Phase 3 — `03-run-pipeline-skill.png` (≙ `skill-run-pipeline.png`), `03-validate-transactions-skill.png`, `03-hook-trigger.png` (≙ `hook-trigger.png`)
   - Phase 4 — `04-mcp-context7.png`, `04-mcp-custom-tool.png` (together ≙ `mcp-interaction.png`)
   - Phase 5 — `05-test-coverage.png` (≙ `test-coverage.png`)
-- **Secrets:** never commit tokens; context7 config via `mcp.json`, env-vars documented in `HOWTORUN.md`.
+- **Secrets:** never commit tokens; context7 config via `.mcp.json`, env-vars documented in `HOWTORUN.md`.
 
 ---
 
@@ -110,7 +110,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
   ├── src/test/kotlin/homework6/
   ├── docs/{screenshots,logs}/
   ├── specification.md  agents.md  research-notes.md
-  ├── mcp.json  README.md  HOWTORUN.md
+  ├── .mcp.json  README.md  HOWTORUN.md
   └── (sample-transactions.json, TASKS.md — already present)
   ```
 - Seed `README.md` / `HOWTORUN.md` placeholders; `.gitignore` for `.venv/`, `__pycache__/`, `build/`, `shared/**` runtime output, secrets.
@@ -217,18 +217,18 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 **Goal:** two MCP servers — context7 (already used in Phase 2) + a custom FastMCP server.
 
 - **`mcp/server.py`** (FastMCP, Python deviation): `get_transaction_status(transaction_id)` → status from `shared/results/`; `list_pipeline_results()` → summary of all processed txns; resource `pipeline://summary` → latest run summary text.
-- **`mcp.json`** — both `context7` (`npx @upstash/context7-mcp`) and `pipeline-status` (`python mcp/server.py`).
+- **`.mcp.json`** — both `context7` (`npx @upstash/context7-mcp`) and `pipeline-status` (`python mcp/server.py`).
 - `mcp/requirements.txt` (fastmcp); `.gitignore` covers `.venv/`.
 
-**Files:** `mcp/server.py`, `mcp/requirements.txt`, `mcp.json`.
+**Files:** `mcp/server.py`, `mcp/requirements.txt`, `.mcp.json`.
 **Risks:** server reads the same `shared/results/` schema the pipeline writes — keep one shared JSON contract; path resolution must be project-relative.
 
 **Checklist:**
 
-- [ ] `mcp/server.py` — `get_transaction_status`, `list_pipeline_results`, resource `pipeline://summary`
-- [ ] `mcp/requirements.txt` (fastmcp); `.gitignore` covers `.venv/`
-- [ ] `mcp.json` — both `context7` and `pipeline-status` configured
-- [ ] **Gate:** both servers respond; `04-mcp-context7.png` + `04-mcp-custom-tool.png` show a context7 result **and** a custom tool call
+- [x] `mcp/server.py` — `get_transaction_status`, `list_pipeline_results`, resource `pipeline://summary` (logic verified against real `shared/results/`)
+- [x] `mcp/requirements.txt` (fastmcp); `.gitignore` covers `.venv/` + `__pycache__/`
+- [x] `.mcp.json` — both `context7` and `pipeline-status` configured
+- [x] **Gate:** ✅ verified on machine — context7 resolved `/kotlin/kotlinx-kover` (`04-mcp-context7.png`) and the custom `pipeline-status` server answered `get_transaction_status(TXN006)` → rejected/currency reason (`04-mcp-custom-tool.png`).
 
 ---
 
@@ -281,7 +281,7 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 | Task 1 — spec + `write-spec` skill | 1 | `specification.md`, `agents.md` |
 | Task 2 — pipeline (≥3 agents) + context7 | 2 | `02-run-pipeline-log.png`, `02-run-pipeline-result.png`, `research-notes.md` |
 | Task 3 — 2 skills + coverage gate hook | 3 | `03-run-pipeline-skill.png`, `03-validate-transactions-skill.png`, `03-hook-trigger.png` |
-| Task 4 — context7 + custom FastMCP | 4 | `04-mcp-context7.png`, `04-mcp-custom-tool.png`, `mcp.json`, `mcp/server.py` |
+| Task 4 — context7 + custom FastMCP | 4 | `04-mcp-context7.png`, `04-mcp-custom-tool.png`, `.mcp.json`, `mcp/server.py` |
 | Task 5 — tests + README (name) + HOWTORUN | 5 | `05-test-coverage.png`, README w/ ASCII diagram |
 | Submission — 5 shots in PR | 6 | PR description |
 

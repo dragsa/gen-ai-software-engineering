@@ -1,13 +1,24 @@
 # Research Notes — context7 queries (Agent 2: Code generation)
 
-During code generation, **context7** (configured in `mcp.json`, see Task 4) was used to look up the
-chosen framework — Kotlin + `kotlinx.serialization` — for two decisions that shaped the pipeline.
+During development, **context7** (configured in `.mcp.json`, see Task 4) was used to look up the
+build/framework docs for decisions that shaped the pipeline — the Kover coverage plugin, Kotlin
+`BigDecimal`, and `kotlinx.serialization`.
 
-> Reproduce these in Claude Code with the context7 MCP enabled and screenshot the results for
-> `docs/screenshots/mcp-interaction.png`. The library IDs below are what context7 resolves for these
-> libraries; confirm the exact ID shown in your run.
+> Query 1 (Kover) is the one captured in `docs/screenshots/04-mcp-context7.png` — context7 resolved
+> the library ID `/kotlin/kotlinx-kover`. The other two are reproducible the same way (run the search
+> in Claude Code with context7 enabled; confirm the exact ID shown in your run).
 
-## Query 1: precise monetary arithmetic in Kotlin (BigDecimal)
+## Query 1: Kover coverage plugin (the 80% gate) — verified
+
+- **Search:** "how to use kover plugin / library" → resolve-library-id "kover"
+- **context7 library ID:** `/kotlin/kotlinx-kover`
+- **Applied:**
+  - Applied `id("org.jetbrains.kotlinx.kover")` in `homework-6/build.gradle.kts` (via the version catalog).
+  - Used the `kover { reports { verify { rule { minBound(80) } } } }` DSL for the coverage gate, run as
+    `koverVerify` — wired into the pre-push hook with `-PenforceCoverage`.
+  - Noted `koverHtmlReport` / `koverXmlReport` for local coverage inspection.
+
+## Query 2: precise monetary arithmetic in Kotlin (BigDecimal)
 
 - **Search:** "Kotlin BigDecimal money handling rounding" / resolve-library-id "kotlin"
 - **context7 library ID:** `/jetbrains/kotlin` (stdlib + `java.math.BigDecimal` interop)
@@ -19,7 +30,7 @@ chosen framework — Kotlin + `kotlinx.serialization` — for two decisions that
   - Per-currency settlement totals accumulate with `BigDecimal.add` in `ReportingAgent.summarize`,
     and are serialized back as strings via `toPlainString()`.
 
-## Query 2: custom serializer for a non-primitive type in kotlinx.serialization
+## Query 3: custom serializer for a non-primitive type in kotlinx.serialization
 
 - **Search:** "kotlinx.serialization custom KSerializer for BigDecimal" / resolve-library-id "kotlinx.serialization"
 - **context7 library ID:** `/kotlin/kotlinx.serialization`
@@ -35,6 +46,7 @@ chosen framework — Kotlin + `kotlinx.serialization` — for two decisions that
 
 ## Outcome
 
-Both lookups directly informed `BigDecimalSerializer.kt`, `TransactionData.kt`, and
+The Kover lookup shaped the coverage gate (`build.gradle.kts` + pre-push hook); the BigDecimal and
+serialization lookups informed `BigDecimalSerializer.kt`, `TransactionData.kt`, and
 `ReportingAgent.kt`, keeping all monetary logic on `BigDecimal` and all JSON on a single configured
 `Json` instance.
