@@ -1,7 +1,5 @@
 # How to Run — Homework 6
 
-> Note: the test suite and the custom MCP server are still being finalized; the commands below reflect the intended workflow and the parts already in place.
-
 ## Prerequisites
 
 - JDK 21 (the Gradle toolchain resolves it automatically)
@@ -34,7 +32,7 @@ Each runtime agent also has its own entry point and communicates only through th
 ```bash
 ./gradlew :homework-6:runValidator -Pargs="--dry-run"   # validate sample-transactions.json, no file moves
 ./gradlew :homework-6:runFraudDetector                  # drains shared/output/ -> shared/results/
-./gradlew :homework-6:runReporting                      # summarizes shared/results/
+./gradlew :homework-6:runReporting                       # summarizes shared/results/
 ```
 
 ## Slash-command skills (Claude Code)
@@ -42,6 +40,8 @@ Each runtime agent also has its own entry point and communicates only through th
 ```text
 /run-pipeline            # clears shared/, runs the pipeline, summarizes results, reports rejects
 /validate-transactions   # runs the validator in dry-run and prints a valid/invalid table
+/write-spec              # (re)generates specification.md from the project template
+/write-docs              # regenerates README.md / HOWTORUN.md from the current code, spec, and pipeline output
 ```
 
 ## Tests & coverage
@@ -51,7 +51,7 @@ Each runtime agent also has its own entry point and communicates only through th
 ./gradlew :homework-6:koverVerify -PenforceCoverage   # fails if line coverage < 80%
 ```
 
-Without `-PenforceCoverage`, `koverVerify` is skipped, so a plain `build` / `run` stays green while the test suite is still being written.
+Without `-PenforceCoverage`, `koverVerify` is skipped, so a plain `build` / `run` stays green.
 
 ## Coverage gate hook (pre-push)
 

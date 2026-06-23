@@ -47,14 +47,27 @@ agentMains.forEach { (taskName, agentMainClass) ->
 }
 
 // --- Coverage gate ----------------------------------------------------------
-// Line coverage must be >= 80%. The gate is enforced at PUSH time (Phase 3 pre-push hook)
-// and in CI, NOT on every local build — so day-to-day `build`/`run` stay green while the
-// test suite is still being written (Phase 5).
+// Line coverage must be >= 80%. The gate is enforced at PUSH time (Phase 3 pre-push hook),
+// NOT on every local build — so day-to-day `build`/`run` stay green.
 //
 // koverVerify only fails the build when invoked with -PenforceCoverage (used by the pre-push
-// hook and CI). Without the flag it is SKIPPED, so it never blocks a plain `build`/`run`.
+// hook). Without the flag it is SKIPPED, so it never blocks a plain `build`/`run`.
+//
+// The standalone CLI entrypoints (the `*Kt` files holding only `fun main`) are excluded from
+// coverage: they are thin wrappers whose underlying logic (process/summarize/run) is unit- and
+// integration-tested. This keeps the gate focused on real logic.
 kover {
     reports {
+        filters {
+            excludes {
+                classes(
+                    "homework6.agent.TransactionValidatorKt",
+                    "homework6.agent.FraudDetectorKt",
+                    "homework6.agent.ReportingAgentKt",
+                    "homework6.agent.IntegratorKt",
+                )
+            }
+        }
         verify {
             rule {
                 minBound(80)

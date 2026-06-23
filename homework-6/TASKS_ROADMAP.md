@@ -22,7 +22,7 @@ These four decisions drive the whole build and map directly to the points flagge
 | **Meta-agent 1 — Spec** | Slash command that emits `specification.md` from the template | `.claude/commands/write-spec.md` | Produces the spec |
 | **Meta-agent 2 — Code-gen** | Workflow that generates the pipeline, using **context7** to look up the framework | prompt + `research-notes.md` | Produces the code |
 | **Meta-agent 3 — Tests** | Workflow that writes the test suite + wires the **coverage gate** | tests + `settings.json` hook | Produces tests |
-| **Meta-agent 4 — Docs** | Workflow that generates `README.md` / `HOWTORUN.md` (with student name) | docs | Produces documentation |
+| **Meta-agent 4 — Docs** | Slash command that regenerates `README.md` / `HOWTORUN.md` (with student name) from the current repo state | `.claude/commands/write-docs.md` | Produces documentation |
 | **Runtime agent — Validator** | Field/amount/ISO-4217 checks | `agents/transaction_validator.*` | Part of the system |
 | **Runtime agent — Fraud Detector** | Risk scoring (high-value, odd hours, cross-border) | `agents/fraud_detector.*` | Part of the system |
 | **Runtime agent — 3rd (Compliance / Settlement / Reporting)** | pick one | `agents/<third>.*` | Part of the system |
@@ -237,18 +237,21 @@ A **`pre-push` git hook** runs the test suite + Kover, parses line coverage, and
 **Goal:** test suite at ≥ 80% (aim ≥ 90%) + complete docs.
 
 - **Tests** (`src/test/kotlin/homework6/`, kotlin-test-junit): unit tests per runtime agent (happy path + each reject reason from the 8 samples) + **1 integration test** of the full pipeline. Isolate from real `shared/` using a temp dir per test (no shared mutable state — FIRST). Once tests pass ≥ 80%, the Phase 3 pre-push hook flips from blocking to passing.
+- **Agent 4 entity:** `.claude/commands/write-docs.md` — a slash command that regenerates the docs from the current repo state, mirroring how Agent 1 is `/write-spec`. This makes Documentation a first-class, re-runnable meta-agent rather than a one-off manual edit.
 - **`README.md`** (ask permission before writing, per AGENTS.MD): **student name** (author / "Created by"), what the system does, one bullet per agent, **ASCII architecture diagram** of the pipeline flow, tech-stack table, Kotlin/Python deviation note.
 - **`HOWTORUN.md`**: numbered setup → run → test → MCP → demo steps (incl. `git config core.hooksPath`).
 
-**Files:** `src/test/kotlin/homework6/...`, `README.md`, `HOWTORUN.md`.
+**Files:** `.claude/commands/write-docs.md`, `src/test/kotlin/homework6/...`, `README.md`, `HOWTORUN.md`.
 
 **Checklist:**
 
-- [ ] Unit tests per runtime agent (happy path + each reject reason)
-- [ ] 1 integration test of the full pipeline (isolated temp `shared/`)
-- [ ] `README.md` — student name, agent bullets, ASCII diagram, tech-stack table, deviation note
-- [ ] `HOWTORUN.md` — numbered setup → run → test → MCP → demo steps
-- [ ] **Gate:** `./gradlew :homework-6:test` green; Kover ≥ 80% (aim ≥ 90%); `05-test-coverage.png` captured
+- [x] Unit tests per agent + utils (Validator, FraudDetector, ReportingAgent, Iso4217, AuditLogger, BigDecimalSerializer, SharedDirs, MessageIo)
+- [x] 1 integration test of `Integrator.run` (isolated temp `shared/`, incl. `.gitkeep`-survives regression)
+- [x] Kover excludes the `*Kt` CLI entrypoints so the gate measures real logic
+- [x] Agent 4 entity: `.claude/commands/write-docs.md` (documentation meta-agent, parallel to `/write-spec`)
+- [x] `README.md` — student name, agent bullets, ASCII diagram, tech-stack table, deviation note
+- [x] `HOWTORUN.md` — numbered setup → run → test → MCP → demo steps
+- [ ] **Gate:** `./gradlew :homework-6:test` green; `koverVerify -PenforceCoverage` ≥ 80% (aim ≥ 90%); `05-test-coverage.png` captured (run on your machine)
 
 ---
 
