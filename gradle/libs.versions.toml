@@ -3,6 +3,7 @@ kotlin = "2.3.20"
 ktor = "3.4.3"
 kotlinxSerialization = "1.9.0"
 commonsCsv = "1.12.0"
+kover = "0.9.1"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
@@ -19,3 +20,4 @@ commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "common
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

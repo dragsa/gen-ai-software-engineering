@@ -1,0 +1,16 @@
+# Build output
+build/
+
+# Python (mcp/ FastMCP server)
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets / env
+*.env
+.env
+
+# Pipeline runtime output (keep the dirs via .gitkeep, ignore generated messages)
+shared/input/*.json
+shared/processing/*.json
+shared/output/*.json

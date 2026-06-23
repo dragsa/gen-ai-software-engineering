@@ -1,0 +1,10 @@
+=== Pipeline Summary ===
+Total transactions: 8
+By status:
+  - flagged_for_review: 3
+  - rejected: 2
+  - settled: 3
+Settled totals by currency:
+  - USD: 14699.99
+CTR (>= 10,000): TXN002, TXN005
+Cross-border: TXN004, TXN007
